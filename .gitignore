@@ -1,5 +1,9 @@
 /GNUmakefile
 /build/
+/build-arm64-phase1/
+/experiments/cm5-phase1/artifacts/
+/experiments/cm5-phase2/artifacts/
+/experiments/cm5-phase3/artifacts/
 /roms/hexagon-firmware-build/
 /.cache/
 /.vscode/
