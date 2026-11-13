@@ -1,4 +1,5 @@
 # See docs/devel/tracing.rst for syntax documentation.
+bcm2712_sdhci_cfg(bool write, uint64_t offset, uint64_t value) "write=%d offset=0x%" PRIx64 " value=0x%" PRIx64
 
 # allwinner-sdhost.c
 allwinner_sdhost_set_inserted(bool inserted) "inserted %u"
@@ -49,6 +50,8 @@ sdcard_set_block_count(uint32_t cnt) "block cnt 0x%"PRIx32
 sdcard_inserted(bool readonly) "read_only: %u"
 sdcard_ejected(void) ""
 sdcard_erase(uint32_t first, uint32_t last) "addr first 0x%" PRIx32" last 0x%" PRIx32
+sdcard_erase_batch(uint64_t addr, uint64_t bytes) "addr=0x%" PRIx64 " bytes=%" PRIu64
+sdcard_erase_elapsed(uint64_t bytes, int64_t elapsed_ns) "bytes=%" PRIu64 " elapsed_ns=%" PRId64
 sdcard_lock(void) ""
 sdcard_unlock(void) ""
 sdcard_req_addr(uint32_t req_arg, uint64_t addr) "req 0x%" PRIx32 " addr 0x%" PRIx64

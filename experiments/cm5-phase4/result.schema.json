@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase 4 preliminary smoke result (not complete experiment schema)",
+  "type": "object",
+  "required": [
+    "status",
+    "systemd",
+    "verified_root",
+    "fec",
+    "dm_verity",
+    "linux_boot",
+    "fsw_startup",
+    "logical_recovery",
+    "experiment_id",
+    "actual_v8",
+    "functions",
+    "page_size",
+    "input_image_sha256"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "systemd": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "verified_root": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "fec": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "dm_verity": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "linux_boot": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "fsw_startup": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "logical_recovery": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNSUPPORTED",
+        "NOT_TESTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "actual_v8": {
+      "type": "boolean"
+    },
+    "functions": {
+      "type": "array"
+    },
+    "page_size": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "input_image_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

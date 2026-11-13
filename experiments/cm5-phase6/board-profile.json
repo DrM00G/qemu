@@ -1,0 +1,120 @@
+{
+  "board": "Official Compute Module 5 IO Board, logical development profile",
+  "sources": [
+    "https://datasheets.raspberrypi.com/cm5/cm5io-datasheet.pdf (sections 3-5, Appendix A Figures 3-6)",
+    "raspberrypi/linux bcm2712-rpi-cm5{,io}.dtsi and rp1.dtsi"
+  ],
+  "electrical_model": false,
+  "vref": {
+    "default_mv": 3300,
+    "supported_metadata_mv": [
+      1800,
+      3300
+    ],
+    "selector": "R5 for 3.3V, R4 for 1.8V, exactly one resistor fitted",
+    "qemu_option": "-M cm5io-dev,gpio-vref=1800",
+    "effect": "metadata only; no signal-level or voltage enforcement"
+  },
+  "pinmux": {
+    "implemented": false,
+    "spi0_route": "fixed, bypasses the unimplemented RP1 pinmux registers"
+  },
+  "connectors": {
+    "40-pin SPI0": {
+      "signals": {
+        "MOSI": {
+          "gpio": 10,
+          "pin": 19
+        },
+        "MISO": {
+          "gpio": 9,
+          "pin": 21
+        },
+        "SCLK": {
+          "gpio": 11,
+          "pin": 23
+        },
+        "CE0": {
+          "gpio": 8,
+          "pin": 24
+        },
+        "CE1": {
+          "gpio": 7,
+          "pin": 26
+        }
+      },
+      "implementation": "RP1 DW SPI0, programmed I/O; test slave explicitly attached",
+      "enable_option": "header-spi",
+      "attachment": "-device ssi-test-slave,bus=spi,cs=0,xor-mask=0xa5"
+    },
+    "40-pin UART0": {
+      "signals": {
+        "TX": {
+          "gpio": 14,
+          "pin": 8
+        },
+        "RX": {
+          "gpio": 15,
+          "pin": 10
+        }
+      },
+      "implementation": "generic separate PL011 substitute, serial1; no RP1 UART0 register emulation",
+      "enable_option": "header-uart",
+      "attachment": "second -serial backend"
+    },
+    "40-pin I2C1": {
+      "signals": {
+        "SDA": {
+          "gpio": 2,
+          "pin": 3
+        },
+        "SCL": {
+          "gpio": 3,
+          "pin": 5
+        }
+      },
+      "implementation": "NOT_IMPLEMENTED; no runtime attachment"
+    },
+    "40-pin GPIO": {
+      "implementation": "NOT_IMPLEMENTED; no gpiochip or RP1 pinmux driver",
+      "gpios": "0..27; alternate functions conflict physically; model does not enforce mux"
+    },
+    "RJ45": {
+      "routing": "CM5 Ethernet PHY to CM5IO magjack; PoE through optional HAT via J9",
+      "implementation": "RP1 MAC/PHY NOT_IMPLEMENTED",
+      "optional_substitute": "-netdev user,id=net0 -device virtio-net-pci,bus=cm5-expansion,netdev=net0"
+    },
+    "USB Type-A": {
+      "routing": "two USB3 connectors from RP1",
+      "implementation": "RP1 USB NOT_IMPLEMENTED",
+      "optional_substitute": "-device qemu-xhci,id=usb,bus=cm5-expansion -device usb-kbd,bus=usb.0"
+    },
+    "USB Type-C J11": {
+      "routing": "USB2 data/rpiboot and power input",
+      "implementation": "NOT_IMPLEMENTED; no USB recovery or power delivery model"
+    },
+    "M.2 M-key": {
+      "routing": "BCM2712 PCIe1, Gen2 x1 by default",
+      "implementation": "independent GPEX substitute, cm5-expansion bus; no link timing/lane training",
+      "enable_option": "pcie-expansion",
+      "attachment": "-device nvme,drive=nvme0,serial=cm5-test,bus=cm5-expansion"
+    },
+    "RTC battery": {
+      "routing": "CM5 RTC battery connection",
+      "implementation": "PL031 software-test substitute; firmware/PMIC RTC NOT_IMPLEMENTED",
+      "enable_option": "test-rtc"
+    },
+    "eMMC": {
+      "routing": "CM5 on-module 8-bit SDIO1, not a carrier SD card",
+      "implementation": "BCM2712 SDHCI/eMMC NOT_IMPLEMENTED; VirtIO substitute on expansion bus"
+    },
+    "J2": {
+      "routing": "boot/EEPROM/write-protect/power configuration",
+      "implementation": "NOT_IMPLEMENTED; direct kernel boot ignores physical boot overrides"
+    },
+    "J6": {
+      "routing": "CAM/DISP1 I2C jumpers",
+      "implementation": "NOT_IMPLEMENTED; no CSI/DSI peripherals"
+    }
+  }
+}

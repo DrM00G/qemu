@@ -148,7 +148,7 @@ static void gpex_host_realize(DeviceState *dev, Error **errp)
         s->irq[i].irq_num = -1;
     }
 
-    pci->bus = pci_register_root_bus(dev, "pcie.0", gpex_set_irq,
+    pci->bus = pci_register_root_bus(dev, s->bus_name ?: "pcie.0", gpex_set_irq,
                                      gpex_swizzle_map_irq_fn,
                                      s, &s->io_mmio, &s->io_ioport, 0,
                                      s->num_irqs, TYPE_PCIE_BUS);
@@ -167,10 +167,14 @@ static void gpex_host_unrealize(DeviceState *dev)
 static const char *gpex_host_root_bus_path(PCIHostState *host_bridge,
                                           PCIBus *rootbus)
 {
-    return "0000:00";
+    GPEXHost *s = GPEX_HOST(host_bridge);
+
+    return s->root_bus_path ?: "0000:00";
 }
 
 static const Property gpex_host_properties[] = {
+    DEFINE_PROP_STRING("x-bus-name", GPEXHost, bus_name),
+    DEFINE_PROP_STRING("x-root-bus-path", GPEXHost, root_bus_path),
     /*
      * Permit CPU accesses to unmapped areas of the PIO and MMIO windows
      * (discarding writes and returning -1 for reads) rather than aborting.

@@ -1324,6 +1324,7 @@ static void sd_erase(SDState *sd)
     uint64_t wpnum;
     uint64_t erase_addr;
     int erase_len = 1 << HWBLOCK_SHIFT;
+    int64_t started = qemu_clock_get_ns(QEMU_CLOCK_REALTIME);
 
     trace_sdcard_erase(sd->erase_start, sd->erase_end);
     if (sd->erase_start == INVALID_ADDRESS
@@ -1341,7 +1342,7 @@ static void sd_erase(SDState *sd)
         sdsc = false;
     }
 
-    if (erase_start > sd->size || erase_end > sd->size) {
+    if (erase_start >= sd->size || erase_end >= sd->size) {
         sd->card_status |= OUT_OF_RANGE;
         sd->erase_start = INVALID_ADDRESS;
         sd->erase_end = INVALID_ADDRESS;
@@ -1351,6 +1352,37 @@ static void sd_erase(SDState *sd)
     sd->erase_start = INVALID_ADDRESS;
     sd->erase_end = INVALID_ADDRESS;
     sd->csd[14] |= 0x40;
+
+    /*
+     * Local CM5 experiment: a large high-capacity erase must not issue one
+     * synchronous block-backend operation per 512-byte sector. Linux fstrim
+     * otherwise stalls the issuing vCPU for tens of seconds per erase group.
+     * Preserve the existing erased value, inclusive end and partition offset;
+     * do not use discard, which can reveal backing data in a QCOW2 overlay.
+     * SDSC write-protect groups retain the per-sector path below.
+     */
+    if (!sdsc && erase_start <= erase_end) {
+        const size_t batch_size = 1024 * 1024;
+        g_autofree uint8_t *erased = g_malloc(batch_size);
+        uint64_t remaining = erase_end - erase_start + erase_len;
+
+        memset(erased, 0xff, batch_size);
+        for (erase_addr = erase_start; remaining; ) {
+            size_t bytes = MIN(remaining, batch_size);
+
+            trace_sdcard_erase_batch(erase_addr, bytes);
+            if (blk_pwrite(sd->blk, erase_addr + sd_part_offset(sd),
+                           bytes, erased, 0) < 0) {
+                sd->card_status |= SD_ERROR;
+                break;
+            }
+            erase_addr += bytes;
+            remaining -= bytes;
+        }
+        trace_sdcard_erase_elapsed(erase_end - erase_start + erase_len,
+            qemu_clock_get_ns(QEMU_CLOCK_REALTIME) - started);
+        return;
+    }
 
     memset(sd->data, 0xff, erase_len);
     for (erase_addr = erase_start; erase_addr <= erase_end;
@@ -1366,6 +1398,8 @@ static void sd_erase(SDState *sd)
         }
         sd_blk_write(sd, erase_addr, erase_len);
     }
+    trace_sdcard_erase_elapsed(erase_end - erase_start + erase_len,
+        qemu_clock_get_ns(QEMU_CLOCK_REALTIME) - started);
 }
 
 static uint32_t sd_wpbits(SDState *sd, uint64_t addr)

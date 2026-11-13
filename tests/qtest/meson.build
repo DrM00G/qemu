@@ -281,6 +281,10 @@ qtests_arm = \
 
 # TODO: once aarch64 TCG is fixed on ARM 32 bit host, make bios-tables-test unconditional
 qtests_aarch64 = \
+  (config_all_devices.has_key('CONFIG_CM5IO_DEV') ? ['bcm2712-sdhci-test'] : []) + \
+  (config_all_devices.has_key('CONFIG_CM5IO_DEV') ? ['bcm2712-mip-test'] : []) + \
+  (config_all_devices.has_key('CONFIG_CM5IO_DEV') ? ['cm5io-test'] : []) + \
+  (config_all_devices.has_key('CONFIG_RP1_PCI') ? ['rp1-test'] : []) + \
   (cpu != 'arm' and unpack_edk2_blobs ? ['bios-tables-test'] : []) +                            \
   (config_all_accel.has_key('CONFIG_TCG') and config_all_devices.has_key('CONFIG_TPM_TIS_SYSBUS') ?            \
     ['tpm-tis-device-test', 'tpm-tis-device-swtpm-test'] : []) +                                         \

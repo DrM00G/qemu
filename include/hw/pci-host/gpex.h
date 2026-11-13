@@ -65,6 +65,9 @@ struct GPEXHost {
     uint8_t num_irqs;
 
     bool allow_unmapped_accesses;
+    /* Optional names for independent experimental PCI root domains. */
+    char *bus_name;
+    char *root_bus_path;
 
     struct GPEXConfig gpex_cfg;
 };

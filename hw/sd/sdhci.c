@@ -361,6 +361,27 @@ static void sdhci_send_command(SDHCIState *s)
 
     s->errintsts = 0;
     s->acmd12errsts = 0;
+    if (s->auto_cmd23 && (s->cmdreg & SDHC_CMD_DATA_PRESENT) &&
+        (s->trnmod & SDHC_TRNS_MULTI) &&
+        (s->trnmod & (SDHC_TRNS_ACMD12 | SDHC_TRNS_ACMD23)) ==
+        SDHC_TRNS_ACMD23) {
+        /* SDHCI v3 Argument2 shares offset zero with the SDMA address. */
+        request.cmd = 23;
+        request.arg = s->sdmasysad;
+        trace_sdhci_send_command(request.cmd, request.arg);
+        rlen = sdbus_do_command(&s->sdbus, &request, response,
+                                sizeof(response));
+        if (rlen != 4 || (ldl_be_p(response) & 0xfdffe008)) {
+            /* Auto command timeout / index-response error, W1C status. */
+            s->acmd12errsts = rlen != 4 ? 2 : 0x10;
+            if (s->errintstsen & SDHC_EIS_CMD12ERR) {
+                s->errintsts |= SDHC_EIS_CMD12ERR;
+                s->norintsts |= SDHC_NIS_ERR;
+            }
+            sdhci_update_irq(s);
+            return;
+        }
+    }
     request.cmd = s->cmdreg >> 8;
     request.arg = s->argument;
 
@@ -1324,7 +1345,8 @@ sdhci_write(void *opaque, hwaddr offset, uint64_t val, unsigned size)
             mask |= 0xffff;
         }
 
-        MASKED_WRITE(s->trnmod, mask, value & SDHC_TRNMOD_MASK);
+        MASKED_WRITE(s->trnmod, mask, value & (SDHC_TRNMOD_MASK |
+                     (s->auto_cmd23 ? SDHC_TRNS_ACMD23 : 0)));
         MASKED_WRITE(s->cmdreg, mask >> 16, value >> 16);
 
         /* Writing to the upper byte of CMDREG triggers SD command generation */
@@ -1701,6 +1723,7 @@ static const Property sdhci_sysbus_properties[] = {
                      dma_mr, TYPE_MEMORY_REGION, MemoryRegion *),
     DEFINE_PROP_BOOL("wp-inverted", SDHCIState,
                      wp_inverted, false),
+    DEFINE_PROP_BOOL("x-auto-cmd23", SDHCIState, auto_cmd23, false),
 };
 
 static void sdhci_sysbus_init(Object *obj)

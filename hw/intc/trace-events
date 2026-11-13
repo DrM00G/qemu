@@ -361,3 +361,7 @@ loongarch_extioi_writew(uint64_t addr, uint64_t val) "addr: 0x%"PRIx64 "val: 0x%
 # riscv_aplic.c
 riscv_aplic_read(uint64_t offset, unsigned size, uint64_t value) "offset: 0x%" PRIx64 ", size: %u, value: 0x%" PRIx64
 riscv_aplic_write(uint64_t offset, unsigned size, uint64_t value) "offset: 0x%" PRIx64 ", size: %u, value: 0x%" PRIx64
+
+# bcm2712-mip.c
+bcm2712_mip_raise(unsigned first, unsigned vector, bool delivered) "first=%u vector=%u delivered=%d"
+bcm2712_mip_mmio(bool write, uint64_t offset, uint64_t value) "write=%d offset=0x%" PRIx64 " value=0x%" PRIx64

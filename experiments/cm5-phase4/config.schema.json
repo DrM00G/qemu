@@ -1,0 +1,10 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object","additionalProperties":false,"required":["logs_new_file"],
+  "properties":{
+    "logs_new_file":{"type":"string","pattern":"^/"},
+    "duration_seconds":{"type":"integer","minimum":1,"maximum":3600},
+    "uart":{"type":"string"},"spi":{"type":"string"},
+    "approved_hardware_mapping":{"type":"boolean","default":false}
+  }
+}

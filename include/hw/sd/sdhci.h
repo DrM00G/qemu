@@ -105,6 +105,8 @@ struct SDHCIState {
     bool wp_inverted;
     /* Indicate that SDMA transfer is paused due to hitting the boundary */
     bool sdma_boundary_paused;
+    /* Local BCM2712 experiment: v3 PIO Auto CMD23, opt-in only. */
+    bool auto_cmd23;
 };
 typedef struct SDHCIState SDHCIState;
 

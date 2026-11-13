@@ -1,0 +1,11 @@
+[Unit]
+Description=Local CM5 functional diagnostic
+After=local-fs.target
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/cm5/run-diagnostic.py /opt/cm5/profile.json --executable /opt/cm5/diagnostic
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=120
+[Install]
+WantedBy=multi-user.target

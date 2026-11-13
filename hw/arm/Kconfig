@@ -774,3 +774,16 @@ config AXIADO_EVK
     default y
     depends on TCG && ARM
     select AXIADO_SOC
+
+config CM5IO_DEV
+    bool
+    default y
+    depends on AARCH64 && TCG
+    select ARM_GIC
+    select DEVICE_TREE
+    select PCI_EXPRESS_GENERIC_BRIDGE
+    select PL011
+    select PL031
+    select RP1_PCI
+    select BCM2712_MIP
+    select BCM2712_SDHCI

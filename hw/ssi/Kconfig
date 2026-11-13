@@ -36,3 +36,7 @@ config ALLWINNER_A10_SPI
 config IMX_SPI
     bool
     select SSI
+
+config DW_APB_SSI
+    bool
+    select SSI
