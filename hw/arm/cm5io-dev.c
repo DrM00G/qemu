@@ -10,6 +10,7 @@
  */
 #include "qemu/osdep.h"
 #include "hw/arm/cm5io-dev.h"
+#include "hw/arm/bcm2712-pcie.h"
 #include "hw/arm/boot.h"
 #include "hw/core/boards.h"
 #include "hw/core/qdev-properties.h"
@@ -46,6 +47,8 @@ struct CM5IODevState {
     AddressSpace dma_as[2];
     bool native_mip;
     bool native_emmc;
+    bool emmc_dma;
+    bool native_pcie;
     int fdt_size;
     uint32_t gpio_vref;
     bool header_spi, header_uart, expansion, test_rtc;
@@ -377,7 +380,8 @@ static void cm5_rp1_dt(CM5IODevState *s)
         return;
     }
     qemu_fdt_add_subnode(fdt, spi);
-    qemu_fdt_setprop_string(fdt, spi, "compatible", "snps,dw-apb-ssi");
+    qemu_fdt_setprop_string(fdt, spi, "compatible",
+                                       "snps,dw-apb-ssi");
     cm5_reg(fdt, spi, 0x50000, 0x1000);
     qemu_fdt_setprop_cells(fdt, spi, "interrupts", 19, 4);
     qemu_fdt_setprop_cell(fdt, spi, "interrupt-parent", irq);
@@ -398,6 +402,135 @@ static void cm5_rp1_dt(CM5IODevState *s)
     qemu_fdt_setprop_cell(fdt,
         "/rp1-peripherals/rp1/spi@50000/test-slave@0", "spi-max-frequency",
         10000000);
+}
+
+/* Native BCM2712 logical link and PCI transaction path. */
+static void cm5_native_pcie(CM5IODevState *s, unsigned index)
+{
+    void *fdt = MACHINE(s)->fdt;
+    hwaddr base = index ? 0x1000110000ULL : 0x1000120000ULL;
+    unsigned intx = index ? 219 : 229;
+    DeviceState *dev = qdev_new(TYPE_BCM2712_PCIE);
+    g_autofree char *node = g_strdup_printf("/pcie@%" HWADDR_PRIx, base);
+    uint32_t clock = qemu_fdt_alloc_phandle(fdt);
+    g_autofree char *clk = g_strdup_printf("/pcie%u-fixed-clock", index);
+    uint32_t map[4 * 10];
+    unsigned pin, j, n = 0;
+    const char names[] = "pcie\0msi";
+
+    object_property_add_child(OBJECT(s), index ? "native-expansion" :
+                              "native-rp1", OBJECT(dev));
+    qdev_prop_set_uint32(dev, "controller", index ? 1 : 2);
+    qdev_prop_set_bit(dev, "connect-rp1", !index);
+    qdev_prop_set_uint64(dev, "ram-size", MACHINE(s)->ram_size);
+    object_property_set_link(OBJECT(dev), "msi-target",
+        OBJECT(sysbus_mmio_get_region(SYS_BUS_DEVICE(s->mip[index]), 1)),
+        &error_fatal);
+    sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
+    sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, base);
+    sysbus_mmio_map(SYS_BUS_DEVICE(dev), 1,
+                   index ? 0x1b80000000ULL : 0x1f00000000ULL);
+    sysbus_mmio_map(SYS_BUS_DEVICE(dev), 2,
+                   index ? 0x1800000000ULL : 0x1c00000000ULL);
+    for (pin = 0; pin < 4; pin++) {
+        sysbus_connect_irq(SYS_BUS_DEVICE(dev), pin,
+                           qdev_get_gpio_in(s->gic, intx + pin));
+    }
+    qemu_fdt_add_subnode(fdt, node);
+    if (!index) {
+        const char *rp1 = "/pcie@1000120000/rp1";
+
+        /*
+         * The real MFD locates this simple-bus node by name. Only modeled
+         * children will be added; this is not an import of the captured DT.
+         */
+        qemu_fdt_add_subnode(fdt, rp1);
+        qemu_fdt_setprop_string(fdt, rp1, "compatible", "simple-bus");
+        qemu_fdt_setprop_cell(fdt, rp1, "#address-cells", 2);
+        qemu_fdt_setprop_cell(fdt, rp1, "#size-cells", 2);
+        qemu_fdt_setprop_cell(fdt, rp1, "#interrupt-cells", 2);
+        qemu_fdt_setprop(fdt, rp1, "interrupt-controller", NULL, 0);
+        qemu_fdt_setprop_cell(fdt, rp1, "phandle", qemu_fdt_alloc_phandle(fdt));
+        qemu_fdt_setprop_cells(fdt, rp1, "ranges",
+            0xc0, 0x40000000, 0x02000000, 0, 0, 0, 0x400000);
+        {
+            const char *clks = "/pcie@1000120000/rp1/clocks@18000";
+            const char *spi = "/pcie@1000120000/rp1/spi@50000";
+            const char *slave = "/pcie@1000120000/rp1/spi@50000/test-slave@0";
+            uint32_t xosc = qemu_fdt_alloc_phandle(fdt);
+            uint32_t clocks = qemu_fdt_alloc_phandle(fdt);
+            uint32_t irq = qemu_fdt_get_phandle(fdt, rp1);
+
+            cm5_clock(s, "/rp1-xosc", 50000000, xosc);
+            qemu_fdt_add_subnode(fdt, clks);
+            qemu_fdt_setprop_string(fdt, clks, "compatible",
+                                   "raspberrypi,rp1-clocks");
+            qemu_fdt_setprop_cell(fdt, clks, "#clock-cells", 1);
+            qemu_fdt_setprop_cell(fdt, clks, "phandle", clocks);
+            qemu_fdt_setprop_cell(fdt, clks, "clocks", xosc);
+            qemu_fdt_setprop_cells(fdt, clks, "reg",
+                                   0xc0, 0x40018000, 0, 0x10038);
+            if (s->header_spi) {
+                qemu_fdt_add_subnode(fdt, spi);
+                qemu_fdt_setprop_string(fdt, spi, "compatible",
+                                       "snps,dw-apb-ssi");
+                qemu_fdt_setprop_cells(fdt, spi, "reg",
+                                       0xc0, 0x40050000, 0, 0x130);
+                qemu_fdt_setprop_cells(fdt, spi, "clocks", clocks, 12);
+                qemu_fdt_setprop_cells(fdt, spi, "interrupts", 19, 4);
+                qemu_fdt_setprop_cell(fdt, spi, "interrupt-parent", irq);
+                qemu_fdt_setprop_cell(fdt, spi, "reg-io-width", 4);
+                qemu_fdt_setprop_cell(fdt, spi, "num-cs", 2);
+                qemu_fdt_setprop_cell(fdt, spi, "#address-cells", 1);
+                qemu_fdt_setprop_cell(fdt, spi, "#size-cells", 0);
+                qemu_fdt_setprop_string(fdt, "/aliases", "spi0", spi);
+                qemu_fdt_add_subnode(fdt, slave);
+                qemu_fdt_setprop_string(fdt, slave, "compatible",
+                                       "qemu,ssi-test-slave");
+                qemu_fdt_setprop_cell(fdt, slave, "reg", 0);
+                qemu_fdt_setprop_cell(fdt, slave, "spi-max-frequency",
+                                     10000000);
+            }
+        }
+    }
+    cm5_clock(s, clk, 54000000, clock);
+    qemu_fdt_setprop_string(fdt, node, "compatible", "brcm,bcm2712-pcie");
+    qemu_fdt_setprop_string(fdt, node, "device_type", "pci");
+    qemu_fdt_setprop_string(fdt, node, "qemu,implementation",
+                          "logical link, indexed config and programmed address windows");
+    cm5_reg(fdt, node, base, 0x9310);
+    qemu_fdt_setprop_cell(fdt, node, "#address-cells", 3);
+    qemu_fdt_setprop_cell(fdt, node, "#size-cells", 2);
+    qemu_fdt_setprop_cell(fdt, node, "#interrupt-cells", 1);
+    qemu_fdt_setprop_cell(fdt, node, "linux,pci-domain", index ? 1 : 2);
+    qemu_fdt_setprop_cells(fdt, node, "bus-range", 0, 15);
+    qemu_fdt_setprop_cell(fdt, node, "num-lanes", index ? 1 : 4);
+    qemu_fdt_setprop_cell(fdt, node, "max-link-speed", 2);
+    qemu_fdt_setprop_cells(fdt, node, "clocks", clock);
+    qemu_fdt_setprop_string(fdt, node, "clock-names", "sw_pcie");
+    qemu_fdt_setprop_cells(fdt, node, "interrupts", 0, intx + 4, 4,
+                           0, intx + 5, 4);
+    qemu_fdt_setprop(fdt, node, "interrupt-names", names, sizeof(names));
+    qemu_fdt_setprop_cells(fdt, node, "msi-parent", s->mip_phandle[index]);
+    qemu_fdt_setprop_cells(fdt, node, "interrupt-map-mask", 0, 0, 0, 7);
+    for (pin = 1; pin <= 4; pin++) {
+        uint32_t entry[] = { 0, 0, 0, pin, s->gic_phandle,
+                            0, 0, 0, intx + pin - 1, 4 };
+        for (j = 0; j < ARRAY_SIZE(entry); j++) {
+            map[n++] = cpu_to_be32(entry[j]);
+        }
+    }
+    qemu_fdt_setprop(fdt, node, "interrupt-map", map, sizeof(map));
+    qemu_fdt_setprop_cells(fdt, node, "ranges",
+        0x02000000, 0, index ? 0x80000000 : 0,
+        index ? 0x1b : 0x1f, index ? 0x80000000 : 0,
+        0, index ? 0x80000000 : 0xfffffffc,
+        0x43000000, 4, 0, index ? 0x18 : 0x1c, 0,
+        3, index ? 0x80000000 : 0);
+    qemu_fdt_setprop_cells(fdt, node, "dma-ranges",
+        0x03000000, 0x10, 0, 0, 0, 0x10, 0,
+        0x03000000, 0xff, 0xfffff000, 0x10,
+        index ? 0x131000 : 0x130000, 0, 0x1000);
 }
 
 static void cm5_connectors(CM5IODevState *s)
@@ -435,13 +568,17 @@ static void cm5_connectors(CM5IODevState *s)
                             "fixed SPI0 route; GPIO pinmux not implemented");
     for (i = 0; i < ARRAY_SIZE(profile); i++) {
         g_autofree char *node = g_strdup_printf("%s/%s", root, profile[i].name);
-        bool enabled = i == 0 ? s->header_spi : i == 1 ? s->header_uart :
-                       i == 6 ? s->expansion : i == 7 ? s->test_rtc : false;
+        bool enabled = i == 0 ? s->header_spi :
+                       i == 1 ? s->header_uart :
+                       i == 6 ? s->expansion && !s->native_pcie :
+                       i == 7 ? s->test_rtc : false;
 
         qemu_fdt_add_subnode(fdt, node);
         qemu_fdt_setprop_string(fdt, node, "qemu,routing", profile[i].routing);
         qemu_fdt_setprop_string(fdt, node, "qemu,implementation",
-                                profile[i].implementation);
+            s->native_pcie && i == 6 ?
+            "native root port; no expansion endpoint attached" :
+            profile[i].implementation);
         qemu_fdt_setprop_string(fdt, node, "status",
                                 enabled ? "okay" : "disabled");
     }
@@ -458,6 +595,7 @@ static void cm5_emmc(CM5IODevState *s)
     DeviceState *dev = qdev_new(TYPE_BCM2712_SDHCI);
 
     object_property_add_child(OBJECT(s), "emmc-host", OBJECT(dev));
+    qdev_prop_set_bit(dev, "dma", s->emmc_dma);
     sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
     sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, CM5_EMMC_HOST);
     sysbus_mmio_map(SYS_BUS_DEVICE(dev), 1, CM5_EMMC_CFG);
@@ -514,6 +652,10 @@ static void cm5_init(MachineState *ms)
         error_report("cm5io-dev requires generated DT and direct -kernel boot");
         exit(1);
     }
+    if (s->native_pcie && !s->native_mip) {
+        error_report("native-pcie requires native-mip=on");
+        exit(1);
+    }
     memory_region_add_subregion(get_system_memory(), 0, ms->ram);
     ms->fdt = fdt = create_device_tree(&s->fdt_size);
     qemu_fdt_setprop_string(fdt, "/", "model",
@@ -553,14 +695,21 @@ static void cm5_init(MachineState *ms)
         qemu_fdt_setprop_cell(fdt, node, "clocks", s->clk_phandle);
         qemu_fdt_setprop_string(fdt, node, "clock-names", "apb_pclk");
     }
-    bus = cm5_pcie(s, 0);
-    rp1 = DEVICE(pci_new(PCI_DEVFN(1, 0), "rp1-pci"));
-    object_property_add_child(OBJECT(s), "rp1", OBJECT(rp1));
-    pci_realize_and_unref(PCI_DEVICE(rp1), bus, &error_fatal);
-    if (s->expansion) {
-        cm5_pcie(s, 1);
+    if (s->native_pcie) {
+        cm5_native_pcie(s, 0);
+        if (s->expansion) {
+            cm5_native_pcie(s, 1);
+        }
+    } else {
+        bus = cm5_pcie(s, 0);
+        rp1 = DEVICE(pci_new(PCI_DEVFN(1, 0), "rp1-pci"));
+        object_property_add_child(OBJECT(s), "rp1", OBJECT(rp1));
+        pci_realize_and_unref(PCI_DEVICE(rp1), bus, &error_fatal);
+        if (s->expansion) {
+            cm5_pcie(s, 1);
+        }
+        cm5_rp1_dt(s);
     }
-    cm5_rp1_dt(s);
     cm5_connectors(s);
     s->bootinfo.ram_size = ms->ram_size;
     s->bootinfo.loader_start = 0;
@@ -598,6 +747,7 @@ static void cm5_class_init(ObjectClass *oc, const void *data)
         ARM_CPU_TYPE_NAME("cortex-a76"), NULL
     };
 
+    mc->pci_allow_0_address = true;
     mc->desc = "Experimental CM5 + CM5IO (partial BCM2712, generic PCI/MSI)";
     mc->init = cm5_init;
     mc->default_cpu_type = ARM_CPU_TYPE_NAME("cortex-a76");
@@ -619,6 +769,12 @@ static void cm5_class_init(ObjectClass *oc, const void *data)
         offsetof(CM5IODevState, native_mip), OBJ_PROP_FLAG_READWRITE);
     object_class_property_add_bool_ptr(oc, "native-emmc",
         offsetof(CM5IODevState, native_emmc), OBJ_PROP_FLAG_READWRITE);
+    object_class_property_add_bool_ptr(oc, "emmc-dma",
+        offsetof(CM5IODevState, emmc_dma), OBJ_PROP_FLAG_READWRITE);
+    object_class_property_add_bool_ptr(oc, "native-pcie",
+        offsetof(CM5IODevState, native_pcie), OBJ_PROP_FLAG_READWRITE);
+    object_class_property_set_description(oc, "native-pcie",
+        "BCM2712 logical PCIe/RP1 link and programmed address windows");
     object_class_property_add_str(oc, "gpio-vref", cm5_get_vref, cm5_set_vref);
     object_class_property_set_description(oc, "gpio-vref",
         "CM5IO R4/R5 selection: 1800 or 3300 mV metadata; no electrical model");

@@ -1336,7 +1336,9 @@ sdhci_write(void *opaque, hwaddr offset, uint64_t val, unsigned size)
          * DMA can be enabled only if it is supported as indicated by
          * capabilities register
          */
-        if (!(s->capareg & R_SDHC_CAPAB_SDMA_MASK)) {
+        if (!(s->capareg & (R_SDHC_CAPAB_SDMA_MASK |
+                           R_SDHC_CAPAB_ADMA1_MASK |
+                           R_SDHC_CAPAB_ADMA2_MASK))) {
             value &= ~SDHC_TRNS_DMA;
         }
 

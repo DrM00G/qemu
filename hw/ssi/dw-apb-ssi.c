@@ -42,9 +42,27 @@ static uint32_t dw_ssi_raw(DWAPBSSIState *s)
            ((s->rx_count > R(s, RXFTLR)) ? BIT(4) : 0);
 }
 
+static void dw_ssi_diag(DWAPBSSIState *s, const char *event)
+{
+    /* Nonarchitectural, bounded first-event capture; never affects pacing. */
+    if (s->diagnostic_left) {
+        s->diagnostic_left--;
+        trace_dw_apb_ssi_state(event, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+            s->tx_count, s->rx_count, s->shift_busy, s->active_cs,
+            dw_ssi_raw(s), R(s, IMR), timer_pending(s->timer) ?
+            timer_expire_time_ns(s->timer) : -1);
+    }
+}
+
 static void dw_ssi_irq(DWAPBSSIState *s)
 {
-    qemu_set_irq(s->irq, !!(dw_ssi_raw(s) & R(s, IMR)));
+    bool level = !!(dw_ssi_raw(s) & R(s, IMR));
+
+    if (level != s->irq_level) {
+        s->irq_level = level;
+        dw_ssi_diag(s, "irq");
+    }
+    qemu_set_irq(s->irq, level);
 }
 
 static void dw_ssi_cs(DWAPBSSIState *s, uint32_t selected)
@@ -56,6 +74,7 @@ static void dw_ssi_cs(DWAPBSSIState *s, uint32_t selected)
     }
     trace_dw_apb_ssi_cs(selected);
     s->active_cs = selected;
+    dw_ssi_diag(s, "cs");
     for (i = 0; i < 4; i++) {
         DeviceState *dev = ssi_get_cs(s->bus, i);
         if (dev) {
@@ -82,32 +101,54 @@ static bool dw_ssi_supported(DWAPBSSIState *s)
 
 static void dw_ssi_schedule(DWAPBSSIState *s)
 {
-    if (R(s, SSIENR) && R(s, SER) && R(s, BAUDR) >= 2 &&
-        s->tx_count && dw_ssi_supported(s)) {
-        if (!timer_pending(s->timer)) {
-            unsigned bits = ((R(s, CTRLR0) >> 16) & 31) + 1;
-            /* 200 MHz fixed experimental input clock; no electrical timing. */
-            int64_t ns = (int64_t)bits * R(s, BAUDR) * 5;
-            dw_ssi_cs(s, R(s, SER));
-            timer_mod(s->timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + ns);
-        }
-    } else {
+    if (!R(s, SSIENR) || !R(s, SER) || R(s, BAUDR) < 2 ||
+        !dw_ssi_supported(s) ||
+        (s->shift_busy && s->active_cs != R(s, SER))) {
         timer_del(s->timer);
+        s->shift_busy = false;
         dw_ssi_cs(s, 0);
+    } else if (!s->input_hz) {
+        /* Logical clock pause; do not manufacture a completed frame. */
+        timer_del(s->timer);
+    } else {
+        if (!s->shift_busy && s->tx_count) {
+            s->shift_tx = s->tx[s->tx_head];
+            s->shift_bits = ((R(s, CTRLR0) >> 16) & 31) + 1;
+            s->tx_head = (s->tx_head + 1) % DW_SSI_FIFO_DEPTH;
+            s->tx_count--;
+            s->shift_busy = true;
+            dw_ssi_cs(s, R(s, SER));
+            dw_ssi_diag(s, "shift-load");
+        }
+        if (s->shift_busy && !timer_pending(s->timer)) {
+            int64_t ns = MAX(1, (uint64_t)s->shift_bits * R(s, BAUDR) *
+                             1000000000 / s->input_hz);
+            timer_mod(s->timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + ns);
+        } else if (!s->shift_busy) {
+            dw_ssi_cs(s, 0);
+        }
     }
     dw_ssi_irq(s);
+}
+
+void dw_apb_ssi_set_frequency(DWAPBSSIState *s, uint64_t hz)
+{
+    s->input_hz = hz;
+    dw_ssi_schedule(s);
 }
 
 static void dw_ssi_tick(void *opaque)
 {
     DWAPBSSIState *s = opaque;
-    unsigned bits = ((R(s, CTRLR0) >> 16) & 31) + 1;
+    unsigned bits = s->shift_bits;
     uint32_t mask = bits == 32 ? UINT32_MAX : (1U << bits) - 1;
-    uint32_t tx = s->tx[s->tx_head] & mask;
+    uint32_t tx = s->shift_tx & mask;
     uint32_t rx;
 
-    s->tx_head = (s->tx_head + 1) % DW_SSI_FIFO_DEPTH;
-    s->tx_count--;
+    if (!s->shift_busy) {
+        return;
+    }
+    s->shift_busy = false;
     rx = (R(s, CTRLR0) & BIT(11)) ? tx : ssi_transfer(s->bus, tx);
     rx &= mask;
     trace_dw_apb_ssi_transfer(s->active_cs, bits, tx, rx);
@@ -119,9 +160,7 @@ static void dw_ssi_tick(void *opaque)
             s->rx_count++;
         }
     }
-    if (!s->tx_count) {
-        dw_ssi_cs(s, 0);
-    }
+    dw_ssi_diag(s, "shift-done");
     dw_ssi_schedule(s);
 }
 
@@ -147,7 +186,7 @@ static uint64_t dw_ssi_read(void *opaque, hwaddr addr, unsigned size)
             val = s->rx_count;
             break;
         case SR:
-            val = (timer_pending(s->timer) ? BIT(0) : 0) |
+            val = (s->shift_busy ? BIT(0) : 0) |
                   (s->tx_count < DW_SSI_FIFO_DEPTH ? BIT(1) : 0) |
                   (!s->tx_count ? BIT(2) : 0) |
                   (s->rx_count ? BIT(3) : 0) |
@@ -204,6 +243,7 @@ static void dw_ssi_write(void *opaque, hwaddr addr, uint64_t val,
         } else {
             s->tx[(s->tx_head + s->tx_count) % DW_SSI_FIFO_DEPTH] = val;
             s->tx_count++;
+            dw_ssi_diag(s, "tx-write");
         }
     } else {
         switch (addr) {
@@ -273,6 +313,9 @@ static void dw_ssi_reset(DeviceState *dev)
     DWAPBSSIState *s = DW_APB_SSI(dev);
 
     timer_del(s->timer);
+    s->shift_busy = false;
+    s->shift_tx = s->shift_bits = 0;
+    s->diagnostic_left = 256;
     memset(s->regs, 0, sizeof(s->regs));
     R(s, CTRLR0) = 7 << 16; /* experimental reset frame size: eight bits */
     R(s, IMR) = 0x3f;
@@ -292,6 +335,7 @@ static void dw_ssi_init(Object *obj)
                           "dw-apb-ssi", 0x1000);
     qdev_init_gpio_out(DEVICE(obj), &s->irq, 1);
     s->timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, dw_ssi_tick, s);
+    s->input_hz = 200000000; /* preserved fallback default */
 }
 
 static void dw_ssi_finalize(Object *obj)

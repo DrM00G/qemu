@@ -3,7 +3,8 @@
  * Experimental BCM2712 SDHCI wrapper. AI-assisted local research only.
  * Implements the configuration contract of Raspberry Pi Linux's
  * sdhci-brcmstb BCM2712 path, around QEMU's existing SDHCI/eMMC engine.
- * PIO only; no PHY, tuning, CQE, SD Express or electrical timing model.
+ * Default PIO, opt-in existing SDHCI ADMA2 engine; no PHY, tuning, CQE,
+ * SD Express or electrical timing model.
  * Configuration reset values are simulated, not measured silicon values.
  */
 #include "qemu/osdep.h"
@@ -89,6 +90,10 @@ static void bcm2712_sdhci_realize(DeviceState *dev, Error **errp)
     BCM2712SDHCIState *s = BCM2712_SDHCI(dev);
     SysBusDevice *core = SYS_BUS_DEVICE(&s->core);
 
+    if (s->dma) {
+        /* ADMA2 and 64-bit descriptor addresses, not CQE or HS400. */
+        qdev_prop_set_uint64(DEVICE(&s->core), "capareg", 0x110cc881);
+    }
     if (!sysbus_realize(core, errp)) {
         return;
     }
@@ -117,11 +122,16 @@ static const VMStateDescription bcm2712_sdhci_vmstate = {
     .unmigratable = true,
 };
 
+static const Property bcm2712_sdhci_properties[] = {
+    DEFINE_PROP_BOOL("dma", BCM2712SDHCIState, dma, false),
+};
+
 static void bcm2712_sdhci_class_init(ObjectClass *oc, const void *data)
 {
     DeviceClass *dc = DEVICE_CLASS(oc);
 
     dc->realize = bcm2712_sdhci_realize;
+    device_class_set_props(dc, bcm2712_sdhci_properties);
     device_class_set_legacy_reset(dc, bcm2712_sdhci_reset);
     dc->desc = "Experimental BCM2712 SDHCI (PIO subset)";
     dc->user_creatable = false;

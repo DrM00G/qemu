@@ -66,3 +66,5 @@ allwinner_a10_spi_write(const char* regname, uint32_t value) "reg[%s] <= 0x%08x"
 # dw-apb-ssi.c (local RP1 research)
 dw_apb_ssi_cs(uint32_t selected) "selected=0x%x"
 dw_apb_ssi_transfer(uint32_t cs, unsigned bits, uint32_t tx, uint32_t rx) "cs=0x%x bits=%u tx=0x%08x rx=0x%08x"
+
+dw_apb_ssi_state(const char *event, int64_t now, unsigned tx, unsigned rx, bool shifting, uint32_t cs, uint32_t raw, uint32_t mask, int64_t deadline) "%s virtual_ns=%" PRId64 " tx=%u rx=%u shifting=%d cs=0x%x raw=0x%x mask=0x%x deadline_ns=%" PRId64

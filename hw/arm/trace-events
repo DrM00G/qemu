@@ -1,4 +1,5 @@
 # See docs/devel/tracing.rst for syntax documentation.
+bcm2712_pcie_access(unsigned controller, bool write, uint64_t offset, uint64_t value) "controller=%u write=%d offset=0x%" PRIx64 " value=0x%" PRIx64
 
 # omap1.c
 omap1_pwl_clocking_scheme(const char *scheme) "omap1 CLKM: clocking scheme set to %s"

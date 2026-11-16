@@ -782,6 +782,7 @@ config CM5IO_DEV
     select ARM_GIC
     select DEVICE_TREE
     select PCI_EXPRESS_GENERIC_BRIDGE
+    select PCIE_PORT
     select PL011
     select PL031
     select RP1_PCI

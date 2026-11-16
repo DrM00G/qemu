@@ -1,0 +1,38 @@
+{
+  "raspberrypi_documentation": {
+    "revision": "c6a64966af136da21a1e55551c5a395cb6987fce",
+    "files": [
+      {
+        "name": "boot.adoc",
+        "sha256": "318bb7008c0596123584f38e63f0ec9fe8c4f4c93f003e4d61d7584113a47038",
+        "url": "https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/config_txt/boot.adoc"
+      },
+      {
+        "name": "conditional.adoc",
+        "sha256": "1b8c3a817fb48478e2098cf5b668d7a14d3aa53630d87655d9e4d185b0fa08b9",
+        "url": "https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/config_txt/conditional.adoc"
+      },
+      {
+        "name": "what_is_config_txt.adoc",
+        "sha256": "717fd5057f3ec75628e1bc4cb9cb79b44a73a1ad1489e6deb9ad65895ca72784",
+        "url": "https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/config_txt/what_is_config_txt.adoc"
+      }
+    ]
+  },
+  "zstd_api": {
+    "header": "/usr/include/zstd.h",
+    "sha256": "9b4bc8245565c98ccfc61c07749928b57e7c0f6fddb0530c4f6aa1971893d88b",
+    "interface": "stable streaming API, ZSTD_d_windowLogMax=100; value=26"
+  },
+  "boot_overlay_sources": {
+    "private_read": "/home/aweso/cm5-v8-lab/phase10f1/accepted-20261114-02/reference-read.json",
+    "acceptance": "/home/aweso/cm5-v8-lab/phase10f1/accepted-20261114-02/accepted-hashes.json",
+    "inspection": "private dtc output and BOOT overlays/README; overlays not applied"
+  },
+  "linux_initramfs_alignment": {
+    "path": "/home/aweso/cm5-phase3-kernel/linux-62a56e350fcfd1c5e204c62dac4ea4ee205eb24e/init/initramfs.c",
+    "revision": "62a56e350fcfd1c5e204c62dac4ea4ee205eb24e",
+    "sha256": "19eff86255abea3ca548b20a6ab8e9d040910a7b70027ac34d2ba4fc603d4394",
+    "operation": "unpack_to_rootfs checks this_header & 3 before raw newc; compressed decode resets offset"
+  }
+}

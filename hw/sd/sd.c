@@ -166,6 +166,10 @@ struct SDState {
     uint64_t rpmb_part_size;
     BlockBackend *blk;
     uint8_t boot_config;
+    bool cmd23_read_batch;
+    uint8_t read_cache[128 * KiB];
+    uint64_t read_cache_addr;
+    uint32_t read_cache_len;
 
     const SDProto *proto;
 
@@ -918,6 +922,8 @@ static void sd_reset(DeviceState *dev)
     uint64_t size;
     uint64_t sect;
 
+    sd->read_cache_len = 0;
+
     trace_sdcard_reset();
     if (sd->blk) {
         blk_get_geometry(sd->blk, &sect);
@@ -1069,6 +1075,7 @@ static int sd_vmstate_pre_load(void *opaque)
      * is included, this will be replaced by the state restore.
      */
     sd_ocr_powerup(sd);
+    sd->read_cache_len = 0;
 
     return 0;
 }
@@ -1116,6 +1123,36 @@ static const VMStateDescription sd_vmstate = {
 static void sd_blk_read(SDState *sd, uint64_t addr, uint32_t len)
 {
     trace_sdcard_read_block(addr, len);
+    if (sd->cmd23_read_batch && sd_is_emmc(sd) && sd->current_cmd == 18 &&
+        sd->multi_blk_cnt && len == 512 && !sd->boot_part_size &&
+        !sd->rpmb_part_size &&
+        !(sd->ext_csd[EXT_CSD_PART_CONFIG] & EXT_CSD_PART_CONFIG_ACC_MASK)) {
+        if (!sd->read_cache_len || addr < sd->read_cache_addr ||
+            addr + len > sd->read_cache_addr + sd->read_cache_len) {
+            uint32_t batch = MIN((uint64_t)sd->multi_blk_cnt * len,
+                                 sizeof(sd->read_cache));
+            int ret;
+
+            batch = MIN((uint64_t)batch, (sd->size - addr) & ~511ULL);
+            sd->read_cache_len = 0;
+            ret = sd->blk ? blk_pread(sd->blk, addr, batch,
+                                     sd->read_cache, 0) : -ENOMEDIUM;
+            trace_sdcard_read_batch(addr, batch, ret);
+            if (ret >= 0) {
+                sd->read_cache_addr = addr;
+                sd->read_cache_len = batch;
+            }
+        }
+        if (sd->read_cache_len) {
+            memcpy(sd->data,
+                   sd->read_cache + (addr - sd->read_cache_addr), len);
+            return;
+        }
+        /*
+         * A fault in a later requested block must not fail this block early.
+         * Fall back to the same active backend, never a pristine host file.
+         */
+    }
     addr += sd_part_offset(sd);
     if (!sd->blk || blk_pread(sd->blk, addr, len, sd->data, 0) < 0) {
         fprintf(stderr, "sd_blk_read: read error on host side\n");
@@ -2372,6 +2409,9 @@ static sd_rsp_type_t sd_normal_command(SDState *sd, SDRequest req)
 {
     uint64_t addr;
 
+    /* No cached bytes survive a command boundary, stop, write or switch. */
+    sd->read_cache_len = 0;
+
     sd->last_cmd_name = sd_cmd_name(sd, req.cmd);
     /* CMD55 precedes an ACMD, so we are not interested in tracing it.
      * However there is no ACMD55, so we want to trace this particular case.
@@ -2852,7 +2892,6 @@ static size_t sd_read_data(SDState *sd, void *buf, size_t length)
     const uint8_t dummy_byte = 0x00;
     unsigned int partition_access;
     uint32_t blk_len;
-    uint8_t *value = buf;
 
     if (!sd->blk || !blk_is_inserted(sd->blk)) {
         memset(buf, dummy_byte, length);
@@ -2893,15 +2932,17 @@ static size_t sd_read_data(SDState *sd, void *buf, size_t length)
 
     case 18:  /* CMD18:  READ_MULTIPLE_BLOCK */
         /*
-         * We will only read one byte at a time. We will be called again with
-         * the remaining buffer.
+         * Return the available part of this block, as the bus API permits.
+         * ADMA requests whole blocks; forcing a callback per byte needlessly
+         * repeats card-state and partition checks for each transferred byte.
+         * Do not read beyond the current requested card block.
          */
-        length = 1;
+        length = MIN(length, blk_len - sd->data_offset);
 
         if (sd->data_offset == 0) {
             if (!address_in_range(sd, "READ_MULTIPLE_BLOCK",
                                   sd->data_start, blk_len)) {
-                *value = dummy_byte;
+                memset(buf, dummy_byte, length);
                 return length;
             }
             partition_access = sd->ext_csd[EXT_CSD_PART_CONFIG]
@@ -2912,7 +2953,8 @@ static size_t sd_read_data(SDState *sd, void *buf, size_t length)
                 sd_blk_read(sd, sd->data_start, blk_len);
             }
         }
-        *value = sd->data[sd->data_offset++];
+        memcpy(buf, sd->data + sd->data_offset, length);
+        sd->data_offset += length;
 
         if (sd->data_offset >= blk_len) {
             sd->data_start += blk_len;
@@ -3254,6 +3296,7 @@ static const Property sd_properties[] = {
 };
 
 static const Property emmc_properties[] = {
+    DEFINE_PROP_BOOL("x-cmd23-read-batch", SDState, cmd23_read_batch, false),
     DEFINE_PROP_UINT64("boot-partition-size", SDState, boot_part_size, 0),
     DEFINE_PROP_UINT8("boot-config", SDState, boot_config, 0x0),
     DEFINE_PROP_UINT64("rpmb-partition-size", SDState, rpmb_part_size, 0),

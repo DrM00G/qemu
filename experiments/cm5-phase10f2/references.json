@@ -1,0 +1,44 @@
+{
+  "eeprom": {
+    "url": "https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/raspberry-pi/eeprom-bootloader.adoc",
+    "accessed": "2026-11-14",
+    "sections": [
+      "BOOT_ORDER",
+      "MAX_RESTARTS"
+    ],
+    "interpretation": "rightmost nibble first; 4 USB-MSD, 1 SD/eMMC source, f restart; absence only permits fallback in this conservative subset"
+  },
+  "device_tree": {
+    "url": "https://www.raspberrypi.com/documentation/computers/configuration.html",
+    "sections": [
+      "The overlay map file",
+      "Overlay/fragment parameters",
+      "Special properties"
+    ],
+    "interpretation": "BCM2712 map entries, empty property identity map, absent entry identity map; general fragment activation and parameter encodings unsupported"
+  },
+  "libfdt": {
+    "url": "https://github.com/dgibson/dtc/blob/main/Documentation/dt-object-internal.txt",
+    "local_revision": "Linux 62a56e350fcfd1c5e204c62dac4ea4ee205eb24e scripts/dtc",
+    "local_source_hashes": {
+      "fdt.c": "0574facf26b0e9d1fdbce3747ceba66b4bdc16bd161601e2bed6a2791b1774c6",
+      "fdt_sw.c": "e9d193f023880f4359c3ed9954d678b51a87b1d66b783318a9d69a8122378122",
+      "fdt_ro.c": "69e99486680db4aa7abc9e8a4bc64025084e84f1fb565f6efe8a9246f61fd936",
+      "libfdt_internal.h": "e26ca18ff2ad39df44add4714262cf5c96f8cb763f28f2dcfe8ce5d49c4384e0",
+      "fdt_empty_tree.c": "f3cdbfa1bcc86cc841544fee5a16c2f66a4da86b1065eaadab9700addb858369",
+      "fdt_addresses.c": "11ac9fb9f20f798483bc1e9e2835b79ef110e55ed7114e20337e59a1b6f4125f",
+      "libfdt_env.h": "273bb264cacd60bb005cfa558bee084558469b9107eaf40d7e1362571ed1bc94",
+      "fdt_wip.c": "a26966b2d991b432473f5c7f6740a3db97ae51313da0ad9eba56048d56c06c73",
+      "libfdt.h": "190b26c478c7f04b1f0d58955256837aa428f24bb4edc9e27fd2e8778bf2862f",
+      "fdt.h": "f1762a7e8de699e4c2dde3f39b2c1bee7380e8a13017036f7096b688efa059d4",
+      "fdt_strerror.c": "4a1de9eb7eadefe07cfe53c238785aa9bdd54e5387903c2faa7e42006027c137",
+      "fdt_rw.c": "c11358cc70404fe78ecfbc4eb8485f59fd356af8dea1fc1bf4bdfdad943bc061",
+      "fdt_overlay.c": "89bf42602c793f6ac5196f676800362bee85d3c072c6a5e4ebaef22cb8f7c4a1"
+    }
+  },
+  "physical_eeprom": {
+    "status": "UNCONFIRMED",
+    "fixture": "0xf14",
+    "evidence": "CM5_Weekend_Codex_Phase10_Handoff.md line 42 identifies an earlier human-copied observation absent from supplied attachments; not an EEPROM dump"
+  }
+}

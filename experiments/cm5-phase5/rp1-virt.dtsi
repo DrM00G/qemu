@@ -1,0 +1,44 @@
+/*
+ * Experimental wiring for virt,highmem=off, slot 1 and no other PCI devices.
+ * Linux assigns BAR1 at 0x10000000. This is not a BCM2712 hardware description.
+ * Fixed clock substitutes for the unimplemented RP1 clock controller.
+ */
+/ {
+    aliases { spi0 = &rp1_spi0; };
+    rp1_test_clk: rp1-test-clock {
+        compatible = "fixed-clock";
+        #clock-cells = <0>;
+        clock-frequency = <200000000>;
+    };
+    rp1-host {
+        compatible = "simple-bus";
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+        rp1: rp1 {
+            compatible = "simple-bus";
+            #address-cells = <2>;
+            #size-cells = <2>;
+            ranges = <0 0 0 0x10000000 0 0x400000>;
+            interrupt-controller;
+            #interrupt-cells = <2>;
+            rp1_spi0: spi@50000 {
+                compatible = "snps,dw-apb-ssi";
+                reg = <0 0x50000 0 0x1000>;
+                interrupt-parent = <&rp1>;
+                interrupts = <19 4>;
+                clocks = <&rp1_test_clk>;
+                clock-names = "ssi_clk";
+                reg-io-width = <4>;
+                num-cs = <4>;
+                #address-cells = <1>;
+                #size-cells = <0>;
+                test-slave@0 {
+                    compatible = "qemu,ssi-test-slave";
+                    reg = <0>;
+                    spi-max-frequency = <10000000>;
+                };
+            };
+        };
+    };
+};

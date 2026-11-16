@@ -6,6 +6,7 @@
 #define ECAM 0x3f008000ULL /* virt,highmem=off, PCI slot 1 */
 #define BAR0 0x10400000ULL
 #define BAR1 0x10000000ULL
+#define BAR2 0x10410000ULL
 #define SPI (BAR1 + 0x50000)
 #define IRQCFG (BAR1 + 0x108008 + 19 * 4)
 #define MESSAGE 0x40001000ULL
@@ -14,6 +15,7 @@ static void assign_bars(QTestState *q)
 {
     qtest_writel(q, ECAM + 0x10, BAR0);
     qtest_writel(q, ECAM + 0x14, BAR1);
+    qtest_writel(q, ECAM + 0x18, BAR2);
     qtest_writew(q, ECAM + 4, 6);
 }
 
@@ -94,6 +96,39 @@ static void test_transfer(void)
     qtest_writel(q, SPI + 0x60, 0x55);
     qtest_clock_step(q, 8000);
     g_assert_cmphex(qtest_readl(q, SPI + 0x60), ==, 0);
+    qtest_quit(q);
+}
+
+static void test_bar2(void)
+{
+    QTestState *q = start();
+    const uint64_t relocated = 0x10500000;
+    uint8_t contents[65536];
+    unsigned i;
+
+    qtest_writel(q, ECAM + 0x18, 0xffffffff);
+    g_assert_cmphex(qtest_readl(q, ECAM + 0x18), ==, 0xffff0000);
+    assign_bars(q);
+    qtest_writeb(q, BAR2, 0xa5);
+    qtest_writew(q, BAR2 + 2, 0x1234);
+    qtest_writel(q, BAR2 + 65532, 0x89abcdef);
+    g_assert_cmphex(qtest_readb(q, BAR2), ==, 0xa5);
+    g_assert_cmphex(qtest_readw(q, BAR2 + 2), ==, 0x1234);
+    g_assert_cmphex(qtest_readl(q, BAR2 + 65532), ==, 0x89abcdef);
+    g_assert_cmphex(qtest_readl(q, BAR2 + 65536), ==, 0xffffffff);
+    qtest_writel(q, ECAM + 0x18, relocated);
+    g_assert_cmphex(qtest_readl(q, BAR2), ==, 0xffffffff);
+    g_assert_cmphex(qtest_readl(q, relocated + 65532), ==, 0x89abcdef);
+    qtest_writew(q, ECAM + 4, 0);
+    g_assert_cmphex(qtest_readl(q, relocated), ==, 0xffffffff);
+    qtest_writew(q, ECAM + 4, 6);
+    g_assert_cmphex(qtest_readb(q, relocated), ==, 0xa5);
+    qtest_qmp_assert_success(q, "{ 'execute': 'system_reset' }");
+    assign_bars(q);
+    qtest_memread(q, BAR2, contents, sizeof(contents));
+    for (i = 0; i < sizeof(contents); i++) {
+        g_assert_cmpuint(contents[i], ==, 0);
+    }
     qtest_quit(q);
 }
 
@@ -224,13 +259,52 @@ static void test_config_overflow(void)
     qtest_quit(q);
 }
 
+static void test_shift_pipeline(void)
+{
+    QTestState *q = start();
+
+    setup_spi(q);
+    qtest_writel(q, SPI + 0x2c, 1); /* TX FIFO empty interrupt */
+    qtest_writel(q, SPI + 0x60, 0x12);
+    /* FIFO empty and BUSY are independent while the word is shifting. */
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x20), ==, 0);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x28) & 5, ==, 5);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x30) & 1, ==, 1);
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x24), ==, 0);
+    /* Refill during the in-flight word, before the first frame ends. */
+    qtest_clock_step(q, 4000);
+    qtest_writel(q, SPI + 0x60, 0x34);
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x20), ==, 1);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x30) & 1, ==, 0);
+    qtest_clock_step(q, 3999);
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x24), ==, 0);
+    qtest_clock_step(q, 1);
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x24), ==, 1);
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x20), ==, 0);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x28) & 1, ==, 1);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x30) & 1, ==, 1);
+    qtest_clock_step(q, 8000);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x28) & 1, ==, 0);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x60), ==, 0x12 ^ 0xa5);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x60), ==, 0x34 ^ 0xa5);
+    qtest_writel(q, SPI + 0x60, 0x56);
+    qtest_clock_step(q, 4000);
+    qtest_writel(q, SPI + 8, 0); /* disable aborts the in-flight word */
+    qtest_clock_step(q, 10000);
+    g_assert_cmpuint(qtest_readl(q, SPI + 0x24), ==, 0);
+    g_assert_cmphex(qtest_readl(q, SPI + 0x28) & 1, ==, 0);
+    qtest_quit(q);
+}
+
 int main(int argc, char **argv)
 {
     g_test_init(&argc, &argv, NULL);
     qtest_add_func("/rp1/pci-reset-registers", test_pci);
+    qtest_add_func("/rp1/bar2-size-access-relocation-reset", test_bar2);
     qtest_add_func("/rp1/spi-transfer-cs", test_transfer);
     qtest_add_func("/rp1/fifo-errors-reset", test_errors_reset);
     qtest_add_func("/rp1/msix-level-ack-mask", test_msix);
     qtest_add_func("/rp1/frame-config-rx-overflow", test_config_overflow);
+    qtest_add_func("/rp1/tx-fifo-shifter-irq-lead", test_shift_pipeline);
     return g_test_run();
 }

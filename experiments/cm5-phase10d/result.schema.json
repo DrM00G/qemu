@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CM5 logical recovery experiment result, version 1",
+  "description": "Extensible record, not a claim that other FEC roots/distributions were exercised. Changing roots requires separate matching metadata and separate provenance, never relabeling the captured roots2 input.",
+  "type": "object",
+  "required": ["schema_version", "case", "status", "profile", "checks", "fault", "fec_events", "fec_configuration", "distribution", "run"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "case": {"type": "string"},
+    "status": {"enum": ["PASS_RECOVERED", "PASS_CLEAN", "EXPECTED_VERITY_REJECTION", "FAIL_UNRECOVERABLE", "INCONCLUSIVE", "SKIPPED_WITH_REASON"]},
+    "profile": {"type": "string"},
+    "checks": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "fault": {"type": "object"},
+    "fec_events": {"type": "array", "items": {"type": "object", "required": ["timestamp", "device", "fec_byte_base", "corrected_errors"]}},
+    "fec_configuration": {
+      "type": "object", "required": ["os_roots", "fsw_roots", "metadata"],
+      "properties": {"os_roots": {"type": "integer", "minimum": 0, "maximum": 24}, "fsw_roots": {"type": "integer", "minimum": 0, "maximum": 24}, "metadata": {"type": "string"}}
+    },
+    "distribution": {"type": "object", "required": ["kind", "tested"], "properties": {"kind": {"type": "string"}, "tested": {"type": "boolean"}, "count": {"type": "integer", "minimum": 0}}},
+    "run": {"type": "object"}
+  }
+}

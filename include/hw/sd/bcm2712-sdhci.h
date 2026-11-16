@@ -13,5 +13,6 @@ struct BCM2712SDHCIState {
     SDHCIState core;
     MemoryRegion host, cfg;
     uint32_t ctrl, pin_sel, cq_cap, max50;
+    bool dma;
 };
 #endif

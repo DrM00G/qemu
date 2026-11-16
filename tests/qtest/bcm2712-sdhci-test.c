@@ -181,6 +181,102 @@ static void test_errors_immutable(void)
     close(fd);
 }
 
+static void test_adma64(void)
+{
+    QTestState *q = qtest_initf("-M cm5io-dev,native-emmc=on,"
+        "native-mip=on,emmc-dma=on -m 8192M -nodefaults "
+        "-drive file=%s,if=none,format=qcow2,id=card "
+        "-device emmc,drive=card,boot-partition-size=0,"
+        "rpmb-partition-size=0,x-cmd23-read-batch=on", overlay);
+    const uint64_t table = 0x100020000ULL;
+    const uint64_t buffer = 0x100010000ULL;
+    uint8_t data[512];
+
+    g_assert_cmphex(qtest_readl(q, CM5_EMMC_HOST + 0x40), ==, 0x110cc881);
+    init_card(q);
+    qtest_writeb(q, CM5_EMMC_HOST + 0x28, 0x18); /* ADMA2, 64-bit */
+    qtest_writel(q, table, (512 << 16) | 0x21);
+    qtest_writeq(q, table + 4, buffer);
+    qtest_writel(q, table + 12, (512 << 16) | 0x23);
+    qtest_writeq(q, table + 16, buffer + 4096);
+    qtest_writel(q, CM5_EMMC_HOST + 0x58, (uint32_t)table);
+    qtest_writel(q, CM5_EMMC_HOST + 0x5c, table >> 32);
+    qtest_writel(q, CM5_EMMC_HOST, 2); /* Auto CMD23 */
+    qtest_writel(q, CM5_EMMC_HOST + 4, 512 | (2 << 16));
+    qtest_writew(q, CM5_EMMC_HOST + 0xc, 0x3b);
+    cmd(q, 18, 16, 0x22);
+    qtest_clock_step(q, 1000000);
+    qtest_memread(q, buffer, data, sizeof(data));
+    g_assert_cmpmem(data, sizeof(data), pattern, 512);
+    qtest_memread(q, buffer + 4096, data, sizeof(data));
+    g_assert_cmpmem(data, sizeof(data), pattern + 512, 512);
+    g_assert_cmphex(qtest_readw(q, CM5_EMMC_HOST + 0x30) & 2, ==, 2);
+    /* Invalid descriptor reports ADMA error instead of completing data. */
+    qtest_writel(q, table, 0);
+    qtest_writel(q, CM5_EMMC_HOST + 0x58, (uint32_t)table);
+    qtest_writel(q, CM5_EMMC_HOST + 0x5c, table >> 32);
+    qtest_writel(q, CM5_EMMC_HOST + 4, 512 | (1 << 16));
+    qtest_writew(q, CM5_EMMC_HOST + 0xc, 0x13);
+    cmd(q, 17, 0, 0x22);
+    qtest_clock_step(q, 1000000);
+    g_assert_cmphex(qtest_readw(q, CM5_EMMC_HOST + 0x32) & 0x200, ==, 0x200);
+    init_card(q);
+    qtest_writeb(q, CM5_EMMC_HOST + 0x28, 0x18);
+    qtest_memwrite(q, buffer, pattern, 512);
+    qtest_writel(q, table, (512 << 16) | 0x23);
+    qtest_writel(q, CM5_EMMC_HOST + 0x58, (uint32_t)table);
+    qtest_writel(q, CM5_EMMC_HOST + 0x5c, table >> 32);
+    qtest_writel(q, CM5_EMMC_HOST + 4, 512 | (1 << 16));
+    qtest_writew(q, CM5_EMMC_HOST + 0xc, 3);
+    cmd(q, 24, 10, 0x22);
+    qtest_clock_step(q, 1000000);
+    g_assert_cmphex(qtest_readw(q, CM5_EMMC_HOST + 0x30) & 2, ==, 2);
+    qtest_writew(q, CM5_EMMC_HOST + 0xc, 0x10);
+    cmd(q, 17, 10, 0x22);
+    read_data(q, data, sizeof(data));
+    g_assert_cmpmem(data, sizeof(data), pattern, 512);
+    qtest_quit(q);
+}
+
+static void test_batch_tail(void)
+{
+    const size_t length = 128 * 1024 + 512;
+    g_autofree uint8_t *expected = g_malloc(length);
+    g_autofree uint8_t *actual = g_malloc(length);
+    QTestState *q = qtest_initf("-M cm5io-dev,native-emmc=on,"
+        "native-mip=on,emmc-dma=on -m 512M -nodefaults "
+        "-drive file=%s,if=none,format=qcow2,id=card "
+        "-device emmc,drive=card,boot-partition-size=0,"
+        "rpmb-partition-size=0,x-cmd23-read-batch=on", overlay);
+    const uint32_t table = 0x100000, buffer = 0x200000;
+    unsigned i;
+
+    for (i = 0; i < length; i++) {
+        expected[i] = (i * 29 + (i >> 8)) % 251;
+    }
+    init_card(q);
+    qtest_writeb(q, CM5_EMMC_HOST + 0x28, 0x10); /* ADMA2 32-bit */
+    for (i = 0; i < 3; i++) {
+        unsigned bytes = i == 2 ? 512 : 0; /* zero encodes 64 KiB */
+        qtest_writel(q, table + i * 8, (bytes << 16) | (i == 2 ? 0x23 : 0x21));
+        qtest_writel(q, table + i * 8 + 4, buffer + i * 65536);
+    }
+    qtest_writel(q, buffer - 4, 0x12345678);
+    qtest_writel(q, buffer + length, 0x87654321);
+    qtest_writel(q, CM5_EMMC_HOST + 0x58, table);
+    qtest_writel(q, CM5_EMMC_HOST, 257);
+    qtest_writel(q, CM5_EMMC_HOST + 4, 512 | (257 << 16));
+    qtest_writew(q, CM5_EMMC_HOST + 0xc, 0x3b);
+    cmd(q, 18, 4096, 0x22);
+    qtest_clock_step(q, 1000000);
+    qtest_memread(q, buffer, actual, length);
+    g_assert_cmpmem(actual, length, expected, length);
+    g_assert_cmphex(qtest_readl(q, buffer - 4), ==, 0x12345678);
+    g_assert_cmphex(qtest_readl(q, buffer + length), ==, 0x87654321);
+    g_assert_cmphex(cmd(q, 13, 1 << 16, 2) & 0x1e00, ==, 4 << 9);
+    qtest_quit(q);
+}
+
 static void test_erase_range(void)
 {
     QTestState *q = start();
@@ -250,6 +346,16 @@ int main(int argc, char **argv)
         pattern[i] = i ^ (i >> 8) ^ 0xa5;
     }
     g_assert_cmpint(write(fd, pattern, sizeof(pattern)), ==, sizeof(pattern));
+    g_assert_cmpint(pwrite(fd, pattern, sizeof(pattern), 16 * 512),
+                    ==, sizeof(pattern));
+    {
+        const size_t length = 128 * 1024 + 512;
+        g_autofree uint8_t *data = g_malloc(length);
+        for (i = 0; i < length; i++) {
+            data[i] = (i * 29 + (i >> 8)) % 251;
+        }
+        g_assert_cmpint(pwrite(fd, data, length, 4096 * 512), ==, length);
+    }
     close(fd);
     overlay = g_strconcat(image, ".qcow2", NULL);
     bindir = g_path_get_dirname(qtest_qemu_binary(NULL));
@@ -270,6 +376,9 @@ int main(int argc, char **argv)
     qtest_add_func("/bcm2712-sdhci/config-system-reset", test_config_reset);
     qtest_add_func("/bcm2712-sdhci/emmc-pio-read-irq", test_pio_read_irq);
     qtest_add_func("/bcm2712-sdhci/errors-readonly", test_errors_immutable);
+    qtest_add_func("/bcm2712-sdhci/adma64-high-scatter-read-write-error",
+                   test_adma64);
+    qtest_add_func("/bcm2712-sdhci/cmd23-batch-tail-guards", test_batch_tail);
     qtest_add_func("/bcm2712-sdhci/erase-range", test_erase_range);
     result = g_test_run();
     unlink(overlay);

@@ -25,6 +25,12 @@ struct DWAPBSSIState {
     uint32_t rx[DW_SSI_FIFO_DEPTH];
     unsigned tx_head, tx_count, rx_head, rx_count;
     uint32_t errors;
+    uint32_t shift_tx;
+    unsigned shift_bits;
+    bool shift_busy, irq_level;
+    unsigned diagnostic_left;
+    uint64_t input_hz;
     uint32_t active_cs;
 };
+void dw_apb_ssi_set_frequency(DWAPBSSIState *s, uint64_t hz);
 #endif
