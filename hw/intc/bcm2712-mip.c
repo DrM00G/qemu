@@ -18,6 +18,7 @@
 #include "qapi/error.h"
 #include "qemu/log.h"
 #include "qemu/module.h"
+#include "qemu/timer.h"
 #include "trace.h"
 
 static void mip_raise(BCM2712MIPState *s, uint32_t vector)
@@ -28,6 +29,8 @@ static void mip_raise(BCM2712MIPState *s, uint32_t vector)
                    (s->edge & (UINT64_C(1) << vector));
 
     trace_bcm2712_mip_raise(s->first_vector, vector, deliver);
+    trace_bcm2712_mip_timed(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+                          s->first_vector, vector, deliver);
     if (deliver) {
         qemu_irq_pulse(s->irq[vector - s->first_vector]);
     } else if (valid && !(s->edge & (UINT64_C(1) << vector))) {

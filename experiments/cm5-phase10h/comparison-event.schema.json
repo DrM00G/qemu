@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CM5 Phase10H comparison event (one JSON object per line)",
+  "type": "object",
+  "required": ["schema", "run_id", "sequence", "origin", "event", "source", "time", "observable", "emulator", "synthetic_stress", "unavailable"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": 1},
+    "run_id": {"type": "string"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "origin": {"enum": ["qemu-qtest", "qemu-linux", "physical-linux", "physical-analyzer"]},
+    "event": {"type": "string"},
+    "source": {"type": "string"},
+    "time": {
+      "type": "object", "required": ["value", "unit", "domain", "origin"],
+      "properties": {
+        "value": {"type": ["integer", "null"]},
+        "unit": {"enum": ["ns", "instructions", "analyzer-ticks", "unknown"]},
+        "domain": {"enum": ["qemu-virtual", "guest-monotonic", "host-monotonic", "physical-analyzer", "unknown"]},
+        "origin": {"type": ["string", "null"]}
+      }, "additionalProperties": false
+    },
+    "observable": {
+      "description": "Analogous Linux/analyzer observations; null if not actually measured at this boundary.",
+      "type": "object",
+      "properties": {
+        "message_id": {"type": ["string", "integer", "null"]},
+        "irq_vector": {"type": ["integer", "null"]},
+        "irq_count": {"type": ["integer", "null"]},
+        "cs_segments": {"type": ["integer", "null"]},
+        "tx_sha256": {"type": ["string", "null"]},
+        "rx_sha256": {"type": ["string", "null"]},
+        "completion": {"type": ["string", "null"]},
+        "requested_hz": {"type": ["integer", "null"]},
+        "divider_derived_hz": {"type": ["integer", "null"]},
+        "measured_sclk_hz": {"type": ["number", "null"]},
+        "register_observation": {"type": ["object", "null"]}
+      }, "additionalProperties": false
+    },
+    "emulator": {
+      "description": "Internal snapshots, before/after transition, FIFO/shifter/timer/IRQ/translation state. Never silently treated as physical observables.",
+      "type": ["object", "null"]
+    },
+    "synthetic_stress": {"type": ["object", "null"]},
+    "unavailable": {"type": "array", "items": {"type": "string"}}
+  }
+}

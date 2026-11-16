@@ -234,7 +234,13 @@ static MemTxResult bcm2712_dma_read(void *opaque, hwaddr addr, uint64_t *value,
 static MemTxResult bcm2712_dma_write(void *opaque, hwaddr addr, uint64_t value,
                                     unsigned size, MemTxAttrs attrs)
 {
-    return bcm2712_inbound(opaque, addr, &value, size, attrs, true);
+    BCM2712PCIeState *s = opaque;
+    MemTxResult result = bcm2712_inbound(s, addr, &value, size, attrs, true);
+
+    /* A notification attempt is not proof that its DMA write was accepted. */
+    trace_bcm2712_pcie_dma_write(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+                               s->controller, addr, value, size, result);
+    return result;
 }
 
 static const MemoryRegionOps bcm2712_dma_ops = {
@@ -490,6 +496,7 @@ static void bcm2712_pcie_finalize(Object *obj)
 
 static const Property bcm2712_pcie_properties[] = {
     DEFINE_PROP_UINT32("controller", BCM2712PCIeState, controller, 2),
+    DEFINE_PROP_BOOL("rp1-gpio-lab", BCM2712PCIeState, rp1_gpio_lab, false),
     DEFINE_PROP_BOOL("connect-rp1", BCM2712PCIeState, connect_rp1, false),
     DEFINE_PROP_UINT64("ram-size", BCM2712PCIeState, ram_size, 0),
     DEFINE_PROP_LINK("msi-target", BCM2712PCIeState, msi_target,
@@ -570,6 +577,7 @@ static void bcm2712_pcie_realize(DeviceState *dev, Error **errp)
         s->endpoint = pci_new(0, "rp1-pci");
         object_property_add_child(OBJECT(s), "rp1", OBJECT(s->endpoint));
         qdev_prop_set_bit(DEVICE(s->endpoint), "native-clock", true);
+        qdev_prop_set_bit(DEVICE(s->endpoint), "gpio-lab", s->rp1_gpio_lab);
         pci_realize_and_unref(s->endpoint,
             pci_bridge_get_sec_bus(PCI_BRIDGE(s->root_port)), errp);
     }

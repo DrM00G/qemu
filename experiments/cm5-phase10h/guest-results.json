@@ -1,0 +1,870 @@
+{
+  "schema": 1,
+  "runs": [
+    {
+      "name": "baseline-a",
+      "status": "PASS",
+      "speed_hz": 10000,
+      "execution_clock": "host",
+      "native_checks": {
+        "clean_original_verified_boot": true,
+        "native_gen2_x4": true,
+        "expansion_link_down": true,
+        "endpoint_enumerated": true,
+        "kernel_chip_id": true,
+        "userspace_bars": true,
+        "msix_vectors61": true,
+        "repeated_spi_after_multi_user": true,
+        "native_mip_event": true,
+        "rp1_msix_event": true,
+        "cs_framing_and_mosi_miso": true,
+        "no_observed_idle_spi_irqs": true,
+        "real_dw_driver": true,
+        "sys_clock_200mhz": true
+      },
+      "provenance_checks": {
+        "selected": true,
+        "exact_exports": true,
+        "selected_kernel_argv": true,
+        "selected_initramfs_argv": true,
+        "same_overlay": true,
+        "captured_kernel": true,
+        "captured_initramfs": true,
+        "original_kernel_entry": true,
+        "native_emmc": true,
+        "original_initramfs_executes": true,
+        "verified_userspace": true,
+        "strict_native_spi": true,
+        "persisted_logs": true,
+        "runtime_dt_observed": true,
+        "runtime_cmdline_matches": true,
+        "normal_shutdown": true
+      },
+      "recovery_checks": {
+        "inputs_unchanged": true,
+        "kernel_entry": true,
+        "initramfs": true,
+        "emmc_partitions": true,
+        "normal_shutdown": true,
+        "raw_target_unchanged_after_injection": true,
+        "fault_cluster_no_guest_content_delta": true,
+        "new_allocations_only_logs": true,
+        "functional_two_observations": true,
+        "host_logs_persistence": true,
+        "original_initramfs": true
+      },
+      "strict_spi": {
+        "status": "PASS",
+        "messages": 90,
+        "cs_segments": 90,
+        "error_count": 0
+      },
+      "kernel_sha256": "154f0ea1e14bb1075077dfd1bdc63c1502bc0b17b0354628d515b4fbd3a4198d",
+      "initramfs_sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+      "executable_sha256": "67db2a47e27142e09d158db6778dc80f9464f99bc2b536df753d823a61f4915a",
+      "command_sha256": "faea08c2e23f8561302a257acdc229532ce88a2030eb86a80397d0ac0a7b90ba",
+      "runtime_dt_sha256": [
+        "8f9ce2e6c3065b87b0b84e44f3c181192b94a4ee8c01d9352bde3952f13b0e34"
+      ],
+      "boot_order_confirmation": "UNCONFIRMED_FIXTURE",
+      "shutdown_returncode": 0,
+      "wall_seconds": 416.35598808600116,
+      "inputs_unchanged": true,
+      "active_observations": [
+        {
+          "uptime_seconds": 371.39,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        },
+        {
+          "uptime_seconds": 402.3,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        }
+      ],
+      "notifications": 2381,
+      "mip_deliveries": 2381,
+      "synthetic_fixture": "qemu,ssi-test-slave XOR0xa5",
+      "workload_definition_sha256": "428cea3f4906ec77b331ae8757330469f53958dff9d7e5bd8cce45550ad2a746",
+      "physical_measurements": false
+    },
+    {
+      "name": "baseline-b",
+      "status": "PASS",
+      "speed_hz": 100000,
+      "execution_clock": "icount-1ns",
+      "native_checks": {
+        "clean_original_verified_boot": true,
+        "native_gen2_x4": true,
+        "expansion_link_down": true,
+        "endpoint_enumerated": true,
+        "kernel_chip_id": true,
+        "userspace_bars": true,
+        "msix_vectors61": true,
+        "repeated_spi_after_multi_user": true,
+        "native_mip_event": true,
+        "rp1_msix_event": true,
+        "cs_framing_and_mosi_miso": true,
+        "no_observed_idle_spi_irqs": true,
+        "real_dw_driver": true,
+        "sys_clock_200mhz": true
+      },
+      "provenance_checks": {
+        "selected": true,
+        "exact_exports": true,
+        "selected_kernel_argv": true,
+        "selected_initramfs_argv": true,
+        "same_overlay": true,
+        "captured_kernel": true,
+        "captured_initramfs": true,
+        "original_kernel_entry": true,
+        "native_emmc": true,
+        "original_initramfs_executes": true,
+        "verified_userspace": true,
+        "strict_native_spi": true,
+        "persisted_logs": true,
+        "runtime_dt_observed": true,
+        "runtime_cmdline_matches": true,
+        "normal_shutdown": true
+      },
+      "recovery_checks": {
+        "inputs_unchanged": true,
+        "kernel_entry": true,
+        "initramfs": true,
+        "emmc_partitions": true,
+        "normal_shutdown": true,
+        "raw_target_unchanged_after_injection": true,
+        "fault_cluster_no_guest_content_delta": true,
+        "new_allocations_only_logs": true,
+        "functional_two_observations": true,
+        "host_logs_persistence": true,
+        "original_initramfs": true
+      },
+      "strict_spi": {
+        "status": "PASS",
+        "messages": 108,
+        "cs_segments": 108,
+        "error_count": 0
+      },
+      "kernel_sha256": "154f0ea1e14bb1075077dfd1bdc63c1502bc0b17b0354628d515b4fbd3a4198d",
+      "initramfs_sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+      "executable_sha256": "67db2a47e27142e09d158db6778dc80f9464f99bc2b536df753d823a61f4915a",
+      "command_sha256": "7b6dd736c817b425f60eb759ec8bc412d8ebda85451d3db8c2df7e9549d72145",
+      "runtime_dt_sha256": [
+        "8f9ce2e6c3065b87b0b84e44f3c181192b94a4ee8c01d9352bde3952f13b0e34"
+      ],
+      "boot_order_confirmation": "UNCONFIRMED_FIXTURE",
+      "shutdown_returncode": 0,
+      "wall_seconds": 463.7968217710004,
+      "inputs_unchanged": true,
+      "active_observations": [
+        {
+          "uptime_seconds": 132.96,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        },
+        {
+          "uptime_seconds": 1631.12,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        }
+      ],
+      "notifications": 2862,
+      "mip_deliveries": 2862,
+      "synthetic_fixture": "qemu,ssi-test-slave XOR0xa5",
+      "workload_definition_sha256": "b01eeda30815bb600a88fd08690e641a6192f2110b6e9f1ba8a1fc6eebf15df1",
+      "physical_measurements": false
+    },
+    {
+      "name": "baseline-c",
+      "status": "PARTIAL",
+      "speed_hz": 1000000,
+      "execution_clock": "icount-1ns",
+      "native_checks": {
+        "clean_original_verified_boot": true,
+        "native_gen2_x4": true,
+        "expansion_link_down": true,
+        "endpoint_enumerated": true,
+        "kernel_chip_id": true,
+        "userspace_bars": true,
+        "msix_vectors61": true,
+        "repeated_spi_after_multi_user": true,
+        "native_mip_event": true,
+        "rp1_msix_event": true,
+        "cs_framing_and_mosi_miso": false,
+        "no_observed_idle_spi_irqs": true,
+        "real_dw_driver": true,
+        "sys_clock_200mhz": true
+      },
+      "provenance_checks": {
+        "selected": true,
+        "exact_exports": true,
+        "selected_kernel_argv": true,
+        "selected_initramfs_argv": true,
+        "same_overlay": true,
+        "captured_kernel": true,
+        "captured_initramfs": true,
+        "original_kernel_entry": true,
+        "native_emmc": true,
+        "original_initramfs_executes": true,
+        "verified_userspace": true,
+        "strict_native_spi": false,
+        "persisted_logs": true,
+        "runtime_dt_observed": true,
+        "runtime_cmdline_matches": true,
+        "normal_shutdown": true
+      },
+      "recovery_checks": {
+        "inputs_unchanged": true,
+        "kernel_entry": true,
+        "initramfs": true,
+        "emmc_partitions": true,
+        "normal_shutdown": true,
+        "raw_target_unchanged_after_injection": true,
+        "fault_cluster_no_guest_content_delta": true,
+        "new_allocations_only_logs": true,
+        "functional_two_observations": true,
+        "host_logs_persistence": true,
+        "original_initramfs": true
+      },
+      "strict_spi": {
+        "status": "FAIL",
+        "messages": 126,
+        "cs_segments": 134,
+        "error_count": 1
+      },
+      "kernel_sha256": "154f0ea1e14bb1075077dfd1bdc63c1502bc0b17b0354628d515b4fbd3a4198d",
+      "initramfs_sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+      "executable_sha256": "67db2a47e27142e09d158db6778dc80f9464f99bc2b536df753d823a61f4915a",
+      "command_sha256": "2dd4f53de6349e226861214b4e2b4c70931100bcc9c8550051fa6c5f4dfc7391",
+      "runtime_dt_sha256": [
+        "8f9ce2e6c3065b87b0b84e44f3c181192b94a4ee8c01d9352bde3952f13b0e34"
+      ],
+      "boot_order_confirmation": "UNCONFIRMED_FIXTURE",
+      "shutdown_returncode": 0,
+      "wall_seconds": 500.69611619400166,
+      "inputs_unchanged": true,
+      "active_observations": [
+        {
+          "uptime_seconds": 447.18,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        },
+        {
+          "uptime_seconds": 1059.18,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        }
+      ],
+      "notifications": 3322,
+      "mip_deliveries": 3322,
+      "synthetic_fixture": "qemu,ssi-test-slave XOR0xa5",
+      "workload_definition_sha256": "5d60318f43f417168dba92fd9ca69246eb7421b7b7d4136c49f20deeaaefbdd3",
+      "physical_measurements": false
+    },
+    {
+      "name": "smp-stress",
+      "status": "PASS",
+      "speed_hz": 10000,
+      "execution_clock": "host",
+      "native_checks": {
+        "clean_original_verified_boot": true,
+        "native_gen2_x4": true,
+        "expansion_link_down": true,
+        "endpoint_enumerated": true,
+        "kernel_chip_id": true,
+        "userspace_bars": true,
+        "msix_vectors61": true,
+        "repeated_spi_after_multi_user": true,
+        "native_mip_event": true,
+        "rp1_msix_event": true,
+        "cs_framing_and_mosi_miso": true,
+        "no_observed_idle_spi_irqs": true,
+        "real_dw_driver": true,
+        "sys_clock_200mhz": true
+      },
+      "provenance_checks": {
+        "selected": true,
+        "exact_exports": true,
+        "selected_kernel_argv": true,
+        "selected_initramfs_argv": true,
+        "same_overlay": true,
+        "captured_kernel": true,
+        "captured_initramfs": true,
+        "original_kernel_entry": true,
+        "native_emmc": true,
+        "original_initramfs_executes": true,
+        "verified_userspace": true,
+        "strict_native_spi": true,
+        "persisted_logs": true,
+        "runtime_dt_observed": true,
+        "runtime_cmdline_matches": true,
+        "normal_shutdown": true
+      },
+      "recovery_checks": {
+        "inputs_unchanged": true,
+        "kernel_entry": true,
+        "initramfs": true,
+        "emmc_partitions": true,
+        "normal_shutdown": true,
+        "raw_target_unchanged_after_injection": true,
+        "fault_cluster_no_guest_content_delta": true,
+        "new_allocations_only_logs": true,
+        "functional_two_observations": true,
+        "host_logs_persistence": true,
+        "original_initramfs": true
+      },
+      "strict_spi": {
+        "status": "PASS",
+        "messages": 90,
+        "cs_segments": 90,
+        "error_count": 0
+      },
+      "kernel_sha256": "154f0ea1e14bb1075077dfd1bdc63c1502bc0b17b0354628d515b4fbd3a4198d",
+      "initramfs_sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+      "executable_sha256": "67db2a47e27142e09d158db6778dc80f9464f99bc2b536df753d823a61f4915a",
+      "command_sha256": "8421d335f4b2883c8b422a9c754d008791bae72b217565f69c0671e0677a26ad",
+      "runtime_dt_sha256": [
+        "8f9ce2e6c3065b87b0b84e44f3c181192b94a4ee8c01d9352bde3952f13b0e34"
+      ],
+      "boot_order_confirmation": "UNCONFIRMED_FIXTURE",
+      "shutdown_returncode": 0,
+      "wall_seconds": 413.24055828900237,
+      "inputs_unchanged": true,
+      "active_observations": [
+        {
+          "uptime_seconds": 368.61,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        },
+        {
+          "uptime_seconds": 399.5,
+          "pid1": "systemd",
+          "os_verity_valid": true,
+          "fsw_verity_valid": true,
+          "os_fec_roots2": true,
+          "fsw_fec_roots2": true,
+          "logs_fsync_readback": true
+        }
+      ],
+      "notifications": 2383,
+      "mip_deliveries": 2383,
+      "synthetic_fixture": "qemu,ssi-test-slave XOR0xa5",
+      "workload_definition_sha256": "428cea3f4906ec77b331ae8757330469f53958dff9d7e5bd8cce45550ad2a746",
+      "physical_measurements": false,
+      "stress_observations": [
+        {
+          "online": "0-3",
+          "clock": "guest-monotonic-ns",
+          "workers": [
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 1,
+                "affinity": [
+                  1
+                ],
+                "loops": 27008,
+                "digest": "122173b91658649dd9381cc893159bbb389179519d11d6d360e52605f80ee19f",
+                "start_monotonic_ns": 281104686443,
+                "end_monotonic_ns": 297973786100
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 2,
+                "affinity": [
+                  2
+                ],
+                "loops": 28640,
+                "digest": "fb6daf06454b15d062f3fb4df17e62b69b7e8540a50d824111063c4741508008",
+                "start_monotonic_ns": 281437015869,
+                "end_monotonic_ns": 297973674692
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 3,
+                "affinity": [
+                  3
+                ],
+                "loops": 28416,
+                "digest": "957ff3cbfeea65a46e75526ed0d4823676d566f20719ed9ffb02c81dadfd0d4c",
+                "start_monotonic_ns": 280621239406,
+                "end_monotonic_ns": 297971993414
+              },
+              "error": ""
+            }
+          ],
+          "before_spi_monotonic_ns": 281457747591,
+          "after_spi_monotonic_ns": 297955109211
+        },
+        {
+          "online": "0-3",
+          "clock": "guest-monotonic-ns",
+          "workers": [
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 1,
+                "affinity": [
+                  1
+                ],
+                "loops": 64192,
+                "digest": "6e42fd2c041f659253270d04800c8bd0950ce9646382a39ecba8c921e144a9ca",
+                "start_monotonic_ns": 308841352297,
+                "end_monotonic_ns": 322783308011
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 2,
+                "affinity": [
+                  2
+                ],
+                "loops": 54656,
+                "digest": "f4fa7a8feb8428a6fa97c2e9704dd7f20820c72dba76ffa273f55619b045437e",
+                "start_monotonic_ns": 308760751908,
+                "end_monotonic_ns": 322767203474
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 3,
+                "affinity": [
+                  3
+                ],
+                "loops": 54144,
+                "digest": "dfb76567acc3aecf8316eb6e4095ce018f032f17b01e1400fa8bb98424bc116a",
+                "start_monotonic_ns": 308737046260,
+                "end_monotonic_ns": 322770214640
+              },
+              "error": ""
+            }
+          ],
+          "before_spi_monotonic_ns": 308846166130,
+          "after_spi_monotonic_ns": 322763033640
+        },
+        {
+          "online": "0-3",
+          "clock": "guest-monotonic-ns",
+          "workers": [
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 1,
+                "affinity": [
+                  1
+                ],
+                "loops": 89696,
+                "digest": "7fe7f446846b8ad351cce1d2eed22d1f30293502fd7721c0f1638f834958806b",
+                "start_monotonic_ns": 338945803964,
+                "end_monotonic_ns": 352003063345
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 2,
+                "affinity": [
+                  2
+                ],
+                "loops": 89184,
+                "digest": "0d042f7186a7e58bc625ec1e6d9cceb2866503500c95bf91b7a25aabc0e04cb8",
+                "start_monotonic_ns": 338957705483,
+                "end_monotonic_ns": 352002920049
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 3,
+                "affinity": [
+                  3
+                ],
+                "loops": 84480,
+                "digest": "e633b5576ad9a1844f5692a4db842a44fd6cf9ae60f83fe572a9439bad621c42",
+                "start_monotonic_ns": 339010396742,
+                "end_monotonic_ns": 352002844697
+              },
+              "error": ""
+            }
+          ],
+          "before_spi_monotonic_ns": 339017621353,
+          "after_spi_monotonic_ns": 351998602938
+        },
+        {
+          "online": "0-3",
+          "clock": "guest-monotonic-ns",
+          "workers": [
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 1,
+                "affinity": [
+                  1
+                ],
+                "loops": 93440,
+                "digest": "ca07756744fc3bbdb748f990a90beb52cdf603366f18481ee87ba5d786083caa",
+                "start_monotonic_ns": 369725472779,
+                "end_monotonic_ns": 382729648919
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 2,
+                "affinity": [
+                  2
+                ],
+                "loops": 79936,
+                "digest": "ef3e17c8d1ced724d6d10999db805904144a55b83df644941dfc67c6ae007318",
+                "start_monotonic_ns": 369722606409,
+                "end_monotonic_ns": 382728941105
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 3,
+                "affinity": [
+                  3
+                ],
+                "loops": 96192,
+                "digest": "76b086174898023f6128dcc008ef2759fae84a90033c968e1fa9c5adb957ca9c",
+                "start_monotonic_ns": 369721352131,
+                "end_monotonic_ns": 382730294827
+              },
+              "error": ""
+            }
+          ],
+          "before_spi_monotonic_ns": 369737648964,
+          "after_spi_monotonic_ns": 382725254271
+        },
+        {
+          "online": "0-3",
+          "clock": "guest-monotonic-ns",
+          "workers": [
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 1,
+                "affinity": [
+                  1
+                ],
+                "loops": 92544,
+                "digest": "0e9b9056d958080fca6cfaac114756922d20b8c8f6c90165bbc5422bfc11520e",
+                "start_monotonic_ns": 400630111446,
+                "end_monotonic_ns": 413730337605
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 2,
+                "affinity": [
+                  2
+                ],
+                "loops": 86688,
+                "digest": "f2f2c08e8f61cdc3aca34eeaf532d00707c65942bbae392633fd4bbb6730a095",
+                "start_monotonic_ns": 400645645242,
+                "end_monotonic_ns": 413729977864
+              },
+              "error": ""
+            },
+            {
+              "returncode": 0,
+              "result": {
+                "cpu": 3,
+                "affinity": [
+                  3
+                ],
+                "loops": 82496,
+                "digest": "95351d48ad12debf744e76ca5fa9471ac5b72d3b52dca6d3c42548ae8b05e457",
+                "start_monotonic_ns": 400628941575,
+                "end_monotonic_ns": 413730218753
+              },
+              "error": ""
+            }
+          ],
+          "before_spi_monotonic_ns": 400661450853,
+          "after_spi_monotonic_ns": 413727610956
+        }
+      ],
+      "stress_validation": [
+        {
+          "workers": [
+            {
+              "cpu": 1,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 16497361620,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 2,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 16497361620,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 3,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 16497361620,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "workers": [
+            {
+              "cpu": 1,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 13916867510,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 2,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 13916867510,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 3,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 13916867510,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "workers": [
+            {
+              "cpu": 1,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 12980981585,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 2,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 12980981585,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 3,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 12980981585,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "workers": [
+            {
+              "cpu": 1,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 12987605307,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 2,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 12987605307,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 3,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 12987605307,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "workers": [
+            {
+              "cpu": 1,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 13066160103,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 2,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 13066160103,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            },
+            {
+              "cpu": 3,
+              "checks": {
+                "exit_zero": true,
+                "progress": true,
+                "affinity": true,
+                "checksum": true,
+                "overlap": true
+              },
+              "overlap_guest_monotonic_ns": 13066160103,
+              "covers_observer_interval": true,
+              "status": "PASS"
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "host_tcg_threads": [
+        "CPU 0/TCG",
+        "CPU 1/TCG",
+        "CPU 2/TCG",
+        "CPU 3/TCG",
+        "IO mon_iothread",
+        "call_rcu",
+        "qemu-system-aar",
+        "worker",
+        "worker"
+      ]
+    }
+  ]
+}

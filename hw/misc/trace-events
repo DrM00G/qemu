@@ -477,3 +477,7 @@ tt_atlantis_prcm_write(uint32_t domain, uint64_t offset, uint64_t data) "domain 
 
 # rp1-pci.c
 rp1_msix(unsigned vector) "vector=%u"
+
+rp1_spi_notify(int64_t now, unsigned vector, uint32_t cfg, uint64_t level, uint64_t outstanding) "virtual_ns=%" PRId64 " vector=%u cfg=0x%x level=0x%" PRIx64 " outstanding=0x%" PRIx64
+
+rp1_spi_state(const char *event, int64_t now, uint32_t cfg, uint64_t level, uint64_t outstanding, bool enabled, bool masked, bool pending) "%s virtual_ns=%" PRId64 " cfg=0x%x level=0x%" PRIx64 " outstanding=0x%" PRIx64 " enabled=%d masked=%d pending=%d"

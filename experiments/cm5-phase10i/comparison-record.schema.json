@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CM5 approved application/peripheral comparison record",
+  "type": "object",
+  "required": [
+    "environment",
+    "run_id",
+    "clock",
+    "software",
+    "fixture",
+    "operation",
+    "result",
+    "required_for_fsw"
+  ],
+  "properties": {
+    "environment": {
+      "enum": [
+        "physical",
+        "qemu",
+        "linux-only"
+      ]
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "clock": {
+      "type": "object",
+      "required": [
+        "name",
+        "domain",
+        "units"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "domain": {
+          "enum": [
+            "guest-monotonic",
+            "qemu-virtual",
+            "host-monotonic",
+            "utc",
+            "external-analyzer"
+          ]
+        },
+        "units": {
+          "enum": [
+            "ns",
+            "s",
+            "instructions"
+          ]
+        },
+        "timestamp": {
+          "type": [
+            "integer",
+            "number",
+            "null"
+          ]
+        },
+        "synchronization_experiment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "software": {
+      "type": "object",
+      "description": "Approved source/build/config/kernel identity and hashes; null where unavailable."
+    },
+    "fixture": {
+      "type": "object",
+      "required": [
+        "identity",
+        "synthetic"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string"
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "physical_equivalence_measured": {
+          "type": "boolean"
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "description": "Driver/API, bus/device, approved inputs and sequence identity."
+    },
+    "result": {
+      "type": "object",
+      "description": "Status, response count/checksum, error and observable IRQ delta; preserve failures."
+    },
+    "internal_emulator_diagnostics": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "QOM/register/shifter/timer diagnostics; null on physical and Linux-only unless independently available."
+    },
+    "synthetic_stress": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "uncollected_hardware_metrics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_for_fsw": {
+      "enum": [
+        "UNKNOWN",
+        "YES",
+        "NO"
+      ]
+    },
+    "approval_reference": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tracing_overhead": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

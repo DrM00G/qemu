@@ -1,0 +1,395 @@
+{
+  "rp1-h-delayed-service": {
+    "events": 88,
+    "notification_attempts": [
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 8000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 32000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 40000
+      }
+    ],
+    "mip_decisions": [],
+    "dma_results": [],
+    "completed_words": [
+      {
+        "virtual_ns": null,
+        "bits": 8,
+        "cs": 1,
+        "rx": 183,
+        "tx": 18
+      },
+      {
+        "virtual_ns": null,
+        "bits": 8,
+        "cs": 1,
+        "rx": 145,
+        "tx": 52
+      },
+      {
+        "virtual_ns": null,
+        "bits": 8,
+        "cs": 1,
+        "rx": 243,
+        "tx": 86
+      }
+    ],
+    "cs": [
+      {
+        "selected": 0
+      },
+      {
+        "selected": 1
+      },
+      {
+        "selected": 0
+      },
+      {
+        "selected": 1
+      },
+      {
+        "selected": 0
+      }
+    ],
+    "qmp_reset": []
+  },
+  "rp1-h-bme-inflight": {
+    "events": 49,
+    "notification_attempts": [
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 8000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 8000
+      }
+    ],
+    "mip_decisions": [],
+    "dma_results": [],
+    "completed_words": [
+      {
+        "virtual_ns": null,
+        "bits": 8,
+        "cs": 1,
+        "rx": 183,
+        "tx": 18
+      }
+    ],
+    "cs": [
+      {
+        "selected": 0
+      },
+      {
+        "selected": 1
+      },
+      {
+        "selected": 0
+      }
+    ],
+    "qmp_reset": []
+  },
+  "cm5io-native-ssi-msix-inbound-mip": {
+    "events": 203,
+    "notification_attempts": [
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "cfg": 9,
+        "level": 524288,
+        "outstanding": 524288,
+        "vector": 19,
+        "virtual_ns": 1016000
+      }
+    ],
+    "mip_decisions": [
+      {
+        "delivered": 1,
+        "first": 0,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "delivered": 1,
+        "first": 0,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "delivered": 0,
+        "first": 0,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "delivered": 1,
+        "first": 0,
+        "vector": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "delivered": 1,
+        "first": 8,
+        "vector": 8,
+        "virtual_ns": 1008000
+      },
+      {
+        "delivered": 1,
+        "first": 0,
+        "vector": 19,
+        "virtual_ns": 1008000
+      }
+    ],
+    "dma_results": [
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623684,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 2,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 2,
+        "size": 4,
+        "value": 8,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 1099511623680,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 19,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 68719480832,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 305419896,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 69256347644,
+        "controller": 2,
+        "result": 0,
+        "size": 4,
+        "value": 305419896,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 69256347648,
+        "controller": 2,
+        "result": 2,
+        "size": 4,
+        "value": 2882400000,
+        "virtual_ns": 1008000
+      },
+      {
+        "address": 68719480832,
+        "controller": 2,
+        "result": 2,
+        "size": 4,
+        "value": 2882400000,
+        "virtual_ns": 1008000
+      }
+    ],
+    "completed_words": [
+      {
+        "virtual_ns": null,
+        "bits": 8,
+        "cs": 1,
+        "rx": 183,
+        "tx": 18
+      }
+    ],
+    "cs": [
+      {
+        "selected": 0
+      },
+      {
+        "selected": 1
+      },
+      {
+        "selected": 0
+      },
+      {
+        "selected": 1
+      },
+      {
+        "selected": 0
+      },
+      {
+        "selected": 0
+      }
+    ],
+    "qmp_reset": [
+      {
+        "event": "qmp_enter_system_reset",
+        "index": 470,
+        "payload": "{}",
+        "virtual_ns": null
+      },
+      {
+        "event": "qmp_exit_system_reset",
+        "index": 471,
+        "payload": "{} 1",
+        "virtual_ns": null
+      }
+    ]
+  }
+}

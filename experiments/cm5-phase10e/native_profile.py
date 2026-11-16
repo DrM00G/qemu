@@ -13,7 +13,12 @@ def qemu_arguments(diagnostics=False):
             '-trace','enable=rp1_msix', '-trace','enable=bcm2712_mip_raise',
             '-trace','enable=dw_apb_ssi_cs', '-trace','enable=dw_apb_ssi_transfer']
     if diagnostics:
-        args += ['-trace', 'enable=dw_apb_ssi_state']
+        args += ['-trace', 'enable=dw_apb_ssi_state',
+                 '-trace', 'enable=dw_apb_ssi_boundary',
+                 '-trace', 'enable=dw_apb_ssi_timer',
+                 '-trace', 'enable=rp1_spi_notify',
+                 '-trace', 'enable=rp1_spi_state',
+                 '-trace', 'enable=bcm2712_mip_timed']
     return args
 
 

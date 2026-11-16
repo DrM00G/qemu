@@ -49,6 +49,7 @@ struct CM5IODevState {
     bool native_emmc;
     bool emmc_dma;
     bool native_pcie;
+    bool rp1_gpio_lab;
     int fdt_size;
     uint32_t gpio_vref;
     bool header_spi, header_uart, expansion, test_rtc;
@@ -422,6 +423,7 @@ static void cm5_native_pcie(CM5IODevState *s, unsigned index)
                               "native-rp1", OBJECT(dev));
     qdev_prop_set_uint32(dev, "controller", index ? 1 : 2);
     qdev_prop_set_bit(dev, "connect-rp1", !index);
+    qdev_prop_set_bit(dev, "rp1-gpio-lab", !index && s->rp1_gpio_lab);
     qdev_prop_set_uint64(dev, "ram-size", MACHINE(s)->ram_size);
     object_property_set_link(OBJECT(dev), "msi-target",
         OBJECT(sysbus_mmio_get_region(SYS_BUS_DEVICE(s->mip[index]), 1)),
@@ -626,6 +628,42 @@ static void cm5_emmc(CM5IODevState *s)
     qemu_fdt_setprop_string(fdt, "/aliases", "mmc0", node);
 }
 
+/* Opt-in generator transformation: only the implemented GPIO20/21 slice. */
+static void cm5_gpio_lab_dt(CM5IODevState *s)
+{
+    void *fdt = MACHINE(s)->fdt;
+    const char *rp1 = "/pcie@1000120000/rp1";
+    const char *gpio = "/pcie@1000120000/rp1/gpio@d0000";
+    uint32_t phandle = qemu_fdt_alloc_phandle(fdt);
+    const char names[] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                         "GPIO20\0GPIO21\0";
+
+    qemu_fdt_add_subnode(fdt, gpio);
+    qemu_fdt_setprop_string(fdt, gpio, "compatible", "raspberrypi,rp1-gpio");
+    qemu_fdt_setprop_cells(fdt, gpio, "reg",
+        0xc0, 0x400d0000, 0, 0xc000,
+        0xc0, 0x400e0000, 0, 0xc000,
+        0xc0, 0x400f0000, 0, 0xc000);
+    qemu_fdt_setprop_cell(fdt, gpio, "phandle", phandle);
+    qemu_fdt_setprop_cell(fdt, gpio, "interrupt-parent",
+                          qemu_fdt_get_phandle(fdt, rp1));
+    qemu_fdt_setprop_cells(fdt, gpio, "interrupts", 0, 4);
+    qemu_fdt_setprop(fdt, gpio, "gpio-controller", NULL, 0);
+    qemu_fdt_setprop_cell(fdt, gpio, "#gpio-cells", 2);
+    qemu_fdt_setprop(fdt, gpio, "interrupt-controller", NULL, 0);
+    qemu_fdt_setprop_cell(fdt, gpio, "#interrupt-cells", 2);
+    qemu_fdt_setprop_cells(fdt, gpio, "gpio-ranges", phandle, 0, 0, 54);
+    qemu_fdt_setprop_cells(fdt, gpio, "gpio-reserved-ranges", 0, 20, 22, 32);
+    qemu_fdt_setprop(fdt, gpio, "gpio-line-names", names, sizeof(names) - 1);
+    qemu_fdt_setprop_string(fdt, "/cm5io-connectors/header-gpio",
+                            "status", "okay");
+    qemu_fdt_setprop_string(fdt, "/cm5io-connectors/header-gpio",
+        "qemu,implementation", "bounded RP1 GPIO20/21; "
+        "synthetic GPIO20->21 loopback");
+    qemu_fdt_setprop_string(fdt, "/cm5io-connectors", "qemu,pinmux",
+        "GPIO20/21 SYS_RIO only; SPI0 logical route remains independent");
+}
+
 static void *cm5_get_dtb(const struct arm_boot_info *info, int *size)
 {
     CM5IODevState *s = container_of(info, CM5IODevState, bootinfo);
@@ -650,6 +688,10 @@ static void cm5_init(MachineState *ms)
     }
     if (ms->firmware || ms->dtb) {
         error_report("cm5io-dev requires generated DT and direct -kernel boot");
+        exit(1);
+    }
+    if (s->rp1_gpio_lab && !s->native_pcie) {
+        error_report("rp1-gpio-lab requires native-pcie=on");
         exit(1);
     }
     if (s->native_pcie && !s->native_mip) {
@@ -711,6 +753,9 @@ static void cm5_init(MachineState *ms)
         cm5_rp1_dt(s);
     }
     cm5_connectors(s);
+    if (s->rp1_gpio_lab) {
+        cm5_gpio_lab_dt(s);
+    }
     s->bootinfo.ram_size = ms->ram_size;
     s->bootinfo.loader_start = 0;
     s->bootinfo.board_id = -1;
@@ -771,6 +816,8 @@ static void cm5_class_init(ObjectClass *oc, const void *data)
         offsetof(CM5IODevState, native_emmc), OBJ_PROP_FLAG_READWRITE);
     object_class_property_add_bool_ptr(oc, "emmc-dma",
         offsetof(CM5IODevState, emmc_dma), OBJ_PROP_FLAG_READWRITE);
+    object_class_property_add_bool_ptr(oc, "rp1-gpio-lab",
+        offsetof(CM5IODevState, rp1_gpio_lab), OBJ_PROP_FLAG_READWRITE);
     object_class_property_add_bool_ptr(oc, "native-pcie",
         offsetof(CM5IODevState, native_pcie), OBJ_PROP_FLAG_READWRITE);
     object_class_property_set_description(oc, "native-pcie",

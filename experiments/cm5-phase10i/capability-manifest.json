@@ -1,0 +1,6522 @@
+{
+  "schema": 1,
+  "environment": "qemu",
+  "physical_measurements_collected": false,
+  "pinned_linux_reference": {
+    "revision": "cff533aec2fa601846766b32ff57204e0a61bed7",
+    "source_hash_inventory": "reference-sources.json"
+  },
+  "identities": {
+    "selected_reference_sha256": "b297f9516345eb4eb22d22f4c364fcb3705970f28b6d87875583dadf37fbb3ac",
+    "captured_live_sha256": "783d064376d6694b642a5efef08a17b361514f0ff99083c1eeb58d036551d3d0",
+    "generated_base_sha256": "77191490723725bedc92d6f4ee06da8751b6a2c09e29bb845b12b2ac0b1b0396",
+    "generated_target_sha256": "c42a0b926b508526a1e59ed8e2d7535ee29238b4f5ade9d31354935b0f5264db",
+    "runtime_fdt_sha256": [
+      "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7"
+    ]
+  },
+  "comparison_scope": "node counts are raw path comparisons; explicit /axi flattening and console/eMMC matches used only for feature correspondence",
+  "raw_counts": {
+    "base": {
+      "physical_only": 315,
+      "runtime_only": 30,
+      "common": 8,
+      "common_changed": 7
+    },
+    "gpio_profile": {
+      "physical_only": 315,
+      "runtime_only": 31,
+      "common": 8,
+      "common_changed": 7
+    }
+  },
+  "symbols": {
+    "count": 338,
+    "sha256": "de45060b43baefa4f5d176dea73d1722b151cc10fd8fb8adff767e513993fb63",
+    "relevant": {
+      "pcie2": "/axi/pcie@1000120000",
+      "rp1": "/axi/pcie@1000120000/rp1",
+      "rp1_clocks": "/axi/pcie@1000120000/rp1/clocks@18000",
+      "rp1_spi0": "/axi/pcie@1000120000/rp1/spi@50000",
+      "rp1_gpio": "/axi/pcie@1000120000/rp1/gpio@d0000",
+      "mip0": "/axi/msi-controller@1000130000"
+    }
+  },
+  "capabilities": [
+    {
+      "id": "rp1-gpio-cdev",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/gpio@d0000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/gpio@d0000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1/rp1/gpio",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1/gpio@d0000",
+      "linux_expected_driver": "pinctrl-rp1",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1f000d0000.gpio",
+          "driver": "pinctrl-rp1",
+          "dt_path": "/pcie@1000120000/rp1/gpio@d0000",
+          "compatible": [
+            "raspberrypi,rp1-gpio"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "GPIO20/21 direction, values, both edges and exclusive ownership; all other lines reserved",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "compiled driver has54 descriptors but only2 usable lines",
+        "bulk54-pin pinctrl debug reads and alternate-function selection are unsupported",
+        "no debounce or electrical model"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "rp1-spi0",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/spi@50000",
+        "declared": true,
+        "selected_status": "disabled",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/spi@50000",
+        "captured_live_status": "disabled",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1/rp1/spi0",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1/spi@50000",
+      "linux_expected_driver": "dw_spi_mmio",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1f00050000.spi",
+          "driver": "dw_spi_mmio",
+          "dt_path": "/pcie@1000120000/rp1/spi@50000",
+          "compatible": [
+            "snps,dw-apb-ssi"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "unchanged original-driver strict SPI workload",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "logical synthetic slave is independent of GPIO pinmux",
+        "SPI DMA absent",
+        "1MHz is not a reliable baseline"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "rp1-sys-clock",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/clocks@18000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/clocks@18000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1/rp1",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1/clocks@18000",
+      "linux_expected_driver": "rp1-clk",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1f00018000.clocks",
+          "driver": "rp1-clk",
+          "dt_path": "/pcie@1000120000/rp1/clocks@18000",
+          "compatible": [
+            "raspberrypi,rp1-clocks"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "Linux native SYS clock200MHz and SPI divider operation",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "limited modeled clock register paths",
+        "firmware reset presets are lab conventions"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "rp1-other-clocks",
+      "classification": "guest-advertised-unvalidated",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/clocks@18000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/clocks@18000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1/rp1",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1/clocks@18000",
+      "linux_expected_driver": "rp1-clk",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1f00018000.clocks",
+          "driver": "rp1-clk",
+          "dt_path": "/pcie@1000120000/rp1/clocks@18000",
+          "compatible": [
+            "raspberrypi,rp1-clocks"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_TESTED",
+        "operation": "NOT_TESTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "the real provider driver publishes clock IDs beyond the tested SYS/SLOW subset",
+        "do not infer functionality from registration"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "rp1-pcie",
+      "classification": "physically-declared-modeled-exercised",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000",
+      "linux_expected_driver": "brcm-pcie",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1000120000.pcie",
+          "driver": "brcm-pcie",
+          "dt_path": "/pcie@1000120000",
+          "compatible": [
+            "brcm,bcm2712-pcie"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "logical link, config, BARs, inbound/outbound and bus-master constraints",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "logical Gen2x4, no electrical PHY/ASPM timing calibration"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "rp1-mfd",
+      "classification": "physically-declared-modeled-exercised",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1/rp1",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1",
+      "linux_expected_driver": "rp1",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "pci",
+          "name": "0002:01:00.0",
+          "driver": "rp1"
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "PCI endpoint,61 MSI-X vectors; functional sources0 and19",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "61 vectors do not mean61 implemented peripherals",
+        "firmware mailbox/shared-memory protocol absent"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "mip-host-edge",
+      "classification": "physically-declared-modeled-exercised",
+      "physical_reference": {
+        "selected_path": "/axi/msi-controller@1000130000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/msi-controller@1000130000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/mip0",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/msi-controller@1000130000",
+      "linux_expected_driver": "mip_msi",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1000130000.msi-controller",
+          "driver": "mip_msi",
+          "dt_path": "/msi-controller@1000130000",
+          "compatible": [
+            "brcm,bcm2712-mip"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "native MSI-X delivery to parent GIC via supported host edge mode",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "level/VPU modes unimplemented",
+        "platform mip_msi binding and domain delivery are independently observed"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ],
+      "linux_irq_domain_inferred_active": true
+    },
+    {
+      "id": "native-emmc",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": "/soc@107c000000/mmc@fff000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/soc@107c000000/mmc@fff000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/emmc-host",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/mmc@1000fff000",
+      "linux_expected_driver": "sdhci-brcmstb",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1000fff000.mmc",
+          "driver": "sdhci-brcmstb",
+          "dt_path": "/mmc@1000fff000",
+          "compatible": [
+            "brcm,bcm2712-sdhci",
+            "brcm,sdhci-brcmstb"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "original verified OS/FSW roots2, normal shutdown and LOGS persistence",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "modeled SDHCI/clock subset, empty pinctrl lab states",
+        "no OTP/RPMB/boot-firmware emulation"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "console-uart",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": "/soc@107c000000/serial@7d001000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/soc@107c000000/serial@7d001000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": null,
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/serial@107d001000",
+      "linux_expected_driver": "uart-pl011",
+      "linux_driver_bound": null,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "original kernel console and userspace boot",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "generic PL011 implementation at BCM2712 address",
+        "no physical pad/electrical timing"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "header-uart-debug",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": null,
+        "declared": false,
+        "selected_status": null,
+        "captured_live_path": null,
+        "captured_live_status": null,
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": null,
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/serial@1203000000",
+      "linux_expected_driver": "uart-pl011",
+      "linux_driver_bound": null,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "disposable guest debug console transport",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "generic PL011 at a lab address, not RP1 UART0 registers or GPIO14/15 mux"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "rtc-substitute",
+      "classification": "compatible-lab-substitution",
+      "physical_reference": {
+        "selected_path": null,
+        "declared": false,
+        "selected_status": null,
+        "captured_live_path": null,
+        "captured_live_status": null,
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": null,
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/rtc@1203010000",
+      "linux_expected_driver": "rtc-pl031",
+      "linux_driver_bound": null,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_RUN",
+        "operation": "PROBE_ONLY",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "PL031 substitute, not physical PMIC RTC or battery model"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "synthetic-spi-slave",
+      "classification": "synthetic-fixture",
+      "physical_reference": {
+        "selected_path": null,
+        "declared": false,
+        "selected_status": null,
+        "captured_live_path": null,
+        "captured_live_status": null,
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1/spi@50000/test-slave@0",
+      "linux_expected_driver": "spidev",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "spi",
+          "name": "spi0.0",
+          "driver": "spidev",
+          "dt_path": "/pcie@1000120000/rp1/spi@50000/test-slave@0",
+          "compatible": [
+            "qemu,ssi-test-slave"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "known MOSI XOR0xa5 response with strict CS oracle",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": "synthetic-spi-slave",
+      "known_limitations": [
+        "physical fixture and wiring are unconfirmed"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "synthetic-gpio-loopback",
+      "classification": "synthetic-fixture",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/gpio@d0000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/gpio@d0000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": true,
+      "qom_path": "/machine/native-rp1/rp1/gpio",
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": true,
+      "runtime_dt_path": "/pcie@1000120000/rp1/gpio@d0000",
+      "linux_expected_driver": "pinctrl-rp1",
+      "linux_driver_bound": true,
+      "linux_driver_evidence": [
+        {
+          "bus": "platform",
+          "name": "1f000d0000.gpio",
+          "driver": "pinctrl-rp1",
+          "dt_path": "/pcie@1000120000/rp1/gpio@d0000",
+          "compatible": [
+            "raspberrypi,rp1-gpio"
+          ]
+        }
+      ],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "PASS",
+        "operation": "GPIO20->21 logical input stimulus and native edge interrupts",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": "synthetic-gpio-loopback",
+      "known_limitations": [
+        "not physically measured wiring",
+        "no analog contention, propagation or synchronizer latency"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "header-i2c-policy",
+      "classification": "intentionally-disabled",
+      "physical_reference": {
+        "selected_path": null,
+        "declared": false,
+        "selected_status": null,
+        "captured_live_path": null,
+        "captured_live_status": null,
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": true,
+      "runtime_dt_advertised": false,
+      "runtime_dt_path": "/cm5io-connectors/header-i2c1",
+      "linux_expected_driver": null,
+      "linux_driver_bound": false,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_IMPLEMENTED",
+        "operation": "NOT_IMPLEMENTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "metadata explicitly disabled; no Linux I2C controller is created"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "physical-rp1-i2c1",
+      "classification": "physical-only-unsupported",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/i2c@74000",
+        "declared": true,
+        "selected_status": "disabled",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/i2c@74000",
+        "captured_live_status": "disabled",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": false,
+      "runtime_dt_advertised": false,
+      "runtime_dt_path": null,
+      "linux_expected_driver": null,
+      "linux_driver_bound": false,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_IMPLEMENTED",
+        "operation": "NOT_IMPLEMENTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "needs DesignWare I2C, clocks and full pinmux"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "physical-rp1-ethernet",
+      "classification": "physical-only-unsupported",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/ethernet@100000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/ethernet@100000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": false,
+      "runtime_dt_advertised": false,
+      "runtime_dt_path": null,
+      "linux_expected_driver": null,
+      "linux_driver_bound": false,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_IMPLEMENTED",
+        "operation": "NOT_IMPLEMENTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "MAC/PHY, DMA, clocks and reset GPIO dependencies absent"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "physical-rp1-gpiomem",
+      "classification": "physical-only-unsupported",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/gpiomem@d0000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/gpiomem@d0000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": false,
+      "runtime_dt_advertised": false,
+      "runtime_dt_path": null,
+      "linux_expected_driver": null,
+      "linux_driver_bound": false,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_IMPLEMENTED",
+        "operation": "NOT_IMPLEMENTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "bounded cdev is implemented; broad raw /dev/gpiomem ABI is not exposed"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "physical-rp1-mailbox",
+      "classification": "physical-only-unsupported",
+      "physical_reference": {
+        "selected_path": "/axi/pcie@1000120000/rp1/mailbox@8000",
+        "declared": true,
+        "selected_status": "okay",
+        "captured_live_path": "/axi/pcie@1000120000/rp1/mailbox@8000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": false,
+      "runtime_dt_advertised": false,
+      "runtime_dt_path": null,
+      "linux_expected_driver": null,
+      "linux_driver_bound": false,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_IMPLEMENTED",
+        "operation": "NOT_IMPLEMENTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "no RP1 firmware mailbox/shared-memory protocol"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    },
+    {
+      "id": "physical-usb2",
+      "classification": "physical-only-unsupported",
+      "physical_reference": {
+        "selected_path": "/axi/usb@480000",
+        "declared": true,
+        "selected_status": "disabled",
+        "captured_live_path": "/axi/usb@480000",
+        "captured_live_status": "okay",
+        "evidence": "captured DT declaration; not a new physical functional measurement"
+      },
+      "qemu_realized": null,
+      "qom_path": null,
+      "runtime_dt_node_present": false,
+      "runtime_dt_advertised": false,
+      "runtime_dt_path": null,
+      "linux_expected_driver": null,
+      "linux_driver_bound": false,
+      "linux_driver_evidence": [],
+      "linux_driver_evidence_scope": "platform/pci/spi/i2c symlinks; AMBA bus not enumerated in these runs",
+      "functional_test": {
+        "status": "NOT_IMPLEMENTED",
+        "operation": "NOT_IMPLEMENTED",
+        "evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03/i-native10k-03-v8"
+      },
+      "synthetic_fixture": null,
+      "known_limitations": [
+        "captured live DT versus BOOT base overlay state differs",
+        "no wholesale USB node import"
+      ],
+      "required_for_fsw": "UNKNOWN",
+      "physical_measurement_needed": [
+        "supervisor-confirmed interface/API and approved matching fixture",
+        "approved physical driver/bus baseline",
+        "clock and waveform measurements only when relevant and approved"
+      ]
+    }
+  ],
+  "physical_declared_nodes": [
+    {
+      "path": "/",
+      "classification": "guest-advertised-unvalidated",
+      "virtual_match": "/",
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,5-compute-module",
+        "brcm,bcm2712"
+      ],
+      "status": "okay",
+      "bindings": {
+        "interrupt-parent": [
+          1
+        ],
+        "#address-cells": [
+          2
+        ],
+        "#size-cells": [
+          2
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "simple-bus"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clk-osc",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clk-vpu",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clk-uart",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clk-emmc2",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clk-usb",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clk_xosc",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/sdio_src",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/sdhci_core",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clocks/clksrc_gp0",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-factor-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          33
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              33
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/clocks/clksrc_gp1",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-factor-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          34
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              34
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/clocks/clksrc_gp2",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-factor-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          35
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              35
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/clocks/clksrc_gp3",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-factor-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          36
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              36
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/clocks/clksrc_gp4",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-factor-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          37
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              37
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/clocks/clksrc_gp5",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-factor-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          38
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              38
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/cpus/cpu@0",
+      "classification": "guest-advertised-unvalidated",
+      "virtual_match": "/cpus/cpu@0",
+      "related_capabilities": [],
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@0/l2-cache",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "cache"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@1",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          256
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@1/l2-cache",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "cache"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@2",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          512
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@2/l2-cache",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "cache"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@3",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          768
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/cpu@3/l2-cache",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "cache"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/cpus/l3-cache",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "cache"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/psci",
+      "classification": "guest-advertised-unvalidated",
+      "virtual_match": "/psci",
+      "related_capabilities": [],
+      "compatible": [
+        "arm,psci-1.0",
+        "arm,psci-0.2"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/reserved-memory/linux,cma",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "shared-dma-pool"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/reserved-memory/nvram@0",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,bootloader-config",
+        "nvmem-rmem"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/reserved-memory/nvram@1",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,bootloader-public-key",
+        "nvmem-rmem"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "simple-bus"
+      ],
+      "status": "okay",
+      "bindings": {
+        "ranges": [
+          0,
+          16,
+          0,
+          2147483648
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/reset-controller@119500",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm7216-pcie-sata-rescal"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          1152256,
+          16
+        ],
+        "#reset-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/mmc@fff000",
+      "classification": "compatible-lab-substitution",
+      "virtual_match": "/mmc@1000fff000",
+      "related_capabilities": [
+        "native-emmc"
+      ],
+      "compatible": [
+        "brcm,bcm2712-sdhci",
+        "brcm,sdhci-brcmstb"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16773120,
+          608,
+          16774144,
+          512
+        ],
+        "interrupts": [
+          0,
+          273,
+          4
+        ],
+        "clocks": [
+          8
+        ],
+        "pinctrl-0": [
+          9,
+          10
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk-emmc2",
+            "phandle": 8,
+            "args": []
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 9,
+            "provider": "/soc@107c000000/pinctrl@7d504100/emmc_cmddat_pulls"
+          },
+          {
+            "phandle": 10,
+            "provider": "/soc@107c000000/pinctrl@7d504100/emmc_ds_pull"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/reset-controller@1504318",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,brcmstb-reset"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          22037272,
+          48
+        ],
+        "#reset-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/timer@7c003000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2835-system-timer"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2080387072,
+          4096
+        ],
+        "interrupts": [
+          0,
+          64,
+          4,
+          0,
+          65,
+          4,
+          0,
+          66,
+          4,
+          0,
+          67,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/mailbox@7c013880",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2835-mbox"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2080454784,
+          64
+        ],
+        "interrupts": [
+          0,
+          33,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/serial@7d001000",
+      "classification": "compatible-lab-substitution",
+      "virtual_match": "/serial@107d001000",
+      "related_capabilities": [
+        "console-uart"
+      ],
+      "compatible": [
+        "arm,pl011-axi",
+        "arm,pl011",
+        "arm,primecell"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2097156096,
+          512
+        ],
+        "interrupts": [
+          0,
+          121,
+          4
+        ],
+        "clocks": [
+          13,
+          14
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk-uart",
+            "phandle": 13,
+            "args": []
+          },
+          {
+            "provider": "/clocks/clk-vpu",
+            "phandle": 14,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/interrupt-controller@7d517000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm7271-l2-intc"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2102489088,
+          16
+        ],
+        "interrupts": [
+          0,
+          247,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/gpio@7d517c00",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,brcmstb-gpio"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102492160,
+          64
+        ],
+        "#gpio-cells": [
+          2
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/interrupt-controller@7fff9000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,gic-400"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2147454976,
+          4096,
+          2147459072,
+          8192,
+          2147467264,
+          8192,
+          2147475456,
+          8192
+        ],
+        "interrupts": [
+          1,
+          9,
+          3844
+        ],
+        "#address-cells": [
+          0
+        ],
+        "#interrupt-cells": [
+          3
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/interrupt-controller@7d510600",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2711-l2-intc",
+        "brcm,l2-intc"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2102461952,
+          48
+        ],
+        "interrupts": [
+          0,
+          239,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/pixelvalve@7c410000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-pixelvalve0"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2084634624,
+          256
+        ],
+        "interrupts": [
+          0,
+          101,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/pixelvalve@7c411000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-pixelvalve1"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2084638720,
+          256
+        ],
+        "interrupts": [
+          0,
+          110,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/mop@7c500000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-mop"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2085617664,
+          40
+        ],
+        "interrupts": [
+          1
+        ],
+        "interrupt-parent": [
+          15
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/moplet@7c501000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-moplet"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2085621760,
+          32
+        ],
+        "interrupts": [
+          0
+        ],
+        "interrupt-parent": [
+          15
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/interrupt-controller@7c502000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2711-l2-intc",
+        "brcm,l2-intc"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2085625856,
+          48
+        ],
+        "interrupts": [
+          0,
+          97,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/clock@7c700000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,brcm2711-dvp"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2087714816,
+          16
+        ],
+        "#clock-cells": [
+          1
+        ],
+        "#reset-cells": [
+          1
+        ],
+        "clocks": [
+          16
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clk-108M",
+            "phandle": 16,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/i2c@7d508200",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,brcmstb-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2102428160,
+          88
+        ],
+        "interrupts": [
+          1
+        ],
+        "interrupt-parent": [
+          17
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/i2c@7d508280",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,brcmstb-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2102428288,
+          88
+        ],
+        "interrupts": [
+          2
+        ],
+        "interrupt-parent": [
+          17
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/interrupt-controller@7d508380",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm7271-l2-intc"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102428544,
+          16
+        ],
+        "interrupts": [
+          0,
+          242,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/interrupt-controller@7d508400",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm7271-l2-intc"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102428672,
+          16
+        ],
+        "interrupts": [
+          0,
+          244,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/hdmi@7c701400",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-hdmi0"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2087719936,
+          768,
+          2087718912,
+          512,
+          2087722240,
+          768,
+          2087723008,
+          128,
+          2087729152,
+          512,
+          2087731200,
+          2048,
+          2087715072,
+          128,
+          2102462464,
+          256,
+          2087845888,
+          256
+        ],
+        "interrupts": [
+          1,
+          2,
+          3,
+          7,
+          8
+        ],
+        "interrupt-parent": [
+          19
+        ],
+        "clocks": [
+          22,
+          13,
+          22,
+          14,
+          18,
+          0,
+          23
+        ],
+        "resets": [
+          18,
+          1
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              13
+            ]
+          },
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              14
+            ]
+          },
+          {
+            "provider": "/soc@107c000000/clock@7c700000",
+            "phandle": 18,
+            "args": [
+              0
+            ]
+          },
+          {
+            "provider": "/clk-27M",
+            "phandle": 23,
+            "args": []
+          }
+        ],
+        "resets": [
+          {
+            "provider": "/soc@107c000000/clock@7c700000",
+            "phandle": 18,
+            "args": [
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/hdmi@7c706400",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-hdmi1"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2087740416,
+          768,
+          2087739392,
+          512,
+          2087742720,
+          768,
+          2087743488,
+          128,
+          2087749632,
+          512,
+          2087751680,
+          2048,
+          2087715200,
+          128,
+          2102464512,
+          256,
+          2087845888,
+          256
+        ],
+        "interrupts": [
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "interrupt-parent": [
+          19
+        ],
+        "clocks": [
+          22,
+          13,
+          22,
+          14,
+          18,
+          1,
+          23
+        ],
+        "resets": [
+          18,
+          2
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              13
+            ]
+          },
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              14
+            ]
+          },
+          {
+            "provider": "/soc@107c000000/clock@7c700000",
+            "phandle": 18,
+            "args": [
+              1
+            ]
+          },
+          {
+            "provider": "/clk-27M",
+            "phandle": 23,
+            "args": []
+          }
+        ],
+        "resets": [
+          {
+            "provider": "/soc@107c000000/clock@7c700000",
+            "phandle": 18,
+            "args": [
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/axiperf@7c012800",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-axiperf"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2080450560,
+          256,
+          2113929216,
+          256
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/spi@7d004000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2835-spi"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2097168384,
+          512
+        ],
+        "interrupts": [
+          0,
+          118,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          14
+        ],
+        "pinctrl-0": [
+          27,
+          28
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk-vpu",
+            "phandle": 14,
+            "args": []
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 27,
+            "provider": "/soc@107c000000/pinctrl@7d504100/spi10_gpio2"
+          },
+          {
+            "phandle": 28,
+            "provider": "/soc@107c000000/pinctrl@7d504100/spi10_cs_gpio1"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/spi@7d004000/spidev@0",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "spidev"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          0
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/i2c@7d005600",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2711-i2c",
+        "brcm,bcm2835-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2097174016,
+          32
+        ],
+        "interrupts": [
+          0,
+          117,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          14
+        ],
+        "pinctrl-0": [
+          29
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk-vpu",
+            "phandle": 14,
+            "args": []
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 29,
+            "provider": "/soc@107c000000/pinctrl@7d510700/i2c3_m4_agpio0_pins"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/watchdog@7d200000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-pm"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2099249152,
+          776
+        ],
+        "#reset-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/rng@7d208000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2711-rng200"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2099281920,
+          40
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/intc@7d503000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,l2-intc"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102407168,
+          24
+        ],
+        "interrupts": [
+          0,
+          238,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/pinctrl@7d504100",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712c0-pinctrl"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102411520,
+          48
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/gpio@7d508500",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,brcmstb-gpio"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102428928,
+          64
+        ],
+        "interrupts": [
+          0
+        ],
+        "interrupt-parent": [
+          30
+        ],
+        "#gpio-cells": [
+          2
+        ],
+        "#interrupt-cells": [
+          2
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/serial@7d50c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm7271-uart"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102444032,
+          32
+        ],
+        "interrupts": [
+          0,
+          276,
+          4
+        ],
+        "pinctrl-0": [
+          31,
+          32
+        ]
+      },
+      "dependencies": {
+        "pinctrl-0": [
+          {
+            "phandle": 31,
+            "provider": "/soc@107c000000/pinctrl@7d504100/uarta_24_pins"
+          },
+          {
+            "phandle": 32,
+            "provider": "/soc@107c000000/pinctrl@7d504100/bt_shutdown_pins"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/soc@107c000000/serial@7d50c000/bluetooth",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm43438-bt"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/pinctrl@7d510700",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712c0-aon-pinctrl"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102462208,
+          32
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/intc@7d517ac0",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm7271-l2-intc"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          2102491840,
+          16
+        ],
+        "interrupts": [
+          0,
+          245,
+          4
+        ],
+        "#interrupt-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/avs-monitor@7d542000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2711-avs-monitor",
+        "syscon",
+        "simple-mfd"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102665216,
+          3840
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/avs-monitor@7d542000/thermal",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2711-thermal"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/firmware",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,bcm2835-firmware",
+        "simple-mfd"
+      ],
+      "status": "okay",
+      "bindings": {
+        "dma-ranges": [],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/firmware/clocks",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,firmware-clocks"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/firmware/reset",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,firmware-reset"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#reset-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/firmware/vcio",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,vcio"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/power",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,bcm2835-power"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/fb",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2708-fb"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/rpi_rtc",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rpi-rtc"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/nvmem",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "simple-bus"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/nvmem/nvmem_otp",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rpi-otp"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          0,
+          192
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/nvmem/nvmem_cust",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rpi-otp"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          1,
+          8
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/nvmem/nvmem_mac",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rpi-otp"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2,
+          6
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/nvmem/nvmem_priv",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rpi-otp"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          3,
+          16
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/fixedregulator_3v3",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/fixedregulator_5v0",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/gpiomem@7d508500",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,gpiomem"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102428928,
+          64
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/gpiomem@7d517c00",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,gpiomem"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102492160,
+          64
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/gpiomem@7d504100",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,gpiomem"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102411520,
+          32
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/soc@107c000000/gpiomem@7d510700",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,gpiomem"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          2102462208,
+          32
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "simple-bus"
+      ],
+      "status": "okay",
+      "bindings": {
+        "ranges": [
+          0,
+          0,
+          0,
+          0,
+          16,
+          0,
+          16,
+          0,
+          16,
+          0,
+          1,
+          0,
+          20,
+          0,
+          20,
+          0,
+          4,
+          0,
+          24,
+          0,
+          24,
+          0,
+          4,
+          0,
+          28,
+          0,
+          28,
+          0,
+          4,
+          0
+        ],
+        "dma-ranges": [
+          0,
+          0,
+          0,
+          0,
+          16,
+          0,
+          16,
+          0,
+          16,
+          0,
+          1,
+          0,
+          20,
+          0,
+          20,
+          0,
+          4,
+          0,
+          24,
+          0,
+          24,
+          0,
+          4,
+          0,
+          28,
+          0,
+          28,
+          0,
+          4,
+          0
+        ],
+        "#address-cells": [
+          2
+        ],
+        "#size-cells": [
+          2
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/gpu",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-vc6"
+      ],
+      "status": "disabled",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000100000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-pcie"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          16,
+          1048576,
+          0,
+          37648
+        ],
+        "ranges": [
+          33554432,
+          0,
+          0,
+          23,
+          0,
+          0,
+          4294967292,
+          1124073472,
+          4,
+          0,
+          20,
+          0,
+          3,
+          0
+        ],
+        "dma-ranges": [
+          1124073472,
+          16,
+          0,
+          0,
+          0,
+          16,
+          0
+        ],
+        "interrupts": [
+          0,
+          213,
+          4,
+          0,
+          214,
+          4
+        ],
+        "interrupt-parent": [
+          1
+        ],
+        "#address-cells": [
+          3
+        ],
+        "#size-cells": [
+          2
+        ],
+        "#interrupt-cells": [
+          1
+        ],
+        "resets": [
+          34,
+          35,
+          42
+        ]
+      },
+      "dependencies": {
+        "resets": [
+          {
+            "provider": "/soc@107c000000/reset-controller@119500",
+            "phandle": 34,
+            "args": []
+          },
+          {
+            "provider": "/soc@107c000000/reset-controller@1504318",
+            "phandle": 35,
+            "args": [
+              42
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000110000",
+      "classification": "guest-advertised-unvalidated",
+      "virtual_match": "/pcie@1000110000",
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-pcie"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          16,
+          1114112,
+          0,
+          37648
+        ],
+        "ranges": [
+          33554432,
+          0,
+          2147483648,
+          27,
+          2147483648,
+          0,
+          2147483648,
+          1124073472,
+          4,
+          0,
+          24,
+          0,
+          3,
+          2147483648
+        ],
+        "dma-ranges": [
+          50331648,
+          16,
+          0,
+          0,
+          0,
+          16,
+          0,
+          50331648,
+          255,
+          4294963200,
+          16,
+          1249280,
+          0,
+          4096
+        ],
+        "interrupts": [
+          0,
+          223,
+          4,
+          0,
+          224,
+          4
+        ],
+        "interrupt-parent": [
+          1
+        ],
+        "#address-cells": [
+          3
+        ],
+        "#size-cells": [
+          2
+        ],
+        "#interrupt-cells": [
+          1
+        ],
+        "resets": [
+          34,
+          35,
+          43
+        ]
+      },
+      "dependencies": {
+        "resets": [
+          {
+            "provider": "/soc@107c000000/reset-controller@119500",
+            "phandle": 34,
+            "args": []
+          },
+          {
+            "provider": "/soc@107c000000/reset-controller@1504318",
+            "phandle": 35,
+            "args": [
+              43
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000",
+      "classification": "physically-declared-modeled-exercised",
+      "virtual_match": "/pcie@1000120000",
+      "related_capabilities": [
+        "rp1-pcie"
+      ],
+      "compatible": [
+        "brcm,bcm2712-pcie"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          1179648,
+          0,
+          37648
+        ],
+        "ranges": [
+          33554432,
+          0,
+          0,
+          31,
+          0,
+          0,
+          4294967292,
+          1124073472,
+          4,
+          0,
+          28,
+          0,
+          3,
+          0
+        ],
+        "dma-ranges": [
+          33554432,
+          0,
+          0,
+          31,
+          0,
+          0,
+          4194304,
+          1124073472,
+          16,
+          0,
+          0,
+          0,
+          16,
+          0,
+          50331648,
+          255,
+          4294963200,
+          16,
+          1245184,
+          0,
+          4096
+        ],
+        "interrupts": [
+          0,
+          233,
+          4,
+          0,
+          234,
+          4
+        ],
+        "interrupt-parent": [
+          1
+        ],
+        "#address-cells": [
+          3
+        ],
+        "#size-cells": [
+          2
+        ],
+        "#interrupt-cells": [
+          1
+        ],
+        "resets": [
+          34,
+          35,
+          44
+        ]
+      },
+      "dependencies": {
+        "resets": [
+          {
+            "provider": "/soc@107c000000/reset-controller@119500",
+            "phandle": 34,
+            "args": []
+          },
+          {
+            "provider": "/soc@107c000000/reset-controller@1504318",
+            "phandle": 35,
+            "args": [
+              44
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1",
+      "classification": "physically-declared-modeled-exercised",
+      "virtual_match": "/pcie@1000120000/rp1",
+      "related_capabilities": [
+        "rp1-mfd"
+      ],
+      "compatible": [
+        "simple-bus"
+      ],
+      "status": "okay",
+      "bindings": {
+        "ranges": [
+          192,
+          1073741824,
+          33554432,
+          0,
+          0,
+          0,
+          4259840
+        ],
+        "dma-ranges": [
+          16,
+          0,
+          1124073472,
+          16,
+          0,
+          16,
+          0,
+          192,
+          1073741824,
+          33554432,
+          0,
+          0,
+          0,
+          4259840,
+          0,
+          0,
+          33554432,
+          16,
+          0,
+          16,
+          0
+        ],
+        "interrupt-parent": [
+          39
+        ],
+        "#address-cells": [
+          2
+        ],
+        "#size-cells": [
+          2
+        ],
+        "#interrupt-cells": [
+          2
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/mailbox@8000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [
+        "physical-rp1-mailbox"
+      ],
+      "compatible": [
+        "raspberrypi,rp1-mbox"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1073774592,
+          0,
+          16384
+        ],
+        "interrupts": [
+          58,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/clocks@18000",
+      "classification": "compatible-lab-substitution",
+      "virtual_match": "/pcie@1000120000/rp1/clocks@18000",
+      "related_capabilities": [
+        "rp1-sys-clock",
+        "rp1-other-clocks"
+      ],
+      "compatible": [
+        "raspberrypi,rp1-clocks"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1073840128,
+          0,
+          65592
+        ],
+        "#clock-cells": [
+          1
+        ],
+        "clocks": [
+          40
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk_xosc",
+            "phandle": 40,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/serial@30000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,pl011-axi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1073938432,
+          0,
+          256
+        ],
+        "interrupts": [
+          25,
+          4
+        ],
+        "clocks": [
+          2,
+          15,
+          2,
+          6
+        ],
+        "pinctrl-0": [
+          41
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              15
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              6
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 41,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_uart0_14_15"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/serial@34000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,pl011-axi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1073954816,
+          0,
+          256
+        ],
+        "interrupts": [
+          42,
+          4
+        ],
+        "clocks": [
+          2,
+          15,
+          2,
+          6
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              15
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/serial@38000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,pl011-axi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1073971200,
+          0,
+          256
+        ],
+        "interrupts": [
+          43,
+          4
+        ],
+        "clocks": [
+          2,
+          15,
+          2,
+          6
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              15
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/serial@3c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,pl011-axi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1073987584,
+          0,
+          256
+        ],
+        "interrupts": [
+          44,
+          4
+        ],
+        "clocks": [
+          2,
+          15,
+          2,
+          6
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              15
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/serial@40000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,pl011-axi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074003968,
+          0,
+          256
+        ],
+        "interrupts": [
+          45,
+          4
+        ],
+        "clocks": [
+          2,
+          15,
+          2,
+          6
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              15
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/serial@44000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,pl011-axi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074020352,
+          0,
+          256
+        ],
+        "interrupts": [
+          46,
+          4
+        ],
+        "clocks": [
+          2,
+          15,
+          2,
+          6
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              15
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              6
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@4c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074053120,
+          0,
+          304
+        ],
+        "interrupts": [
+          56,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@50000",
+      "classification": "compatible-lab-substitution",
+      "virtual_match": "/pcie@1000120000/rp1/spi@50000",
+      "related_capabilities": [
+        "rp1-spi0"
+      ],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074069504,
+          0,
+          304
+        ],
+        "interrupts": [
+          19,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          43,
+          44
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 43,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_spi0_gpio9"
+          },
+          {
+            "phandle": 44,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_spi0_cs_gpio7"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@50000/spidev@0",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "spidev"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          0
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@50000/spidev@1",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "spidev"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          1
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@54000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074085888,
+          0,
+          304
+        ],
+        "interrupts": [
+          20,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@58000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074102272,
+          0,
+          304
+        ],
+        "interrupts": [
+          21,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          46
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 46,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_spi2_gpio1"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@5c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074118656,
+          0,
+          304
+        ],
+        "interrupts": [
+          22,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          47
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 47,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_spi3_gpio5"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@60000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074135040,
+          0,
+          304
+        ],
+        "interrupts": [
+          23,
+          4
+        ],
+        "#address-cells": [
+          0
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          48
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 48,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_spi4_gpio9"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@60000/slave",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "spidev"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@64000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074151424,
+          0,
+          304
+        ],
+        "interrupts": [
+          24,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          49
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 49,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_spi5_gpio13"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@68000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074167808,
+          0,
+          304
+        ],
+        "interrupts": [
+          54,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@6c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dw-apb-ssi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074184192,
+          0,
+          304
+        ],
+        "interrupts": [
+          55,
+          4
+        ],
+        "#address-cells": [
+          0
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/spi@6c000/slave",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "spidev"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@70000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074200576,
+          0,
+          4096
+        ],
+        "interrupts": [
+          7,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          50
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 50,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2c0_0_1"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@74000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [
+        "physical-rp1-i2c1"
+      ],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074216960,
+          0,
+          4096
+        ],
+        "interrupts": [
+          8,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          51
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 51,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2c1_2_3"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@78000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074233344,
+          0,
+          4096
+        ],
+        "interrupts": [
+          9,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          52
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 52,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2c2_4_5"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@7c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074249728,
+          0,
+          4096
+        ],
+        "interrupts": [
+          10,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          53
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 53,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2c3_6_7"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@80000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074266112,
+          0,
+          4096
+        ],
+        "interrupts": [
+          11,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@84000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074282496,
+          0,
+          4096
+        ],
+        "interrupts": [
+          12,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2c@88000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2c"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074298880,
+          0,
+          4096
+        ],
+        "interrupts": [
+          13,
+          4
+        ],
+        "clocks": [
+          2,
+          12
+        ],
+        "pinctrl-0": [
+          54
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 54,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2c6_38_39"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/audio_out@94000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-audio-out"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074348032,
+          0,
+          16384
+        ],
+        "clocks": [
+          2,
+          20
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              20
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/pwm@98000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-pwm"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074364416,
+          0,
+          256
+        ],
+        "clocks": [
+          2,
+          17
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              17
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/pwm@9c000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-pwm"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074380800,
+          0,
+          256
+        ],
+        "clocks": [
+          2,
+          18
+        ],
+        "pinctrl-0": [
+          55
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              18
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 55,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_pwm1_gpio45"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2s@a0000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2s"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074397184,
+          0,
+          4096
+        ],
+        "clocks": [
+          2,
+          21
+        ],
+        "pinctrl-0": [
+          56
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              21
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 56,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2s0_18_21"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2s@a4000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2s"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074413568,
+          0,
+          4096
+        ],
+        "clocks": [
+          2,
+          21
+        ],
+        "pinctrl-0": [
+          57
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              21
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 57,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/rp1_i2s1_18_21"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/i2s@a8000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,designware-i2s"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074429952,
+          0,
+          4096
+        ],
+        "clocks": [
+          2,
+          21
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              21
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/sdio_clk0@b0004",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-sdio-clk"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074462724,
+          0,
+          28
+        ],
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          58,
+          59
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/sdio_src",
+            "phandle": 58,
+            "args": []
+          },
+          {
+            "provider": "/clocks/sdhci_core",
+            "phandle": 59,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/sdio_clk1@b4004",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-sdio-clk"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074479108,
+          0,
+          28
+        ],
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          58,
+          59
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/sdio_src",
+            "phandle": 58,
+            "args": []
+          },
+          {
+            "provider": "/clocks/sdhci_core",
+            "phandle": 59,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/adc@c8000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-adc"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1074561024,
+          0,
+          16384
+        ],
+        "#clock-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          30
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              30
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/gpio@d0000",
+      "classification": "compatible-lab-substitution",
+      "virtual_match": "/pcie@1000120000/rp1/gpio@d0000",
+      "related_capabilities": [
+        "rp1-gpio-cdev",
+        "synthetic-gpio-loopback"
+      ],
+      "compatible": [
+        "raspberrypi,rp1-gpio"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1074593792,
+          0,
+          49152,
+          192,
+          1074659328,
+          0,
+          49152,
+          192,
+          1074724864,
+          0,
+          49152
+        ],
+        "interrupts": [
+          0,
+          4,
+          1,
+          4,
+          2,
+          4
+        ],
+        "#gpio-cells": [
+          2
+        ],
+        "#interrupt-cells": [
+          2
+        ],
+        "gpio-ranges": [
+          45,
+          0,
+          0,
+          54
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/ethernet@100000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [
+        "physical-rp1-ethernet"
+      ],
+      "compatible": [
+        "raspberrypi,rp1-gem",
+        "cdns,macb"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1074790400,
+          0,
+          16384
+        ],
+        "interrupts": [
+          6,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          12,
+          2,
+          12,
+          2,
+          29,
+          2,
+          16
+        ],
+        "pinctrl-0": [
+          62
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              29
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              16
+            ]
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 62,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/eth0_irq_pins"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/csi@110000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-cfe"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074855936,
+          0,
+          256,
+          192,
+          1074872320,
+          0,
+          256,
+          192,
+          1074921472,
+          0,
+          256,
+          192,
+          1074937856,
+          0,
+          4096
+        ],
+        "interrupts": [
+          47,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          22
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              22
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/csi@128000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-cfe"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074954240,
+          0,
+          256,
+          192,
+          1074970624,
+          0,
+          256,
+          192,
+          1075019776,
+          0,
+          256,
+          192,
+          1075036160,
+          0,
+          4096
+        ],
+        "interrupts": [
+          48,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          2,
+          23
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              23
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/pio@178000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-pio"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1075281920,
+          0,
+          32
+        ],
+        "interrupts": [
+          50,
+          1,
+          51,
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/mmc@180000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-dwcmshc"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1075314688,
+          0,
+          256
+        ],
+        "interrupts": [
+          17,
+          4
+        ],
+        "clocks": [
+          2,
+          12,
+          59,
+          2,
+          31,
+          65
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          },
+          {
+            "provider": "/clocks/sdhci_core",
+            "phandle": 59,
+            "args": []
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              31
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/sdio_clk0@b0004",
+            "phandle": 65,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/mmc@184000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-dwcmshc"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1075331072,
+          0,
+          256
+        ],
+        "interrupts": [
+          18,
+          4
+        ],
+        "clocks": [
+          2,
+          12,
+          59,
+          2,
+          31,
+          66
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          },
+          {
+            "provider": "/clocks/sdhci_core",
+            "phandle": 59,
+            "args": []
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              31
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/sdio_clk1@b4004",
+            "phandle": 66,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/dma@188000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,axi-dma-1.01a"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1075347456,
+          0,
+          4096
+        ],
+        "interrupts": [
+          40,
+          4
+        ],
+        "clocks": [
+          2,
+          14,
+          2,
+          12
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              14
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              12
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/usb@200000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dwc3"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1075838976,
+          0,
+          1048576
+        ],
+        "interrupts": [
+          31,
+          1
+        ],
+        "pinctrl-0": [
+          67
+        ]
+      },
+      "dependencies": {
+        "pinctrl-0": [
+          {
+            "phandle": 67,
+            "provider": "/axi/pcie@1000120000/rp1/gpio@d0000/usb_vbus_pins"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/usb@300000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "snps,dwc3"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1076887552,
+          0,
+          1048576
+        ],
+        "interrupts": [
+          36,
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/dsi@110000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1dsi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074888704,
+          0,
+          4096,
+          192,
+          1074905088,
+          0,
+          4096,
+          192,
+          1074921472,
+          0,
+          4096
+        ],
+        "interrupts": [
+          47,
+          4
+        ],
+        "clocks": [
+          2,
+          22,
+          2,
+          41,
+          2,
+          45,
+          40,
+          2,
+          3
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              22
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              41
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              45
+            ]
+          },
+          {
+            "provider": "/clocks/clk_xosc",
+            "phandle": 40,
+            "args": []
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/dsi@128000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1dsi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1074987008,
+          0,
+          4096,
+          192,
+          1075003392,
+          0,
+          4096,
+          192,
+          1075019776,
+          0,
+          4096
+        ],
+        "interrupts": [
+          48,
+          4
+        ],
+        "clocks": [
+          2,
+          23,
+          2,
+          42,
+          2,
+          46,
+          40,
+          2,
+          3
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              23
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              42
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              46
+            ]
+          },
+          {
+            "provider": "/clocks/clk_xosc",
+            "phandle": 40,
+            "args": []
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/vec@144000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1vec"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1075068928,
+          0,
+          4096,
+          192,
+          1075052544,
+          0,
+          4096
+        ],
+        "interrupts": [
+          49,
+          4
+        ],
+        "clocks": [
+          2,
+          39
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              39
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/dpi@148000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1dpi"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          192,
+          1075085312,
+          0,
+          4096,
+          192,
+          1075052544,
+          0,
+          4096
+        ],
+        "interrupts": [
+          49,
+          4
+        ],
+        "clocks": [
+          2,
+          40,
+          2,
+          5,
+          2,
+          2
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              40
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              5
+            ]
+          },
+          {
+            "provider": "/axi/pcie@1000120000/rp1/clocks@18000",
+            "phandle": 2,
+            "args": [
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/sram@400000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "mmio-sram"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1077936128,
+          0,
+          65536
+        ],
+        "ranges": [
+          0,
+          192,
+          1077936128,
+          65536
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/sram@400000/shmem@ff00",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-shmem"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          65280,
+          256
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/pcie@1000120000/rp1/gpiomem@d0000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [
+        "physical-rp1-gpiomem"
+      ],
+      "compatible": [
+        "raspberrypi,gpiomem"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          192,
+          1074593792,
+          0,
+          196608
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/msi-controller@1000130000",
+      "classification": "physically-declared-modeled-exercised",
+      "virtual_match": "/msi-controller@1000130000",
+      "related_capabilities": [
+        "mip-host-edge"
+      ],
+      "compatible": [
+        "brcm,bcm2712-mip"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          1245184,
+          0,
+          192,
+          255,
+          4294963200,
+          0,
+          4096
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/msi-controller@1000131000",
+      "classification": "guest-advertised-unvalidated",
+      "virtual_match": "/msi-controller@1000131000",
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-mip"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          1249280,
+          0,
+          192,
+          255,
+          4294963200,
+          0,
+          4096
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/iommu@5100",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-iommu"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          20736,
+          0,
+          128
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/iommu@5200",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-iommu"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          20992,
+          0,
+          128
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/iommu@5280",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-iommu"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          21120,
+          0,
+          128
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/iommuc@5b00",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-iommuc"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          23296,
+          0,
+          128
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/dma@10000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-dma"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          65536,
+          0,
+          1536
+        ],
+        "interrupts": [
+          0,
+          80,
+          4,
+          0,
+          81,
+          4,
+          0,
+          82,
+          4,
+          0,
+          83,
+          4,
+          0,
+          84,
+          4,
+          0,
+          85,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/dma@10600",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-dma"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          67072,
+          0,
+          1536
+        ],
+        "interrupts": [
+          0,
+          86,
+          4,
+          0,
+          87,
+          4,
+          0,
+          88,
+          4,
+          0,
+          89,
+          4,
+          0,
+          90,
+          4,
+          0,
+          91,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/syscon@400018",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,syscon-piarbctl",
+        "syscon",
+        "simple-mfd"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          4194328,
+          0,
+          24
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/usb@480000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [
+        "physical-usb2"
+      ],
+      "compatible": [
+        "brcm,bcm2835-usb"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          16,
+          4718592,
+          0,
+          65536
+        ],
+        "interrupts": [
+          0,
+          73,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          69
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk-usb",
+            "phandle": 69,
+            "args": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/codec@800000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-hevc-dec",
+        "raspberrypi,hevc-dec"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          8388608,
+          0,
+          65536,
+          16,
+          8650752,
+          0,
+          4096
+        ],
+        "interrupts": [
+          0,
+          98,
+          4
+        ],
+        "clocks": [
+          22,
+          11
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              11
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/pisp_be@880000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,pispbe"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          8912896,
+          0,
+          16384
+        ],
+        "interrupts": [
+          0,
+          72,
+          4
+        ],
+        "clocks": [
+          22,
+          7
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              7
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/mmc@1100000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-sdhci"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          16,
+          17825792,
+          0,
+          608,
+          16,
+          17826816,
+          0,
+          512
+        ],
+        "interrupts": [
+          0,
+          274,
+          4
+        ],
+        "#address-cells": [
+          1
+        ],
+        "#size-cells": [
+          0
+        ],
+        "clocks": [
+          8
+        ],
+        "pinctrl-0": [
+          73,
+          74
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/clocks/clk-emmc2",
+            "phandle": 8,
+            "args": []
+          }
+        ],
+        "pinctrl-0": [
+          {
+            "phandle": 73,
+            "provider": "/soc@107c000000/pinctrl@7d504100/sdio2_30_pins"
+          },
+          {
+            "phandle": 74,
+            "provider": "/soc@107c000000/pinctrl@7d510700/ant_pins"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/axi/mmc@1100000/wifi@1",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm4329-fmac"
+      ],
+      "status": "okay",
+      "bindings": {
+        "reg": [
+          1
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/axi/v3d@2000000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,2712-v3d"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          16,
+          33554432,
+          0,
+          16384,
+          16,
+          33587200,
+          0,
+          24576,
+          16,
+          33753088,
+          0,
+          1792
+        ],
+        "interrupts": [
+          0,
+          250,
+          4,
+          0,
+          249,
+          4
+        ],
+        "clocks": [
+          22,
+          5
+        ],
+        "resets": [
+          76,
+          0
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              5
+            ]
+          }
+        ],
+        "resets": [
+          {
+            "provider": "/soc@107c000000/watchdog@7d200000",
+            "phandle": 76,
+            "args": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/timer",
+      "classification": "guest-advertised-unvalidated",
+      "virtual_match": "/timer",
+      "related_capabilities": [],
+      "compatible": [
+        "arm,armv8-timer"
+      ],
+      "status": "okay",
+      "bindings": {
+        "interrupts": [
+          1,
+          13,
+          3848,
+          1,
+          14,
+          3848,
+          1,
+          11,
+          3848,
+          1,
+          10,
+          3848
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clk-27M",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/clk-108M",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "okay",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/hvs@107c580000",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "brcm,bcm2712-hvs"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "reg": [
+          16,
+          2086141952,
+          0,
+          106496
+        ],
+        "interrupts": [
+          2,
+          9,
+          16
+        ],
+        "interrupt-parent": [
+          15
+        ],
+        "clocks": [
+          22,
+          4,
+          22,
+          16
+        ]
+      },
+      "dependencies": {
+        "clocks": [
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              4
+            ]
+          },
+          {
+            "provider": "/soc@107c000000/firmware/clocks",
+            "phandle": 22,
+            "args": [
+              16
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/arm-pmu",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "arm,cortex-a76-pmu"
+      ],
+      "status": "okay",
+      "bindings": {
+        "interrupts": [
+          0,
+          16,
+          4,
+          0,
+          17,
+          4,
+          0,
+          18,
+          4,
+          0,
+          19,
+          4
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/firmwarekms",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rpi-firmware-kms-2712"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "interrupts": [
+          19
+        ],
+        "interrupt-parent": [
+          89
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/phy",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "usb-nop-xceiv"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/leds",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "gpio-leds"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/sd-io-1v8-reg",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/sd-vcc-reg",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/wl-on-reg",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {
+        "pinctrl-0": [
+          91
+        ]
+      },
+      "dependencies": {
+        "pinctrl-0": [
+          {
+            "phandle": 91,
+            "provider": "/soc@107c000000/pinctrl@7d504100/wl_on_pins"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/cam1_clk",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/cam0_clk",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "fixed-clock"
+      ],
+      "status": "disabled",
+      "bindings": {
+        "#clock-cells": [
+          0
+        ]
+      },
+      "dependencies": {}
+    },
+    {
+      "path": "/cam0_reg",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/cam_dummy_reg",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/rp1_firmware",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "raspberrypi,rp1-firmware",
+        "simple-mfd"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/rp1_vdd_3v3",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "regulator-fixed"
+      ],
+      "status": "okay",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/cooling_fan",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "pwm-fan"
+      ],
+      "status": "disabled",
+      "bindings": {},
+      "dependencies": {}
+    },
+    {
+      "path": "/pwr_button",
+      "classification": "physical-only-unsupported",
+      "virtual_match": null,
+      "related_capabilities": [],
+      "compatible": [
+        "gpio-keys"
+      ],
+      "status": "okay",
+      "bindings": {
+        "pinctrl-0": [
+          118
+        ]
+      },
+      "dependencies": {
+        "pinctrl-0": [
+          {
+            "phandle": 118,
+            "provider": "/soc@107c000000/pinctrl@7d504100/pwr_button_pins"
+          }
+        ]
+      }
+    }
+  ],
+  "virtual_without_exact_physical_path": [
+    {
+      "path": "/pcie1-fixed-clock",
+      "compatible": [
+        "fixed-clock"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/pcie0-fixed-clock",
+      "compatible": [
+        "fixed-clock"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/rp1-xosc",
+      "compatible": [
+        "fixed-clock"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/pcie@1000120000/rp1/spi@50000/test-slave@0",
+      "compatible": [
+        "qemu,ssi-test-slave"
+      ],
+      "related_capabilities": [
+        "synthetic-spi-slave"
+      ],
+      "classification": "synthetic-fixture"
+    },
+    {
+      "path": "/rtc@1203010000",
+      "compatible": [
+        "arm,pl031",
+        "arm,primecell"
+      ],
+      "related_capabilities": [
+        "rtc-substitute"
+      ],
+      "classification": "compatible-lab-substitution"
+    },
+    {
+      "path": "/serial@1203000000",
+      "compatible": [
+        "arm,pl011",
+        "arm,primecell"
+      ],
+      "related_capabilities": [
+        "header-uart-debug"
+      ],
+      "classification": "compatible-lab-substitution"
+    },
+    {
+      "path": "/emmc-fixed-clock",
+      "compatible": [
+        "fixed-clock"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/interrupt-controller@107fff9000",
+      "compatible": [
+        "arm,gic-400"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/cpus/cpu@300",
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/cpus/cpu@200",
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/cpus/cpu@100",
+      "compatible": [
+        "arm,cortex-a76"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    },
+    {
+      "path": "/uart-fixed-clock",
+      "compatible": [
+        "fixed-clock"
+      ],
+      "related_capabilities": [],
+      "classification": "guest-advertised-unvalidated"
+    }
+  ],
+  "ranked_gaps": [
+    {
+      "rank": 1,
+      "id": "rp1-other-clocks",
+      "reason": "existing real driver exposes provider outputs beyond tested register subset; audit actual unsupported accesses"
+    },
+    {
+      "rank": 2,
+      "id": "physical-rp1-gpiomem",
+      "reason": "confirm cdev versus direct-MMIO/pinmux needs before expanding bounded GPIO"
+    },
+    {
+      "rank": 3,
+      "id": "physical-rp1-i2c1",
+      "reason": "possible sensor interface, dependencies unmodeled; FSW requirement UNKNOWN"
+    },
+    {
+      "rank": 4,
+      "id": "physical-rp1-ethernet",
+      "reason": "physical board declares MAC/PHY; substantial DMA/reset/provider dependencies"
+    },
+    {
+      "rank": 5,
+      "id": "physical-usb2",
+      "reason": "physical runtime overlay differs; do not advertise unsupported controller"
+    }
+  ],
+  "linux_observations": 5,
+  "linux_buses": {
+    "gpio": [
+      "gpiochip0"
+    ],
+    "i2c": [],
+    "spi": [
+      "spi0"
+    ],
+    "mmc": [
+      "mmc0"
+    ]
+  },
+  "qom_evidence": "private phase10i-qom.json: explicit realized queries plus HMP qtree/mtree; null means not established, not absent",
+  "required_for_fsw": "UNKNOWN for every capability; no proprietary FSW was obtained or explicitly launched; captured boot services unchanged"
+}

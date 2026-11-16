@@ -1,0 +1,62 @@
+[
+  {
+    "suite": "rp1",
+    "returncode": 0,
+    "count": 18
+  },
+  {
+    "suite": "cm5io",
+    "returncode": 0,
+    "count": 7
+  },
+  {
+    "suite": "bcm2712-mip",
+    "returncode": 0,
+    "count": 3
+  },
+  {
+    "suite": "bcm2712-sdhci",
+    "returncode": 0,
+    "count": 6
+  },
+  {
+    "suite": "cm5-phase10g",
+    "returncode": 0,
+    "count": 5
+  },
+  {
+    "suite": "cm5-phase10e",
+    "returncode": 0,
+    "count": 3
+  },
+  {
+    "suite": "cm5-phase10f1",
+    "returncode": 0,
+    "count": 23
+  },
+  {
+    "suite": "cm5-phase10f2",
+    "returncode": 0,
+    "count": 47
+  },
+  {
+    "suite": "cm5-phase10f",
+    "returncode": 0,
+    "count": 20
+  },
+  {
+    "suite": "cm5-phase10a",
+    "returncode": 0,
+    "count": 24
+  },
+  {
+    "suite": "cm5-phase10d",
+    "returncode": 0,
+    "count": 8
+  },
+  {
+    "suite": "cm5-phase10h",
+    "returncode": 0,
+    "count": 5
+  }
+]

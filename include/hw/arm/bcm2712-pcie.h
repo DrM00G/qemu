@@ -24,7 +24,7 @@ struct BCM2712PCIeState {
     AddressSpace pci_as, dma_as, msi_as;
     BCM2712PCIeWindow outbound[2];
     PCIDevice *root_port, *endpoint;
-    bool connect_rp1, link_up;
+    bool connect_rp1, link_up, rp1_gpio_lab;
     QEMUTimer *link_timer;
     qemu_irq intx[4];
     uint32_t controller;

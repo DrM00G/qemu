@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "physical_measurements": false,
+  "attempts": [
+    {
+      "id": "default-qtest-initial-realize",
+      "status": "FAILED_ASSERTION",
+      "cause": "optional GPIO child initialized without being realized",
+      "correction": "initialize child only in enabled parent realize path",
+      "final_control": "39 hardware qtests pass;19 repeated ordering cases pass"
+    },
+    {
+      "id": "i-native10k",
+      "status": "INCONCLUSIVE",
+      "cause": "canonical tty truncated long embedded observer-source line before any SPI/GPIO workload",
+      "correction": "adjacent short literals; actual PTY exact-byte and syntax regression",
+      "normal_shutdown": true,
+      "private_evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k"
+    },
+    {
+      "id": "i-native10k-02",
+      "status": "ORIGINAL_V8_SPI_PASS_GPIO_NOT_EXERCISED",
+      "strict_messages": 90,
+      "cs_segments": 90,
+      "cause": "gpiochip0 and gpiochip4 aliases counted as distinct chips; discovery rejected before writes",
+      "correction": "record all aliases and deduplicate actual st_rdev identity",
+      "confirmation": "i-native10k-03 records both aliases with identical device identity and all functional GPIO checks pass",
+      "private_evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-02"
+    }
+  ]
+}

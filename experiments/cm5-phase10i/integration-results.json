@@ -1,0 +1,1746 @@
+{
+  "schema": 1,
+  "environment": "qemu",
+  "physical_measurements": false,
+  "runs": [
+    {
+      "run_id": "i-native10k-03",
+      "status": "PASS",
+      "speed_hz": 10000,
+      "execution_clock": "host",
+      "physical_measurement": false,
+      "required_for_fsw": "UNKNOWN",
+      "original_kernel_release": "6.18.50+rpt-rpi-2712",
+      "executable_sha256": "f94c29959930a78c39d147d568d14e32f8d1128e32b6cf7a31c30ccae906d3dc",
+      "command_sha256": "508b050b571c04625ad074b67b28412be290707a1acfa9eb7b48eef6fa5f3c3b",
+      "execution_sources": {
+        "/home/aweso/projects/qemu/hw/ssi/dw-apb-ssi.c": "7a47947855ac9f68f0cd6fd2db2711c0d75103333c329496d9346d4914647bcd",
+        "/home/aweso/projects/qemu/include/hw/ssi/dw-apb-ssi.h": "c8716b017c08811ac4854f311a11b18ad01d91d9f21a4e24a21f9bbcb19e2fc6",
+        "/home/aweso/projects/qemu/hw/misc/rp1-pci.c": "f5e55a7b6ceb2a599df353442e86ca2ceeb3d881f77403529cfe4b67efa7b129",
+        "/home/aweso/projects/qemu/hw/intc/bcm2712-mip.c": "91ecbba36761711772f79d1bc9bcce43b21e10bc9a70b52c657d6ddc1c1b0f64",
+        "/home/aweso/projects/qemu/hw/arm/bcm2712-pcie.c": "bca4593b9f6f3cdf6b2af1b30ccd67bdf2108cdb02b8727a90c50d14d25529cf",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10e/native_profile.py": "7dc91d5a0fc2f7324b398c0e8927429aeef47b5c1f1dc0b38c0bfc1f52b05a2c",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10c/run.py": "2cb15751c055bfbdbe61743f4defde1ad6351a7b873775cd35078926db803bca",
+        "/home/aweso/projects/qemu/hw/ssi/trace-events": "8c25131b2218b984d65875e11c347526d57816ee54f5281d72b71c6bde2d2e8b",
+        "/home/aweso/projects/qemu/hw/misc/trace-events": "76cc687e8fc8e20842a6e024c8ed253376f57f559c8089a1fa33d5d4e9575aea",
+        "/home/aweso/projects/qemu/hw/intc/trace-events": "750ab7d63b0cd61512c8a822d25041c8a8b611c22f87e6cb0472493e7b571b6a",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10g/run.py": "1638939d5e4518ac216686b0cd6f4a9a85b6185947fe706cc107b1e66eb2dd54",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10g/correlate.py": "a9e4c9a25610aebb9f643d4fb7bced9c8a9cc61a10a6eb05993c21074e632a95",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10g/metrics.py": "ca710915836208cf3d350487e7df307b945f43a3352638172feeec5df204980b",
+        "/home/aweso/projects/qemu/hw/arm/cm5io-dev.c": "630c37f29383818077d5688605b8493c9fe6819c3812bf1f185425b7e64d39ad",
+        "/home/aweso/projects/qemu/hw/gpio/rp1-gpio.c": "2dd8241ca3af2305cbe057c1ba858d7bedfdc93a95a909bba6158e590cd0cf9b",
+        "/home/aweso/projects/qemu/include/hw/gpio/rp1-gpio.h": "f13f42fece775bcd5dbda4f72950d866ac8552d918b35a6042aff86c29d3ee5c",
+        "/home/aweso/projects/qemu/hw/gpio/trace-events": "19b53b0895c8a6939cb08ccf0a24f66bcc04a0169f1bea7f7397c38d8f46f112",
+        "/home/aweso/projects/qemu/include/hw/arm/bcm2712-pcie.h": "3a94fb5240d054c6fcadd7c8d4663292ce255563ff417b70464ab4e89cced823",
+        "/home/aweso/projects/qemu/hw/gpio/meson.build": "6f708fba9a9cffb14c96b1582a83de683acdba023cf23318aac3fa8a7f5d2d05",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10i/guest_gpio.py": "42c194cc60262119882f77ad4853bc7a70cf17417a6f1755918a0f549d96da10",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10i/linux_census.py": "c99a3a2eda5910960a852b08d936cbf6444c1e009ad5e347f58d5573849f2e2b",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10i/observer.py": "cda5af99105070f64b6f2779b122f83172d3887aa60c14bd565f047d8ef4b51f"
+      },
+      "selected_files": {
+        "kernel": {
+          "name": "kernel_2712.img",
+          "sha256": "154f0ea1e14bb1075077dfd1bdc63c1502bc0b17b0354628d515b4fbd3a4198d",
+          "size": 10197590,
+          "validation": {
+            "memory_image_bytes": 26607616,
+            "text_offset": 0,
+            "decoded_sha256": "7b2ce1544ed18d495c8ad2fb6945d2eb7517df80a2b8af4a62e0884d76d88c78",
+            "decoded_bytes": 25872896,
+            "validation": "gzip stream/CRC when compressed, ARM64 header/memory bounds; instruction semantics unknown"
+          }
+        },
+        "cmdline": {
+          "name": "cmdline_2712-osverified-v8.txt",
+          "sha256": "67ee4076a0fe8d3b81f49733d4d1a09d4ca2054f5cc84688acc06614ac06f09e",
+          "size": 279,
+          "validation": {
+            "validation": "single ASCII command line"
+          }
+        },
+        "initramfs": {
+          "name": "initramfs_2712-osverified-v8",
+          "sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+          "size": 23455255,
+          "validation": {
+            "archives": 2,
+            "entries": 1091,
+            "segments": [
+              {
+                "offset": 0,
+                "stored_bytes": 5192372,
+                "format": "newc",
+                "stored_sha256": "df2e9a2090f9c4e4559c4b24d7ed61c42cf94f9ca643635cfb43f615505e059c",
+                "decoded_bytes": 5192372,
+                "decoded_sha256": "df2e9a2090f9c4e4559c4b24d7ed61c42cf94f9ca643635cfb43f615505e059c",
+                "decoder_version": null
+              },
+              {
+                "offset": 5192704,
+                "stored_bytes": 18262551,
+                "format": "zstd",
+                "stored_sha256": "d3357fee5563919d0feddc909d65bd9483061471972ab2a03a583aafba7e5b8a",
+                "decoded_bytes": 57997824,
+                "decoded_sha256": "53a9a5df5cadba05da9719869096a93646ce45ab054c1f8ce55c53a74ca85d48",
+                "decoder_version": "1.5.7"
+              }
+            ],
+            "stored_sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+            "decoded_sha256": "94ce23cb8923f395f65a8a52782d4bc166d4d1570734946079d26118856dae17",
+            "decoded_bytes": 63190528,
+            "window_limit_bytes": 67108864,
+            "validation": "complete frames and newc structure; not executable semantics"
+          }
+        },
+        "dtb": {
+          "name": "bcm2712-rpi-cm5-cm5io.dtb",
+          "sha256": "b297f9516345eb4eb22d22f4c364fcb3705970f28b6d87875583dadf37fbb3ac",
+          "size": 79751,
+          "validation": {
+            "validation": "DTB block/token structure; bindings and overlay operations not validated"
+          }
+        }
+      },
+      "boot_order_confirmation": "UNCONFIRMED_FIXTURE",
+      "physical_firmware_equivalence": false,
+      "original_provenance_checks": {
+        "selected": true,
+        "exact_exports": true,
+        "selected_kernel_argv": true,
+        "selected_initramfs_argv": true,
+        "same_overlay": true,
+        "captured_kernel": true,
+        "captured_initramfs": true,
+        "original_kernel_entry": true,
+        "native_emmc": true,
+        "original_initramfs_executes": true,
+        "verified_userspace": true,
+        "strict_native_spi": true,
+        "persisted_logs": true,
+        "runtime_dt_observed": true,
+        "runtime_cmdline_matches": true,
+        "normal_shutdown": true
+      },
+      "original_recovery_checks": {
+        "inputs_unchanged": true,
+        "kernel_entry": true,
+        "initramfs": true,
+        "emmc_partitions": true,
+        "normal_shutdown": true,
+        "raw_target_unchanged_after_injection": true,
+        "fault_cluster_no_guest_content_delta": true,
+        "new_allocations_only_logs": true,
+        "functional_two_observations": true,
+        "host_logs_persistence": true,
+        "original_initramfs": true
+      },
+      "native_checks": {
+        "clean_original_verified_boot": true,
+        "native_gen2_x4": true,
+        "expansion_link_down": true,
+        "endpoint_enumerated": true,
+        "kernel_chip_id": true,
+        "userspace_bars": true,
+        "msix_vectors61": true,
+        "repeated_spi_after_multi_user": true,
+        "native_mip_event": true,
+        "rp1_msix_event": true,
+        "cs_framing_and_mosi_miso": true,
+        "no_observed_idle_spi_irqs": true,
+        "real_dw_driver": true,
+        "sys_clock_200mhz": true
+      },
+      "vertical_checks": {
+        "original_v8_and_strict_spi": true,
+        "gpio_all_observations_pass": true,
+        "actual_original_pinctrl_driver": true,
+        "cdev54_with_only_two_usable_lines": true,
+        "gpio_values_and_edges": true,
+        "exclusive_ownership": true,
+        "irq_accounting_and_quiescence": true,
+        "gpio_qom_realized": true,
+        "spi_qom_realized": true,
+        "dt_runtime_postconditions": true,
+        "active_multi_user_gpio_observations": true,
+        "native_gpio_msix_mip_observed": true,
+        "no_unsupported_gpio_mmio": true
+      },
+      "spi": {
+        "submitted_messages": 90,
+        "cs_segments": 90,
+        "completed_bytes": 69210,
+        "failed_messages": [],
+        "strict_oracle": "PASS"
+      },
+      "interrupts": {
+        "rp1_notifications_by_vector": {
+          "0": 20,
+          "19": 2378
+        },
+        "native_mip_deliveries_by_vector": {
+          "0": 20,
+          "19": 2378
+        }
+      },
+      "gpio_observations": [
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 294229251435
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 294231746898
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 294233139472
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 294233747879
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 324520157046
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 324521106324
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 324521626305
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 324522037657
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 351402711030
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 351403694456
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 351404962289
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 351405586956
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 382276984215
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 382277893308
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 382278439104
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 382278985327
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 413023259956
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 413023894068
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 413024928901
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 413025378827
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        }
+      ],
+      "independently_active_multi_user": [
+        {
+          "guest_uptime_s": 368.33,
+          "gpio_status": "PASS"
+        },
+        {
+          "guest_uptime_s": 399.23,
+          "gpio_status": "PASS"
+        }
+      ],
+      "live_fdt_sha256": [
+        "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7"
+      ],
+      "live_gpio_contract": {
+        "status": "PASS",
+        "observations": [
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          }
+        ],
+        "stage_note": "generated base/target precede ARM boot fixups; actual runtime FDT identity observed independently"
+      },
+      "generated_dt_contract": {
+        "schema": 1,
+        "status": "PASS",
+        "commands": [
+          [
+            "/home/aweso/projects/qemu/build-arm64-phase1/qemu-system-aarch64",
+            "-M",
+            "cm5io-dev,native-pcie=on,native-mip=on,native-emmc=on,emmc-dma=on,dumpdtb=/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/dt-contract-final/base.dtb",
+            "-m",
+            "2048",
+            "-smp",
+            "4",
+            "-accel",
+            "tcg,thread=single",
+            "-S",
+            "-display",
+            "none",
+            "-monitor",
+            "none",
+            "-serial",
+            "none",
+            "-nodefaults"
+          ],
+          [
+            "/home/aweso/projects/qemu/build-arm64-phase1/qemu-system-aarch64",
+            "-M",
+            "cm5io-dev,native-pcie=on,native-mip=on,native-emmc=on,emmc-dma=on,rp1-gpio-lab=on,dumpdtb=/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/dt-contract-final/gpio.dtb",
+            "-m",
+            "2048",
+            "-smp",
+            "4",
+            "-accel",
+            "tcg,thread=single",
+            "-S",
+            "-display",
+            "none",
+            "-monitor",
+            "none",
+            "-serial",
+            "none",
+            "-nodefaults"
+          ]
+        ],
+        "selected_reference_sha256": "b297f9516345eb4eb22d22f4c364fcb3705970f28b6d87875583dadf37fbb3ac",
+        "generated_base_sha256": "77191490723725bedc92d6f4ee06da8751b6a2c09e29bb845b12b2ac0b1b0396",
+        "generated_target_sha256": "c42a0b926b508526a1e59ed8e2d7535ee29238b4f5ade9d31354935b0f5264db",
+        "transformation": {
+          "effect": "ADDED_BOUNDED_GPIO_PROVIDER",
+          "changed": true,
+          "added_nodes": [
+            "/pcie@1000120000/rp1/gpio@d0000"
+          ],
+          "modified_properties": [
+            [
+              "/cm5io-connectors",
+              "qemu,pinmux"
+            ],
+            [
+              "/cm5io-connectors/header-gpio",
+              "qemu,implementation"
+            ],
+            [
+              "/cm5io-connectors/header-gpio",
+              "status"
+            ]
+          ],
+          "physical_properties_preserved": [
+            "compatible",
+            "reg",
+            "#gpio-cells",
+            "#interrupt-cells"
+          ],
+          "differences": [
+            "only bank0 interrupt advertised",
+            "GPIO0..19/22..53 reserved",
+            "no physical hogs/alt functions imported",
+            "synthetic GPIO20->21 loopback"
+          ],
+          "external_physical_dt_installed": false
+        },
+        "fallback": {
+          "effect": "NO_CHANGE_GENERATED_FALLBACK",
+          "changed": false
+        },
+        "specification_sha256": "2a8c69ee0c202cf7c5e3f9243e70944b5b2afabb87b5fee46db2a119e92e432b",
+        "qemu_executable_sha256": "f94c29959930a78c39d147d568d14e32f8d1128e32b6cf7a31c30ccae906d3dc",
+        "gpio_property_hashes": {
+          "gpio-line-names": "8d1fc0e0a3e7f11f74bbf8e41c86ccd5acada4e91e2349ec26bdf60cb6dbf1db",
+          "gpio-reserved-ranges": "736cb80cb1e7f0b86070649477904f9a2af91b8bd7b20d647ee067813dc03f49",
+          "gpio-ranges": "649ece7a6a809782589b4acbabd7bda7444c44b87e62be0f678fd1f1e312c8ee",
+          "#interrupt-cells": "433ebf5bc03dffa38536673207a21281612cef5faa9bc7a4d5b9be2fdb12cf1a",
+          "interrupt-controller": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "#gpio-cells": "433ebf5bc03dffa38536673207a21281612cef5faa9bc7a4d5b9be2fdb12cf1a",
+          "gpio-controller": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "interrupts": "8005f02d43fa06e7d0585fb64c961d57e318b27a145c857bcd3a6bdb413ff7fc",
+          "interrupt-parent": "267ad1f33c5b0140c49e82407a3a7987cef85d11d14baf947c9915501d1725e6",
+          "phandle": "b59a547336d724cc2840aeecdadb9c4671f210998554821f33baba120bb18ffb",
+          "reg": "99ac26c50dbf239f0c4b18a283d02a0997ab2ad6f917abcb132dd8d1b4f6db69",
+          "compatible": "9747a508e1a8cd722dfc019f4b371a93d482ace0adbb822736e0d9aa49ebdc73"
+        }
+      },
+      "synthetic_fixtures": [
+        "logical SPI0 CS0 XOR0xa5 slave",
+        "unidirectional zero-delay GPIO20->21"
+      ],
+      "private_evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-native10k-03",
+      "evidence_hashes": {
+        "result.json": "2e50f08ac56e954e8a44887cb7caa60c44286c8066806498437615d15526b892",
+        "source-manifest.json": "61ecac9ec6cccef174caa04f38ef9e759443d989e558b348a64267683295f043",
+        "correlation.json": "8f6fccbbf674acdb777f9602667def15f2d58d0f5084fa170e76ff03200a4e65",
+        "native-report/result.json": "8852a104b8023a817769cca2e1ab0d6ef433398429f30d39dfbe3fae1519eaa1",
+        "provenance/provenance.json": "611117a26bf4d6424e7d73497418e23394bc194897e73233b4da6f741044c571"
+      },
+      "limits": [
+        "No physical measurements or approved FSW workload",
+        "No calibrated BCM2712 CPU/electrical/bus timing",
+        "Do not compare guest-monotonic ns with QEMU virtual ns directly",
+        "G aggregate notification counters include GPIO; use per-vector counts",
+        "Early inactive/time-out systemd observations retained privately; independent later active observations decide gate"
+      ]
+    },
+    {
+      "run_id": "i-fixed100k-01",
+      "status": "PASS",
+      "speed_hz": 100000,
+      "execution_clock": "icount-1ns",
+      "physical_measurement": false,
+      "required_for_fsw": "UNKNOWN",
+      "original_kernel_release": "6.18.50+rpt-rpi-2712",
+      "executable_sha256": "f94c29959930a78c39d147d568d14e32f8d1128e32b6cf7a31c30ccae906d3dc",
+      "command_sha256": "592c703bd7ae0e13e5b9a5d09c4e5640ff88f803605ecc8e743d4d4424d41bb8",
+      "execution_sources": {
+        "/home/aweso/projects/qemu/hw/ssi/dw-apb-ssi.c": "7a47947855ac9f68f0cd6fd2db2711c0d75103333c329496d9346d4914647bcd",
+        "/home/aweso/projects/qemu/include/hw/ssi/dw-apb-ssi.h": "c8716b017c08811ac4854f311a11b18ad01d91d9f21a4e24a21f9bbcb19e2fc6",
+        "/home/aweso/projects/qemu/hw/misc/rp1-pci.c": "f5e55a7b6ceb2a599df353442e86ca2ceeb3d881f77403529cfe4b67efa7b129",
+        "/home/aweso/projects/qemu/hw/intc/bcm2712-mip.c": "91ecbba36761711772f79d1bc9bcce43b21e10bc9a70b52c657d6ddc1c1b0f64",
+        "/home/aweso/projects/qemu/hw/arm/bcm2712-pcie.c": "bca4593b9f6f3cdf6b2af1b30ccd67bdf2108cdb02b8727a90c50d14d25529cf",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10e/native_profile.py": "7dc91d5a0fc2f7324b398c0e8927429aeef47b5c1f1dc0b38c0bfc1f52b05a2c",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10c/run.py": "2cb15751c055bfbdbe61743f4defde1ad6351a7b873775cd35078926db803bca",
+        "/home/aweso/projects/qemu/hw/ssi/trace-events": "8c25131b2218b984d65875e11c347526d57816ee54f5281d72b71c6bde2d2e8b",
+        "/home/aweso/projects/qemu/hw/misc/trace-events": "76cc687e8fc8e20842a6e024c8ed253376f57f559c8089a1fa33d5d4e9575aea",
+        "/home/aweso/projects/qemu/hw/intc/trace-events": "750ab7d63b0cd61512c8a822d25041c8a8b611c22f87e6cb0472493e7b571b6a",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10g/run.py": "1638939d5e4518ac216686b0cd6f4a9a85b6185947fe706cc107b1e66eb2dd54",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10g/correlate.py": "a9e4c9a25610aebb9f643d4fb7bced9c8a9cc61a10a6eb05993c21074e632a95",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10g/metrics.py": "ca710915836208cf3d350487e7df307b945f43a3352638172feeec5df204980b",
+        "/home/aweso/projects/qemu/hw/arm/cm5io-dev.c": "630c37f29383818077d5688605b8493c9fe6819c3812bf1f185425b7e64d39ad",
+        "/home/aweso/projects/qemu/hw/gpio/rp1-gpio.c": "2dd8241ca3af2305cbe057c1ba858d7bedfdc93a95a909bba6158e590cd0cf9b",
+        "/home/aweso/projects/qemu/include/hw/gpio/rp1-gpio.h": "f13f42fece775bcd5dbda4f72950d866ac8552d918b35a6042aff86c29d3ee5c",
+        "/home/aweso/projects/qemu/hw/gpio/trace-events": "19b53b0895c8a6939cb08ccf0a24f66bcc04a0169f1bea7f7397c38d8f46f112",
+        "/home/aweso/projects/qemu/include/hw/arm/bcm2712-pcie.h": "3a94fb5240d054c6fcadd7c8d4663292ce255563ff417b70464ab4e89cced823",
+        "/home/aweso/projects/qemu/hw/gpio/meson.build": "6f708fba9a9cffb14c96b1582a83de683acdba023cf23318aac3fa8a7f5d2d05",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10i/guest_gpio.py": "42c194cc60262119882f77ad4853bc7a70cf17417a6f1755918a0f549d96da10",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10i/linux_census.py": "c99a3a2eda5910960a852b08d936cbf6444c1e009ad5e347f58d5573849f2e2b",
+        "/home/aweso/projects/qemu/experiments/cm5-phase10i/observer.py": "cda5af99105070f64b6f2779b122f83172d3887aa60c14bd565f047d8ef4b51f"
+      },
+      "selected_files": {
+        "kernel": {
+          "name": "kernel_2712.img",
+          "sha256": "154f0ea1e14bb1075077dfd1bdc63c1502bc0b17b0354628d515b4fbd3a4198d",
+          "size": 10197590,
+          "validation": {
+            "memory_image_bytes": 26607616,
+            "text_offset": 0,
+            "decoded_sha256": "7b2ce1544ed18d495c8ad2fb6945d2eb7517df80a2b8af4a62e0884d76d88c78",
+            "decoded_bytes": 25872896,
+            "validation": "gzip stream/CRC when compressed, ARM64 header/memory bounds; instruction semantics unknown"
+          }
+        },
+        "cmdline": {
+          "name": "cmdline_2712-osverified-v8.txt",
+          "sha256": "67ee4076a0fe8d3b81f49733d4d1a09d4ca2054f5cc84688acc06614ac06f09e",
+          "size": 279,
+          "validation": {
+            "validation": "single ASCII command line"
+          }
+        },
+        "initramfs": {
+          "name": "initramfs_2712-osverified-v8",
+          "sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+          "size": 23455255,
+          "validation": {
+            "archives": 2,
+            "entries": 1091,
+            "segments": [
+              {
+                "offset": 0,
+                "stored_bytes": 5192372,
+                "format": "newc",
+                "stored_sha256": "df2e9a2090f9c4e4559c4b24d7ed61c42cf94f9ca643635cfb43f615505e059c",
+                "decoded_bytes": 5192372,
+                "decoded_sha256": "df2e9a2090f9c4e4559c4b24d7ed61c42cf94f9ca643635cfb43f615505e059c",
+                "decoder_version": null
+              },
+              {
+                "offset": 5192704,
+                "stored_bytes": 18262551,
+                "format": "zstd",
+                "stored_sha256": "d3357fee5563919d0feddc909d65bd9483061471972ab2a03a583aafba7e5b8a",
+                "decoded_bytes": 57997824,
+                "decoded_sha256": "53a9a5df5cadba05da9719869096a93646ce45ab054c1f8ce55c53a74ca85d48",
+                "decoder_version": "1.5.7"
+              }
+            ],
+            "stored_sha256": "fcaade1e3aab0d79a51a170f556d25d0d1476bc17518099de54f5ebe16feab5b",
+            "decoded_sha256": "94ce23cb8923f395f65a8a52782d4bc166d4d1570734946079d26118856dae17",
+            "decoded_bytes": 63190528,
+            "window_limit_bytes": 67108864,
+            "validation": "complete frames and newc structure; not executable semantics"
+          }
+        },
+        "dtb": {
+          "name": "bcm2712-rpi-cm5-cm5io.dtb",
+          "sha256": "b297f9516345eb4eb22d22f4c364fcb3705970f28b6d87875583dadf37fbb3ac",
+          "size": 79751,
+          "validation": {
+            "validation": "DTB block/token structure; bindings and overlay operations not validated"
+          }
+        }
+      },
+      "boot_order_confirmation": "UNCONFIRMED_FIXTURE",
+      "physical_firmware_equivalence": false,
+      "original_provenance_checks": {
+        "selected": true,
+        "exact_exports": true,
+        "selected_kernel_argv": true,
+        "selected_initramfs_argv": true,
+        "same_overlay": true,
+        "captured_kernel": true,
+        "captured_initramfs": true,
+        "original_kernel_entry": true,
+        "native_emmc": true,
+        "original_initramfs_executes": true,
+        "verified_userspace": true,
+        "strict_native_spi": true,
+        "persisted_logs": true,
+        "runtime_dt_observed": true,
+        "runtime_cmdline_matches": true,
+        "normal_shutdown": true
+      },
+      "original_recovery_checks": {
+        "inputs_unchanged": true,
+        "kernel_entry": true,
+        "initramfs": true,
+        "emmc_partitions": true,
+        "normal_shutdown": true,
+        "raw_target_unchanged_after_injection": true,
+        "fault_cluster_no_guest_content_delta": true,
+        "new_allocations_only_logs": true,
+        "functional_two_observations": true,
+        "host_logs_persistence": true,
+        "original_initramfs": true
+      },
+      "native_checks": {
+        "clean_original_verified_boot": true,
+        "native_gen2_x4": true,
+        "expansion_link_down": true,
+        "endpoint_enumerated": true,
+        "kernel_chip_id": true,
+        "userspace_bars": true,
+        "msix_vectors61": true,
+        "repeated_spi_after_multi_user": true,
+        "native_mip_event": true,
+        "rp1_msix_event": true,
+        "cs_framing_and_mosi_miso": true,
+        "no_observed_idle_spi_irqs": true,
+        "real_dw_driver": true,
+        "sys_clock_200mhz": true
+      },
+      "vertical_checks": {
+        "original_v8_and_strict_spi": true,
+        "gpio_all_observations_pass": true,
+        "actual_original_pinctrl_driver": true,
+        "cdev54_with_only_two_usable_lines": true,
+        "gpio_values_and_edges": true,
+        "exclusive_ownership": true,
+        "irq_accounting_and_quiescence": true,
+        "gpio_qom_realized": true,
+        "spi_qom_realized": true,
+        "dt_runtime_postconditions": true,
+        "active_multi_user_gpio_observations": true,
+        "native_gpio_msix_mip_observed": true,
+        "no_unsupported_gpio_mmio": true
+      },
+      "spi": {
+        "submitted_messages": 126,
+        "cs_segments": 126,
+        "completed_bytes": 96894,
+        "failed_messages": [],
+        "strict_oracle": "PASS"
+      },
+      "interrupts": {
+        "rp1_notifications_by_vector": {
+          "0": 28,
+          "19": 3339
+        },
+        "native_mip_deliveries_by_vector": {
+          "0": 28,
+          "19": 3339
+        }
+      },
+      "gpio_observations": [
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 53055930967
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 53058291801
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 53059041264
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 53059560930
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 58051613501
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 58051831594
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 58051942742
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 58052248150
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 60976417777
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 60978831000
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 60979384277
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 60979692277
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 69181092698
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 69181137661
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 69181180680
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 69181221550
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 117944764614
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 117944819077
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 117944863132
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 117944904632
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 1187712338680
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 1187712383680
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 1187712426661
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 1187712467365
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        },
+        {
+          "status": "PASS",
+          "driver": "pinctrl-rp1",
+          "ngpio": 54,
+          "records": [
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 2239689699034
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 2239689745942
+            },
+            {
+              "output": 1,
+              "input": 1,
+              "edge": 1,
+              "guest_monotonic_ns": 2239689790812
+            },
+            {
+              "output": 0,
+              "input": 0,
+              "edge": 2,
+              "guest_monotonic_ns": 2239689833590
+            }
+          ],
+          "reserved_rejections": [
+            {
+              "line": 19,
+              "errno": 22
+            },
+            {
+              "line": 22,
+              "errno": 22
+            },
+            {
+              "line": 28,
+              "errno": 22
+            },
+            {
+              "line": 53,
+              "errno": 22
+            },
+            {
+              "line": 54,
+              "errno": 22
+            }
+          ],
+          "ownership_rejected": 16,
+          "irq_delta": 4,
+          "no_extra_event": true,
+          "discovered_chips": [
+            {
+              "path": "/dev/gpiochip0",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            },
+            {
+              "path": "/dev/gpiochip4",
+              "label": "pinctrl-rp1",
+              "name": "gpiochip0",
+              "lines": 54,
+              "rdev": 65024
+            }
+          ]
+        }
+      ],
+      "independently_active_multi_user": [
+        {
+          "guest_uptime_s": 1186.15,
+          "gpio_status": "PASS"
+        },
+        {
+          "guest_uptime_s": 2238.13,
+          "gpio_status": "PASS"
+        }
+      ],
+      "live_fdt_sha256": [
+        "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7"
+      ],
+      "live_gpio_contract": {
+        "status": "PASS",
+        "observations": [
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          },
+          {
+            "runtime_fdt_sha256": "ce8ff79740dd8236cb71eccf78340fc101749c34d2b85e81510f3620123b10a7",
+            "checks": {
+              "gpio-line-names": true,
+              "gpio-reserved-ranges": true,
+              "gpio-ranges": true,
+              "#interrupt-cells": true,
+              "interrupt-controller": true,
+              "#gpio-cells": true,
+              "gpio-controller": true,
+              "interrupts": true,
+              "interrupt-parent": true,
+              "phandle": true,
+              "reg": true,
+              "compatible": true
+            },
+            "extra_live_properties": [
+              "name"
+            ]
+          }
+        ],
+        "stage_note": "generated base/target precede ARM boot fixups; actual runtime FDT identity observed independently"
+      },
+      "generated_dt_contract": {
+        "schema": 1,
+        "status": "PASS",
+        "commands": [
+          [
+            "/home/aweso/projects/qemu/build-arm64-phase1/qemu-system-aarch64",
+            "-M",
+            "cm5io-dev,native-pcie=on,native-mip=on,native-emmc=on,emmc-dma=on,dumpdtb=/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/dt-contract-final/base.dtb",
+            "-m",
+            "2048",
+            "-smp",
+            "4",
+            "-accel",
+            "tcg,thread=single",
+            "-S",
+            "-display",
+            "none",
+            "-monitor",
+            "none",
+            "-serial",
+            "none",
+            "-nodefaults"
+          ],
+          [
+            "/home/aweso/projects/qemu/build-arm64-phase1/qemu-system-aarch64",
+            "-M",
+            "cm5io-dev,native-pcie=on,native-mip=on,native-emmc=on,emmc-dma=on,rp1-gpio-lab=on,dumpdtb=/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/dt-contract-final/gpio.dtb",
+            "-m",
+            "2048",
+            "-smp",
+            "4",
+            "-accel",
+            "tcg,thread=single",
+            "-S",
+            "-display",
+            "none",
+            "-monitor",
+            "none",
+            "-serial",
+            "none",
+            "-nodefaults"
+          ]
+        ],
+        "selected_reference_sha256": "b297f9516345eb4eb22d22f4c364fcb3705970f28b6d87875583dadf37fbb3ac",
+        "generated_base_sha256": "77191490723725bedc92d6f4ee06da8751b6a2c09e29bb845b12b2ac0b1b0396",
+        "generated_target_sha256": "c42a0b926b508526a1e59ed8e2d7535ee29238b4f5ade9d31354935b0f5264db",
+        "transformation": {
+          "effect": "ADDED_BOUNDED_GPIO_PROVIDER",
+          "changed": true,
+          "added_nodes": [
+            "/pcie@1000120000/rp1/gpio@d0000"
+          ],
+          "modified_properties": [
+            [
+              "/cm5io-connectors",
+              "qemu,pinmux"
+            ],
+            [
+              "/cm5io-connectors/header-gpio",
+              "qemu,implementation"
+            ],
+            [
+              "/cm5io-connectors/header-gpio",
+              "status"
+            ]
+          ],
+          "physical_properties_preserved": [
+            "compatible",
+            "reg",
+            "#gpio-cells",
+            "#interrupt-cells"
+          ],
+          "differences": [
+            "only bank0 interrupt advertised",
+            "GPIO0..19/22..53 reserved",
+            "no physical hogs/alt functions imported",
+            "synthetic GPIO20->21 loopback"
+          ],
+          "external_physical_dt_installed": false
+        },
+        "fallback": {
+          "effect": "NO_CHANGE_GENERATED_FALLBACK",
+          "changed": false
+        },
+        "specification_sha256": "2a8c69ee0c202cf7c5e3f9243e70944b5b2afabb87b5fee46db2a119e92e432b",
+        "qemu_executable_sha256": "f94c29959930a78c39d147d568d14e32f8d1128e32b6cf7a31c30ccae906d3dc",
+        "gpio_property_hashes": {
+          "gpio-line-names": "8d1fc0e0a3e7f11f74bbf8e41c86ccd5acada4e91e2349ec26bdf60cb6dbf1db",
+          "gpio-reserved-ranges": "736cb80cb1e7f0b86070649477904f9a2af91b8bd7b20d647ee067813dc03f49",
+          "gpio-ranges": "649ece7a6a809782589b4acbabd7bda7444c44b87e62be0f678fd1f1e312c8ee",
+          "#interrupt-cells": "433ebf5bc03dffa38536673207a21281612cef5faa9bc7a4d5b9be2fdb12cf1a",
+          "interrupt-controller": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "#gpio-cells": "433ebf5bc03dffa38536673207a21281612cef5faa9bc7a4d5b9be2fdb12cf1a",
+          "gpio-controller": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "interrupts": "8005f02d43fa06e7d0585fb64c961d57e318b27a145c857bcd3a6bdb413ff7fc",
+          "interrupt-parent": "267ad1f33c5b0140c49e82407a3a7987cef85d11d14baf947c9915501d1725e6",
+          "phandle": "b59a547336d724cc2840aeecdadb9c4671f210998554821f33baba120bb18ffb",
+          "reg": "99ac26c50dbf239f0c4b18a283d02a0997ab2ad6f917abcb132dd8d1b4f6db69",
+          "compatible": "9747a508e1a8cd722dfc019f4b371a93d482ace0adbb822736e0d9aa49ebdc73"
+        }
+      },
+      "synthetic_fixtures": [
+        "logical SPI0 CS0 XOR0xa5 slave",
+        "unidirectional zero-delay GPIO20->21"
+      ],
+      "private_evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/i-fixed100k-01",
+      "evidence_hashes": {
+        "result.json": "0cebfcb262b19c05c27e534870d759e569400665bf06d9f4e83d39338fca5df8",
+        "source-manifest.json": "d42fb15ed686d4525ab886770b23042cedb0bdaced6ab4e449e03444f15c5906",
+        "correlation.json": "287ed31b0a097bc97bb35b1ce00c780194190383ba0b295ee91a6c1fa518fa35",
+        "native-report/result.json": "8639dc190e20a7728d2f9a25f724ca7fb6e5a19cafe318bb41fccea76b14e75c",
+        "provenance/provenance.json": "dbd5c68cdaaad12a7200511fba8a9bb7baea710db1f80de6f22f2bb21ea10972"
+      },
+      "limits": [
+        "No physical measurements or approved FSW workload",
+        "No calibrated BCM2712 CPU/electrical/bus timing",
+        "Do not compare guest-monotonic ns with QEMU virtual ns directly",
+        "G aggregate notification counters include GPIO; use per-vector counts",
+        "Early inactive/time-out systemd observations retained privately; independent later active observations decide gate"
+      ]
+    }
+  ]
+}

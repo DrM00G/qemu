@@ -1,0 +1,429 @@
+{
+  "schema": 1,
+  "clock": "qtest-controlled-virtual-ns",
+  "physical_measurements": false,
+  "executable_sha256": "f94c29959930a78c39d147d568d14e32f8d1128e32b6cf7a31c30ccae906d3dc",
+  "sources": {
+    "hw/misc/rp1-pci.c": "f5e55a7b6ceb2a599df353442e86ca2ceeb3d881f77403529cfe4b67efa7b129",
+    "hw/ssi/dw-apb-ssi.c": "7a47947855ac9f68f0cd6fd2db2711c0d75103333c329496d9346d4914647bcd",
+    "hw/arm/bcm2712-pcie.c": "bca4593b9f6f3cdf6b2af1b30ccd67bdf2108cdb02b8727a90c50d14d25529cf",
+    "hw/arm/cm5io-dev.c": "630c37f29383818077d5688605b8493c9fe6819c3812bf1f185425b7e64d39ad",
+    "hw/intc/bcm2712-mip.c": "91ecbba36761711772f79d1bc9bcce43b21e10bc9a70b52c657d6ddc1c1b0f64",
+    "tests/qtest/rp1-test.c": "d7404eb19395ee804c8a85f5e6425ecda9458ecf967867e57e9dd4457c80a93f",
+    "tests/qtest/cm5io-test.c": "068fe28d2108d515fdfb021ee5a2ff6e890e6cf21bd579b32486c448e6fffa71",
+    "tests/qtest/bcm2712-mip-test.c": "48090cb55d8112d7a1f78e0b47ce7ffdb0c4c8df7c692be4e9f7c663245dfedf",
+    "experiments/cm5-phase10h/ordering.py": "197bae8e57107a0d1f7ef6eb1a3f101aff6f157f68a5e83e7d62dd4b93dcaada",
+    "hw/gpio/rp1-gpio.c": "2dd8241ca3af2305cbe057c1ba858d7bedfdc93a95a909bba6158e590cd0cf9b",
+    "include/hw/gpio/rp1-gpio.h": "f13f42fece775bcd5dbda4f72950d866ac8552d918b35a6042aff86c29d3ee5c",
+    "hw/gpio/trace-events": "19b53b0895c8a6939cb08ccf0a24f66bcc04a0169f1bea7f7397c38d8f46f112",
+    "experiments/cm5-phase10i/ordering_i.py": "0844a273fd6448adf19b38650793a99d55f5e8e652d0779cd1920123cacee44d"
+  },
+  "private_evidence": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/ordering-02",
+  "cases": [
+    {
+      "suite": "rp1",
+      "name": "h-edge-config-no-duplicate",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 67,
+      "protocol_count": 64,
+      "events_sha256": "de4c0edc0a75a22bd5cab2dc45e92e38f4394d34e48ccfd4f34aeef1de9045bb",
+      "protocol_sha256": "cf55452ceff9909bef89007f31ad6a38117cdd73b09460b1807be4c203ef59ec",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-refill-before-completion",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 43,
+      "protocol_count": 52,
+      "events_sha256": "7c41520f96d1f6c2c3fc84ea69882023cad57134c0e3294f57387de2a79c5603",
+      "protocol_sha256": "c4a22500295a714dabe3755b7ecd0de0c070a9274604846c89c131b1ff01ee76",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-function-pending-ack",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 74,
+      "protocol_count": 82,
+      "events_sha256": "b400ea6b854c7f16af061a9b639aadb775ebabae7c95e0ff924cf2391b7ec8f8",
+      "protocol_sha256": "e24afa5c2ebc612c7e2592906205420e0189ba4b129da0717b6eca51af7ccbee",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-delayed-service",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 88,
+      "protocol_count": 76,
+      "events_sha256": "e22403ee6a84a92c8e2be50956e9f3f7a40474a4ddc961b8c9a6cd1d1a8ed69b",
+      "protocol_sha256": "dce24605a5f436a766d84dd986e470e99d81aeeb2fdec5cad25f70d3e331b676",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-disable-abort-boundary",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 58,
+      "protocol_count": 58,
+      "events_sha256": "6d73a6898dbe617887e032b748c5bf86264ef5c4df67c81092c08a841c81bd30",
+      "protocol_sha256": "eb903935e6285f43f4a16fbfaad2e0467f802a74e498a7f9620ec9b2ceea5e15",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-bar-decode-inflight",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 32,
+      "protocol_count": 46,
+      "events_sha256": "56235a7d7bed864a3ec78a01620cc80562dcdbf80d9a0479026ee06e16cc2e70",
+      "protocol_sha256": "9c6bdb543b953dcaaf48b92879248b88a83a5fcea5aed31160ead5c55cceef3e",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-two-pending-vectors",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 5,
+      "protocol_count": 56,
+      "events_sha256": "eeab74f4c412222ca9ab67ff682770349aed3eb697dfc1a127065bb5441c9f66",
+      "protocol_sha256": "f58a77eb631309a2ce1e364828d6245791cf6a55c46743f9f775a8f0f4446a87",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "h-bme-inflight",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 49,
+      "protocol_count": 70,
+      "events_sha256": "7c4d6db99ac8a4588f2a8914c2291e21f527d6c4f7e12cab94bfdba7d0d263a2",
+      "protocol_sha256": "299b8294f939261493e7e9683ffa3b5f943c52fa9cdc146c1d1cb9cdeffd5422",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "drain-refill-deadline",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 52,
+      "protocol_count": 50,
+      "events_sha256": "e7c367b2110cb0c3b63b997c180b950fd1e3c0c82d46a39d7d42eae8ee49e389",
+      "protocol_sha256": "95791b30212f7f4d9f031f9fcfe80efd4f86e9e9386debef16f6b1e04a2a59e4",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "reset-active-pending-msix",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 53,
+      "protocol_count": 62,
+      "events_sha256": "9e6dc6c268f6f61140efdff3165dc22c3fb72b72b63da8887a757e723d65a8e8",
+      "protocol_sha256": "ee03b710f422e2676903f5a4f3937ec64309664e2d6fe85c717ebebd92dfcdec",
+      "semantic_checks": {
+        "tx_sequence": true,
+        "rx_sequence": true,
+        "cs_segments": true,
+        "notification_attempts": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "i-gpio-registers-errors",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 27,
+      "protocol_count": 58,
+      "events_sha256": "45e90120d52e8dd8e9233eb3ba7755cd45a19b5b9ecebb633086d880703b777a",
+      "protocol_sha256": "8c6221e8ae5d0ee1c5272fb96acbbf6786b65d56b4d6929e8daac0fba056ebe0",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "i-gpio-msix-edge-level-mask",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 35,
+      "protocol_count": 106,
+      "events_sha256": "58a1c353583c57e4f4449c19931d7b19529a62b2f0e59bce871284ec39328eea",
+      "protocol_sha256": "f1ece5986870174462dd250a7781c22d7a4dc52fb54c293722d1ef9e864620ea",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "i-gpio-reset-clock",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 29,
+      "protocol_count": 76,
+      "events_sha256": "7973a5eefd1341fb6c3de61917d8a3adea9cf36942fb327abfcf45ab2bbe5ccc",
+      "protocol_sha256": "ebbfc4baa2a7cce95ff8642ac959e3b42bf637b2ec05761af62c82523ab91f3d",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "rp1",
+      "name": "i-gpio-spi-isolation-bme",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 58,
+      "protocol_count": 98,
+      "events_sha256": "e515156838bc142332cddd39e361211ed5610935b960e139721e9ee5541d7db6",
+      "protocol_sha256": "e22dc52e1126e4b70ca4176b1bb6fd8db5ead791cf7d20ae577c61c019f50b26",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "cm5io",
+      "name": "native-ssi-msix-inbound-mip",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 203,
+      "protocol_count": 333,
+      "events_sha256": "99bec3a0df5aa51d9b7e63e46d860070c86118a474db441d337c6668cad4c465",
+      "protocol_sha256": "d2e2b5082f8635ca16f4e857eb3ec9066e5021889b0466ce17fe2e01ee806815",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "cm5io",
+      "name": "native-rp1-clock-pll-gate-reset",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 158,
+      "protocol_count": 212,
+      "events_sha256": "60dc1b76a9d12680deae78ddf475bc0212c4610752457319d6d2056375698f0f",
+      "protocol_sha256": "4e5e2987843e6af11995c089f813927cd112d088bacc731d2fe0663c368b56e6",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "cm5io",
+      "name": "native-gpio-msix-mip-reset",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 82,
+      "protocol_count": 193,
+      "events_sha256": "674637e945cbd5f74051c026a2901e959fcd47eca374d4cf664852a909a230b7",
+      "protocol_sha256": "110a1f75705bce631711fd2ec5ec7fd55e2e2d1964b875d89dbb3f3424e601a9",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "bcm2712-mip",
+      "name": "edge-mask-gic-clear-reset",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 11,
+      "protocol_count": 48,
+      "events_sha256": "f57b9ff0676de3e30e8e530b58d4c0f6095689018d22d71e1d960612b288c02f",
+      "protocol_sha256": "71458b46cef5a9c9afb809c9088df8608c7e51e3ca7c34c61e64fb8b7cc5cd59",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    },
+    {
+      "suite": "bcm2712-mip",
+      "name": "vector-ranges-offset",
+      "returncodes": [
+        0,
+        0
+      ],
+      "events_equal": true,
+      "protocol_equal": true,
+      "sequence_equal": true,
+      "event_count": 8,
+      "protocol_count": 50,
+      "events_sha256": "642146dfec1340070df1bbd2bcc422dbb1a14aa0f2b920ffa5ec3314355eb3d5",
+      "protocol_sha256": "22d50af2d00309563094a7585a7250228c682bb68f8ed5c21aa7e19b970cd56f",
+      "semantic_checks": {
+        "qtest_state_assertions": true
+      },
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "phase10h_trace_preservation": {
+    "h-edge-config-no-duplicate": true,
+    "h-refill-before-completion": true,
+    "h-function-pending-ack": true,
+    "h-delayed-service": true,
+    "h-disable-abort-boundary": true,
+    "h-bar-decode-inflight": true,
+    "h-two-pending-vectors": true,
+    "h-bme-inflight": true,
+    "drain-refill-deadline": true,
+    "reset-active-pending-msix": true,
+    "native-ssi-msix-inbound-mip": true,
+    "native-rp1-clock-pll-gate-reset": true,
+    "edge-mask-gic-clear-reset": true,
+    "vector-ranges-offset": true
+  }
+}

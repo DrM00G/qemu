@@ -60,7 +60,8 @@ def select(emmc, work, expected=None, order='0xf14', config_profile=None,
         # Do not permit two source labels to identify the same active file.
         if usb is not None and emmc is not None:
             h.require(Path(usb).resolve() != Path(emmc).resolve() and
-                      not Path(usb).samefile(emmc), 'UNSUPPORTED', 'source identities alias')
+                      not (Path(usb).exists() and Path(emmc).exists() and
+                           Path(usb).samefile(emmc)), 'UNSUPPORTED', 'source identities alias')
         sources = {'emmc': (emmc, expected), 'usb-msd': (usb, usb_expected)}
         for cycle in range(max_restarts+1):
             for mode in modes:
@@ -78,9 +79,24 @@ def select(emmc, work, expected=None, order='0xf14', config_profile=None,
                     row['reason'] = 'operator-declared unavailable; no device enumeration performed'
                     row['next_action'] = 'NEXT_SOURCE'
                     continue
+                if not isinstance(manifest, dict) or not manifest:
+                    row.update(classification='MISSING_ACCEPTANCE_MANIFEST',
+                               next_action='STOP_UNCERTAIN_FALLBACK')
+                    empty.update(status='UNSUPPORTED', reason='present source requires independent acceptance manifest')
+                    return empty, {}
                 attempt_work = Path(work)/f'{cycle}-{mode}'
                 attempt_work.mkdir(mode=0o700)
                 report, buffers = h.select(path, attempt_work, manifest, config_profile=config_profile)
+                # An active source may share immutable base data, but must not
+                # itself be a backing node of the other active source.
+                other = emmc if mode == 'usb-msd' else usb
+                if other is not None and Path(other).exists():
+                    st = Path(other).stat()
+                    if any((n['identity']['device'], n['identity']['inode']) ==
+                           (st.st_dev, st.st_ino) for n in report.get('overlay_chain_before', [])):
+                        report.update(status='UNSUPPORTED', stage='POLICY', selection_complete=False,
+                                      reason='active source aliases selected backing chain')
+                        buffers = {}
                 row.update(classification=classify(report), image=report.get('overlay_chain_before'),
                            reads=report['reads'], partition=next((x for x in report.get('partitions', []) if x['partition'] == 1), None),
                            status=report['status'], stage=report['stage'], reason=report.get('reason'))

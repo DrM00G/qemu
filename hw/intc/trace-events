@@ -365,3 +365,5 @@ riscv_aplic_write(uint64_t offset, unsigned size, uint64_t value) "offset: 0x%" 
 # bcm2712-mip.c
 bcm2712_mip_raise(unsigned first, unsigned vector, bool delivered) "first=%u vector=%u delivered=%d"
 bcm2712_mip_mmio(bool write, uint64_t offset, uint64_t value) "write=%d offset=0x%" PRIx64 " value=0x%" PRIx64
+
+bcm2712_mip_timed(int64_t now, uint32_t first, uint32_t vector, bool delivered) "virtual_ns=%" PRId64 " first=%u vector=%u delivered=%d"

@@ -1,0 +1,80 @@
+[
+  {
+    "kind": "qtest",
+    "suite": "rp1",
+    "returncode": 0,
+    "count": 22
+  },
+  {
+    "kind": "qtest",
+    "suite": "cm5io",
+    "returncode": 0,
+    "count": 8
+  },
+  {
+    "kind": "qtest",
+    "suite": "bcm2712-mip",
+    "returncode": 0,
+    "count": 3
+  },
+  {
+    "kind": "qtest",
+    "suite": "bcm2712-sdhci",
+    "returncode": 0,
+    "count": 6
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10a",
+    "returncode": 0,
+    "count": 24
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10d",
+    "returncode": 0,
+    "count": 8
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10e",
+    "returncode": 0,
+    "count": 3
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10f",
+    "returncode": 0,
+    "count": 20
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10f1",
+    "returncode": 0,
+    "count": 23
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10f2",
+    "returncode": 0,
+    "count": 47
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10g",
+    "returncode": 0,
+    "count": 5
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10h",
+    "returncode": 0,
+    "count": 5
+  },
+  {
+    "kind": "host",
+    "suite": "cm5-phase10i",
+    "returncode": 0,
+    "count": 6
+  }
+]

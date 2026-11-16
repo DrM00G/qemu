@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "run_id": "ordering-10/rp1-h-delayed-service-0",
+  "origin": "qemu-qtest",
+  "clock": "controlled virtual ns from cold zero",
+  "cpu_execution": "stopped qtest accelerator",
+  "kernel": null,
+  "boot_selection": null,
+  "media": null,
+  "sources": {
+    "hw/misc/rp1-pci.c": "3d5199792d1bdd4b66e873eb4fd995f68a0510c9309c0d92f25e0b2623ff48ef",
+    "hw/ssi/dw-apb-ssi.c": "7a47947855ac9f68f0cd6fd2db2711c0d75103333c329496d9346d4914647bcd",
+    "hw/arm/bcm2712-pcie.c": "1ee4270316fb4aa0b76b1373ea7ea819f99ab135947da34240b21ec4685c4bf3",
+    "hw/arm/cm5io-dev.c": "b2f9fdef440ebc1a9771032b13149d66a4b1b69522023e03c4e81ec66e5cd2ef",
+    "hw/intc/bcm2712-mip.c": "91ecbba36761711772f79d1bc9bcce43b21e10bc9a70b52c657d6ddc1c1b0f64",
+    "tests/qtest/rp1-test.c": "46ee3a2ebd55c84c54bc727a1494a26124aa7e461e64d8dedf70457aee4e9559",
+    "tests/qtest/cm5io-test.c": "93562a17d3d7d924852ad6eeb46af6bdeed9c4430915b01441d15c9bbedde80d",
+    "tests/qtest/bcm2712-mip-test.c": "48090cb55d8112d7a1f78e0b47ce7ffdb0c4c8df7c692be4e9f7c663245dfedf",
+    "experiments/cm5-phase10h/ordering.py": "197bae8e57107a0d1f7ef6eb1a3f101aff6f157f68a5e83e7d62dd4b93dcaada"
+  },
+  "executable_sha256": "67db2a47e27142e09d158db6778dc80f9464f99bc2b536df753d823a61f4915a",
+  "fixture": "virt highmem=off RP1 SPI0 CS0, 8-bit mode0 XOR0xa5, 200MHz/BAUDR200, RAM MSI sentinel",
+  "synthetic_service_delay_ns": 24000,
+  "event_file_sha256": "12c8dc74be71de9fef3bdab2c3aed39e59b17a29aade8726a4e4a4f09f18766b",
+  "physical_measurements": false
+}

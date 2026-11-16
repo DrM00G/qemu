@@ -54,6 +54,64 @@ class DTTests(unittest.TestCase):
         tree=d.Tree(self.overlay);tree.set('/__fixups__','spi10',b'/fragment@0:target:9\0')
         with self.assertRaises(d.h.Outcome):self.apply(overlays={'nospi10':tree.bytes()})
 
+    def test_wrong_board(self):
+        base = self.compile('wrong-board', '/dts-v1/; / { compatible="brcm,bcm2711"; };')
+        with self.assertRaisesRegex(d.h.Outcome, 'requires BCM2712'):
+            self.apply(base=base)
+
+    def test_unknown_fixup(self):
+        tree = d.Tree(self.overlay)
+        tree.set('/__fixups__', 'unknown', b'/fragment@0:target:0\0')
+        with self.assertRaisesRegex(d.h.Outcome, 'missing base symbol'):
+            self.apply(overlays={'nospi10': tree.bytes()})
+
+    def test_conflicting_target(self):
+        tree = d.Tree(self.overlay)
+        tree.set('/fragment@0', 'target-path', b'/spi\0')
+        with self.assertRaisesRegex(d.h.Outcome, 'one fragment target'):
+            self.apply(overlays={'nospi10': tree.bytes()})
+
+    def test_bad_override_encoding(self):
+        overlay = self.compile('bad-override', '/dts-v1/; /plugin/; / { fragment@0 {target=<&usb>; u: __overlay__ {dr_mode="otg";};}; __overrides__ {dr_mode=<&u>,"wrong";}; };')
+        with self.assertRaisesRegex(d.h.Outcome, 'override encoding'):
+            self.apply(name='dwc2', overlays={'dwc2': overlay}, params={'dr_mode':'host'})
+
+    def test_property_bound(self):
+        with self.assertRaisesRegex(d.h.Outcome, 'update bound'):
+            d.Tree(self.base).set('/spi', 'value', b'x'*262145)
+
+    def test_file_size_bound_before_read(self):
+        path = self.work/'oversized.dtb'
+        with path.open('wb') as stream:stream.truncate(2*1024*1024+1)
+        with self.assertRaisesRegex(d.h.Outcome, 'input size bound'):
+            d.bounded_read(path)
+
+    def test_tool_hash_mismatch(self):
+        path = self.work/'dtc'; path.write_bytes(b'wrong tool')
+        with self.assertRaisesRegex(d.h.Outcome, 'tool hash mismatch'):
+            d.accepted_tool(path)
+
+    def test_overlay_order(self):
+        # Same property, last explicitly applied overlay wins.
+        r, first = self.apply()
+        enable = self.compile('enable', '/dts-v1/; /plugin/; / { fragment@0 {target=<&spi10>; __overlay__ {status="okay";};}; };')
+        _, second = self.apply(base=first, overlays={'nospi10':enable}, work=self.work/'second')
+        self.assertEqual(d.Tree(second).get('/spi', 'status'), b'okay\0')
+        self.assertNotEqual(d.h.sha(first), d.h.sha(second))
+
+    def test_conflicting_fixup_location(self):
+        tree = d.Tree(self.overlay)
+        tree.set('/__fixups__', 'usb', b'/fragment@0:target:0\0')
+        with self.assertRaisesRegex(d.h.Outcome, 'conflicting fixup'):
+            self.apply(overlays={'nospi10': tree.bytes()})
+
+    def test_unknown_local_fixup(self):
+        overlay = self.compile('bad-local', '/dts-v1/; /plugin/; / { fragment@0 {target=<&spi10>; u: __overlay__ {status="disabled"; link=<&u>;};}; };')
+        tree = d.Tree(overlay)
+        tree.set('/__local_fixups__/fragment@0/__overlay__', 'missing', b'\0'*4)
+        with self.assertRaises(d.h.Outcome):
+            self.apply(overlays={'nospi10':tree.bytes()})
+
     def test_dwc2_parameter_applied(self):
         overlay=self.compile('dwc2-valid','/dts-v1/; /plugin/; / { fragment@0 {target=<&usb>; u: __overlay__ {dr_mode="otg"; status="okay";};}; __overrides__ {dr_mode=<&u>,"dr_mode";}; };')
         r,out=self.apply(name='dwc2',overlays={'dwc2':overlay},params={'dr_mode':'host'})

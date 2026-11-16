@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import shlex
 import select
 import socket
 import subprocess
@@ -71,8 +72,30 @@ class QMP:
         return self.receive()
 
 
+def observer_upload(code, remote='/run/cm5-observer.py'):
+    """Public observer only; remote destination is disposable guest tmpfs."""
+    if 'P10C' in code.splitlines():
+        raise ValueError('observer collides with here-document delimiter')
+    path = shlex.quote(remote)
+    return ('set +o emacs; set +o vi; stty -echo\n'
+            "cat > "+path+" <<'P10C'\n"+code+'\nP10C\n').encode()
+
+
+def observer_invoke(remote='/run/cm5-observer.py'):
+    # With echo disabled, PS1 and program output otherwise share a line.
+    return ("printf '\\n'; python3 "+shlex.quote(remote)+'\n').encode()
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--phase10i-gpio-lab', action='store_true',
+                   help='opt-in bounded native RP1 GPIO20/21 model, DT and driver test')
+    p.add_argument('--phase10h-smp-stress', action='store_true',
+                   help='opt-in bounded guest CPU1/2/3 and read-only BAR load during native SPI')
+    p.add_argument('--observer-upload-once', action='store_true',
+                   help='cache observer in guest /run; disable terminal line editing/echo and await each result')
+    p.add_argument('--execution-clock', choices=('host','icount-1ns','icount-adaptive'), default='host',
+                   help='explicit experimental CPU timebase; icount is not physical cycle calibration')
     p.add_argument('--control-pipes', action='store_true', help='local FIFO chardevs; no socket syscalls required')
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--diagnostic', action='store_true')
@@ -98,6 +121,10 @@ def main():
     p.add_argument('--boot-overlay', type=Path,
                    help='Phase10F: use this exact disposable private QCOW2, exclusively owned by this run')
     a = p.parse_args()
+    if a.phase10i_gpio_lab and (not a.native_rp1_test or a.profile != 'native' or a.phase10h_smp_stress):
+        p.error('Phase10I GPIO lab requires native RP1 profile without SMP stress')
+    if a.phase10h_smp_stress and not a.native_rp1_test:
+        p.error('Phase10H SMP stress requires --native-rp1-test')
     if a.boot_overlay and (not a.boot_selection_policy or a.recovery_case not in (None, 'clean')):
         p.error('--boot-overlay requires BOOT selection and allows only clean recovery-case setup')
     if a.boot_config_profile and not a.boot_selection_policy:
@@ -190,6 +217,8 @@ def main():
         machine += ',emmc-dma=on'
     if a.profile == 'native':
         machine += ',native-pcie=on'
+    if a.phase10i_gpio_lab:
+        machine += ',rp1-gpio-lab=on'
     cmdline_input = (Path(boot_selection['exports']['cmdline']['path']) if boot_selection
                      else assets/'cmdline_2712-osverified-v8.txt')
     cmdline = cmdline_input.read_text().strip()
@@ -206,6 +235,11 @@ def main():
         '-device', 'emmc,drive=native,boot-partition-size=0,rpmb-partition-size=0' +
                    (',x-cmd23-read-batch=on' if a.batch else ''),
         '-d', 'unimp,guest_errors', '-D', str(out/'hardware.log')]
+    if a.execution_clock != 'host':
+        cmd[cmd.index('-accel')+1] = 'tcg,thread=single'
+        clock_options = ('shift=0,align=off,sleep=off' if a.execution_clock == 'icount-1ns'
+                         else 'shift=auto,align=off,sleep=on')
+        cmd += ['-icount', clock_options]
     command_record = lab/'command.json' if boot_selection else out/'command.json'
     command_record.write_text(json.dumps(cmd, indent=2)+'\n')
     if a.debug_shell:
@@ -213,6 +247,9 @@ def main():
         command_record.write_text(json.dumps(cmd, indent=2)+'\n')
     if native_test:
         cmd += native_test.qemu_arguments(a.native_spi_diagnostics)
+        command_record.write_text(json.dumps(cmd, indent=2)+'\n')
+    if a.phase10i_gpio_lab:
+        cmd += ['-trace', 'enable=rp1_gpio_irq', '-trace', 'enable=rp1_gpio_access']
         command_record.write_text(json.dumps(cmd, indent=2)+'\n')
     executable = identity(REPO/'build-arm64-phase1/qemu-system-aarch64')
     if recovery:
@@ -248,6 +285,8 @@ def main():
     start, last = time.monotonic(), -10
     sel = selectors.DefaultSelector()
     sel.register(proc.stdout, selectors.EVENT_READ)
+    observer_uploaded = observer_running = False
+    observer_results = 0
     qmp = None
     trace_on = False
     timed_out = False
@@ -268,6 +307,16 @@ def main():
         code = native_test.observer(code, a.native_spi_hz)
         # Public observer source only, never captured disk/firmware bytes.
         (out/'guest-observer.py').write_text(code)
+    if a.phase10h_smp_stress:
+        sys.path.insert(0, str(REPO/'experiments/cm5-phase10h'))
+        from smp_observer import wrap
+        code = wrap(code)
+        (out/'guest-observer.py').write_text(code)
+    if a.phase10i_gpio_lab:
+        sys.path.insert(0, str(REPO/'experiments/cm5-phase10i'))
+        import observer as phase10i_observer
+        code = phase10i_observer.wrap(code)
+        (out/'guest-observer.py').write_text(code)
     try:
         with (out/'serial.log').open('wb') as log:
             while sel.get_map():
@@ -279,6 +328,8 @@ def main():
                     try:
                         qmp = QMP(lab/'qmp.sock', sock=qmp_parent)
                         qmp_parent = None
+                        if a.phase10i_gpio_lab:
+                            phase10i_observer.capture_machine(qmp, out)
                     except OSError as error:
                         # A bounded synthetic kernel can power off during negotiation.
                         qmp_failed = True
@@ -299,10 +350,19 @@ def main():
                         with (out/'debug-serial.log').open('ab') as stream:
                             stream.write(data)
                         debug_data += data.decode(errors='replace')
-                    if '#' in debug_data and not shutdown_requested and elapsed-last_debug >= 30:
+                    if ('#' in debug_data and not shutdown_requested and elapsed-last_debug >= 30
+                            and not (a.observer_upload_once and observer_running)):
                         last_debug = elapsed
                         # Here-document avoids a canonical tty's single-line limit.
-                        debug.sendall(('python3 - <<\'P10C\'\n'+code+'\nP10C\n').encode())
+                        if a.observer_upload_once:
+                            if not observer_uploaded:
+                                # /run is guest tmpfs; original media are untouched.
+                                debug.sendall(observer_upload(code))
+                                observer_uploaded = True
+                            debug.sendall(observer_invoke())
+                            observer_running = True
+                        else:
+                            debug.sendall(('python3 - <<\'P10C\'\n'+code+'\nP10C\n').encode())
                     matches = re.findall(r'(?:^|[\r\n])P10C_USER_JSON=(\{[^\r\n]+\})', debug_data)
                     if matches:
                         records = []
@@ -311,6 +371,9 @@ def main():
                                 records.append(json.loads(match))
                             except ValueError:
                                 pass
+                        if len(records) > observer_results:
+                            observer_results = len(records)
+                            observer_running = False
                         (out/'userspace.json').write_text(json.dumps(records, indent=2)+'\n')
                         valid = [r for r in records if r.get('pid1') == 'systemd' and
                                  r.get('target') == 'active' and r.get('os_status', '').endswith('verity V') and
@@ -376,6 +439,8 @@ def main():
         multi_user='Reached target multi-user.target' in serial,
         inputs_unchanged=all(identity(Path(name)) == meta for name, meta in inputs.items()),
         overlay=identity(overlay))
+    result['execution_clock'] = a.execution_clock
+    result['observer_upload_once'] = a.observer_upload_once
     result.update(userspace_validated=user_validated, shutdown_requested=shutdown_requested,
                   debug_shell=a.debug_shell)
     if user_validated:

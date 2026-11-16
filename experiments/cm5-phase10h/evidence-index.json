@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "private_root": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z",
+  "initial_checkpoint": {
+    "source": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/source",
+    "hashes": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/source-hashes.json",
+    "status": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/status.txt"
+  },
+  "final": {
+    "status": "STATUS.md",
+    "handoff": "NEXT-SESSION.md",
+    "invariants": "EVENT-ORDERING-INVARIANTS.md",
+    "timing": "TIMING-AND-CONCURRENCY-LIMITATIONS.md",
+    "ordering": "ordering-results.json",
+    "sequences": "sequences-validated",
+    "host_and_hardware_units": "validation-results.json",
+    "guests": "guest-results.json",
+    "stretch_failure": "stretch-failure-analysis.json",
+    "boundary_metrics": "boundary-metrics.json",
+    "comparison_schema": "comparison-event.schema.json",
+    "comparison_examples": "comparison-events.jsonl",
+    "comparison_manifest": "comparison-manifest.json",
+    "git": "git-summary.json"
+  },
+  "private_audits": {
+    "git_status": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/git-status-final.txt",
+    "tracked_diff": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/git-diff-final.patch",
+    "tracked_stat": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/git-diff-final-stat.txt",
+    "source_manifest": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/source-manifest-final.json",
+    "processes": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/process-audit-final.json",
+    "preservation": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/preservation-final.json"
+  },
+  "raw_ordering": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/ordering-10",
+  "raw_guest_runs": {
+    "baseline-a": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/baseline-a",
+    "baseline-b": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/baseline-b",
+    "baseline-c": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/baseline-c",
+    "smp-stress": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/smp-stress"
+  },
+  "physical_access": false,
+  "committed": false
+}

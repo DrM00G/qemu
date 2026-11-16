@@ -283,6 +283,9 @@ static void test_native_msi(void)
     unsigned irq = 128 + 19, id = irq + 32;
     uint64_t pending = CM5_GIC_DIST + 0x200 + id / 32 * 4;
     uint32_t bit = 1U << (id % 32);
+    unsigned other_id = 247 + 8 + 32;
+    uint64_t other_pending = CM5_GIC_DIST + 0x200 + other_id / 32 * 4;
+    uint32_t other_bit = 1U << (other_id % 32);
 
     native_link(q, h);
     qtest_writel(q, h + 0x18, 0x00010100);
@@ -345,6 +348,19 @@ static void test_native_msi(void)
     qtest_writel(q, h + 0x40b4, 0x131001); /* other host MIP: isolated */
     qtest_writel(q, cfg, 13);
     g_assert_cmphex(qtest_readl(q, pending) & bit, ==, 0);
+    /* Make the other MIP a live target with valid data, not a masked oracle. */
+    qtest_writel(q, CM5_MIP1 + 0x20, UINT32_MAX);
+    qtest_writel(q, CM5_MIP1 + 0x40, 0);
+    qtest_writel(q, CM5_GIC_DIST + 0xc00 + other_id / 16 * 4, 0xaaaaaaaa);
+    qtest_writeb(q, CM5_GIC_DIST + 0x800 + other_id, 1);
+    qtest_writel(q, CM5_MIP1, 8); /* positive control for the observer */
+    g_assert_cmphex(qtest_readl(q, other_pending) & other_bit, ==, other_bit);
+    qtest_writel(q, other_pending + 0x80, other_bit);
+    qtest_writel(q, table + 8, 8);
+    qtest_writel(q, cfg, 13); /* this endpoint still cannot reach other MIP */
+    g_assert_cmphex(qtest_readl(q, other_pending) & other_bit, ==, 0);
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, 0);
+    qtest_writel(q, table + 8, 19);
     qtest_writel(q, h + 0x40b4, 0x130001);
     qtest_writel(q, cfg, 13);
     g_assert_cmphex(qtest_readl(q, pending) & bit, ==, bit);
@@ -366,8 +382,37 @@ static void test_native_msi(void)
     qtest_writel(q, table + 8, 0xabcdef00);
     qtest_writel(q, cfg, 13);
     g_assert_cmphex(qtest_readl(q, 0x1000), ==, 0x12345678);
+    /* Phase 10H: PERST cancels a masked event and the next active frame. */
+    qtest_writel(q, table, (uint32_t)CM5_MIP_MSI);
+    qtest_writel(q, table + 4, CM5_MIP_MSI >> 32);
+    qtest_writel(q, table + 8, 19);
+    qtest_writel(q, table + 12, 1);
+    qtest_writel(q, spi + 8, 0);
+    qtest_writel(q, spi, 7 << 16);
+    qtest_writel(q, spi + 0x14, 200);
+    qtest_writel(q, spi + 0x10, 1);
+    qtest_writel(q, spi + 0x2c, 0x10);
+    qtest_writel(q, spi + 8, 1);
+    qtest_writel(q, cfg, 13);
+    qtest_writel(q, spi + 0x60, 0x12);
+    qtest_clock_step(q, 8000);
+    g_assert_cmphex(qtest_readl(q, CM5_RP1_WINDOW + 0x501000), ==, 1 << 19);
+    qtest_writel(q, spi + 0x60, 0x34);
+    /* Endpoint reset cannot retract an edge already latched by the GIC. */
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, bit);
     qtest_writel(q, h + 0x4064, 0); /* PERST resets endpoint IRQ/MSI state */
     g_assert_cmphex(qtest_readw(q, data + 0xb2), ==, 0xffff);
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, bit);
+    qtest_writel(q, pending + 0x80, bit);
+    qtest_writel(q, h + 0x4064, 4);
+    qtest_clock_step(q, 1000000);
+    qtest_writel(q, data + 0x10, 0x500000);
+    qtest_writel(q, data + 0x14, 0);
+    qtest_writew(q, data + 4, 6);
+    g_assert_cmphex(qtest_readl(q, CM5_RP1_WINDOW + 0x501000), ==, 0);
+    g_assert_cmphex(qtest_readl(q, spi + 0x24), ==, 0);
+    g_assert_cmphex(qtest_readl(q, spi + 0x28), ==, 6);
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, 0);
     qtest_qmp_assert_success(q, "{ 'execute': 'system_reset' }");
     g_assert_cmphex(qtest_readl(q, CM5_MIP0 + 0x40), ==, UINT32_MAX);
     qtest_quit(q);
@@ -419,8 +464,19 @@ static void test_native_clock(void)
     g_assert_cmpuint(qtest_readl(q, spi + 0x24), ==, 0);
     g_assert_cmphex(qtest_readl(q, spi + 0x28) & 1, ==, 1);
     qtest_writel(q, cpu + 0x18014, 0x802);
-    qtest_clock_step(q, 8000);
+    qtest_clock_step(q, 3999);
+    g_assert_cmpuint(qtest_readl(q, spi + 0x24), ==, 0);
+    qtest_clock_step(q, 1); /* only the unshifted half remains */
+    g_assert_cmpuint(qtest_readl(q, spi + 0x24), ==, 1);
     g_assert_cmphex(qtest_readl(q, spi + 0x60), ==, 0x35 ^ 0xa5);
+    qtest_writel(q, spi + 0x60, 0x56);
+    qtest_clock_step(q, 2000); /* one quarter at 200MHz */
+    qtest_writel(q, cpu + 0x18018, 2); /* remaining clocks at 100MHz */
+    qtest_clock_step(q, 11999);
+    g_assert_cmpuint(qtest_readl(q, spi + 0x24), ==, 0);
+    qtest_clock_step(q, 1);
+    g_assert_cmphex(qtest_readl(q, spi + 0x60), ==, 0x56 ^ 0xa5);
+    qtest_writel(q, cpu + 0x18018, 1);
     qtest_writel(q, cpu + 0x18014, 0x803); /* unsupported parent */
     g_assert_cmphex(qtest_readl(q, cpu + 0x18020), ==, 0);
     qtest_writel(q, h + 0x4064, 0);
@@ -429,6 +485,73 @@ static void test_native_clock(void)
     qtest_writel(q, data + 0x14, 0);
     qtest_writew(q, data + 4, 6);
     g_assert_cmphex(qtest_readl(q, cpu + 0x18014), ==, 0x802);
+    qtest_quit(q);
+}
+
+static void test_native_gpio(void)
+{
+    QTestState *q = qtest_init("-M cm5io-dev,native-pcie=on,native-mip=on,"
+        "rp1-gpio-lab=on -m 512M -nodefaults");
+    uint64_t h = 0x1000120000ULL, cfg = h + 0x8000;
+    uint64_t io = CM5_RP1_WINDOW + 0xd0000;
+    uint64_t rio = CM5_RP1_WINDOW + 0xe0000;
+    uint64_t pads = CM5_RP1_WINDOW + 0xf0000;
+    uint64_t table = CM5_RP1_WINDOW + 0x500000;
+    uint64_t irqcfg = CM5_RP1_WINDOW + 0x108008;
+    unsigned id = 128 + 32;
+    uint64_t pending = CM5_GIC_DIST + 0x200 + id / 32 * 4;
+    uint32_t bit = 1U << (id % 32);
+
+    native_link(q, h);
+    qtest_writel(q, h + 0x18, 0x00010100);
+    qtest_writew(q, h + 4, 6);
+    qtest_writel(q, h + 0x20, 0x00f00000);
+    qtest_writel(q, h + 0x9000, 1 << 20);
+    qtest_writel(q, cfg + 0x10, 0x500000);
+    qtest_writel(q, cfg + 0x14, 0);
+    qtest_writew(q, cfg + 4, 6);
+    native_out(q, h, CM5_RP1_WINDOW, 0, 16 * 1024 * 1024);
+    qtest_writel(q, h + 0x4034, 0xfffff01c);
+    qtest_writel(q, h + 0x4038, 0xff);
+    qtest_writel(q, h + 0x40b4, 0x130001);
+    qtest_writel(q, h + 0x40b8, 0x10);
+    qtest_writel(q, CM5_MIP0 + 0x20, UINT32_MAX);
+    qtest_writel(q, CM5_MIP0 + 0x40, 0);
+    qtest_writel(q, CM5_GIC_DIST + 0xc00 + id / 16 * 4, 0xaaaaaaaa);
+    qtest_writeb(q, CM5_GIC_DIST + 0x800 + id, 1);
+    qtest_writel(q, table, CM5_MIP_MSI);
+    qtest_writel(q, table + 4, CM5_MIP_MSI >> 32);
+    qtest_writel(q, table + 8, 0);
+    qtest_writel(q, table + 12, 0);
+    qtest_writew(q, cfg + 0xb2, 0x8000 | 60);
+    qtest_writel(q, irqcfg, 9);
+    qtest_writel(q, pads + 84, 0x52);
+    qtest_writel(q, pads + 88, 0x52);
+    qtest_writel(q, io + 164, 0x85);
+    qtest_writel(q, io + 172, 0x85 | (1 << 21));
+    qtest_writel(q, rio + 0x2004, 1 << 20);
+    qtest_writel(q, io + 0x211c, 1 << 21);
+    qtest_writel(q, rio + 0x2000, 1 << 20);
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, bit);
+    g_assert_cmphex(qtest_readl(q, io + 0x124), ==, 1 << 21);
+    qtest_writel(q, io + 172 + 0x2000, 1 << 28);
+    qtest_writel(q, irqcfg + 0x800, 4);
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, bit);
+    qtest_writel(q, pending + 0x80, bit);
+    qtest_writel(q, table + 12, 1);
+    qtest_writel(q, rio + 0x3000, 1 << 20);
+    qtest_writel(q, rio + 0x2000, 1 << 20);
+    g_assert_cmphex(qtest_readl(q, table + 0x1000), ==, 1);
+    qtest_writel(q, h + 0x4064, 0); /* reset with masked GPIO event */
+    qtest_writel(q, h + 0x4064, 4);
+    qtest_clock_step(q, 1000000);
+    qtest_writel(q, cfg + 0x10, 0x500000);
+    qtest_writel(q, cfg + 0x14, 0);
+    qtest_writew(q, cfg + 4, 6);
+    g_assert_cmphex(qtest_readl(q, table + 0x1000), ==, 0);
+    g_assert_cmphex(qtest_readl(q, io + 172), ==, 0x9f);
+    g_assert_cmphex(qtest_readl(q, rio + 4), ==, 0);
+    g_assert_cmphex(qtest_readl(q, pending) & bit, ==, 0);
     qtest_quit(q);
 }
 
@@ -445,5 +568,6 @@ int main(int argc, char **argv)
     qtest_add_func("/cm5io-dev/native-ssi-msix-inbound-mip", test_native_msi);
     qtest_add_func("/cm5io-dev/native-rp1-clock-pll-gate-reset",
                    test_native_clock);
+    qtest_add_func("/cm5io-dev/native-gpio-msix-mip-reset", test_native_gpio);
     return g_test_run();
 }

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CM5 bounded SPI comparison observation v1",
+  "type": "object",
+  "required": ["schema", "environment", "run_id", "status", "fixture", "workload", "provenance", "clock_domains", "messages", "limitations"],
+  "properties": {
+    "schema": {"const": 1},
+    "environment": {"enum": ["physical", "virtual"]},
+    "run_id": {"type": "string"},
+    "status": {"enum": ["PASS", "PARTIAL", "FAIL", "INCONCLUSIVE"]},
+    "fixture": {"type": "object", "required": ["identity", "wiring", "comparability"], "properties": {"identity": {"type": ["string", "null"]}, "wiring": {"type": ["string", "null"]}, "comparability": {"type": "string"}}},
+    "workload": {"type": "object", "required": ["mode", "bits_per_word", "requested_speed_hz", "definition_sha256"], "properties": {"mode": {"type": "integer"}, "bits_per_word": {"type": "integer"}, "requested_speed_hz": {"type": "integer"}, "divider_speed_hz": {"type": ["number", "null"]}, "measured_sclk_hz": {"type": ["number", "null"]}, "definition_sha256": {"type": "string"}}},
+    "provenance": {"type": "object", "description": "kernel/initramfs/module/runtime-DT identities; selected input identity and BOOT_ORDER confirmation state"},
+    "pcie": {"type": ["object", "null"], "description": "BDF, negotiated GT/s, width, BAR resources and chip ID"},
+    "ssi": {"type": ["object", "null"], "description": "input clock, BAUDR, enable, SER, mode, FIFO thresholds and error registers"},
+    "interrupts": {"type": ["object", "null"], "description": "MSI-X vector count, source vector, before/after counts, observation windows, delivery/error metrics"},
+    "clock_domains": {"type": "object", "description": "Each clock's origin, units and semantics; unsynchronized clocks are separate"},
+    "messages": {"type": "array", "items": {"type": "object", "required": ["index", "length", "tx_sha256", "rx_sha256", "cs_segments", "completion"], "properties": {"index": {"type": "integer"}, "length": {"type": "integer"}, "tx_sha256": {"type": "string"}, "rx_sha256": {"type": ["string", "null"]}, "cs_segments": {"type": ["array", "null"]}, "completion": {"type": "string"}}}},
+    "raw_evidence": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

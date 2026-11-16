@@ -1,0 +1,16 @@
+{
+  "branch": "cm5-rp1-hardware",
+  "head": "872181e1de29acb4c13ffdd8937ee6c9fa7d11bd",
+  "staged_changes": false,
+  "tracked_modified": 23,
+  "untracked_files": 25281,
+  "initial_untracked_files": 25215,
+  "initial_untracked_paths_missing": [],
+  "private_full_status": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/git-status-final.txt",
+  "private_diff": "/home/aweso/cm5-v8-lab/phase10i/i-20261116T190606Z/git-diff-final.patch",
+  "public_status": "experiments/cm5-phase10i/GIT-STATUS.md",
+  "preserved_phase10h": true,
+  "spi_core_unchanged": true,
+  "committed": false,
+  "pushed": false
+}

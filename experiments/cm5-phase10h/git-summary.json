@@ -1,0 +1,29 @@
+{
+  "utc": "2026-11-16T18:44:33.960197+00:00",
+  "branch": "cm5-rp1-hardware",
+  "head": "872181e1de29acb4c13ffdd8937ee6c9fa7d11bd",
+  "staged_changes": false,
+  "modified_tracked_files": 19,
+  "untracked_files": 25215,
+  "initial_paths_preserved": true,
+  "missing_initial_status_paths": [],
+  "tracked_diff_stat": " experiments/cm5-phase10c/run.py              |  53 ++++-\n experiments/cm5-phase10e/native_profile.py   |   7 +-\n experiments/cm5-phase10f1/runtime_observe.py |  13 ++\n experiments/cm5-phase10f2/boot_policy.py     |  18 +-\n experiments/cm5-phase10f2/build-dt-tools.sh  |   8 +\n experiments/cm5-phase10f2/dt_pipeline.py     |  82 ++++++-\n experiments/cm5-phase10f2/test_dt.py         |  58 +++++\n experiments/cm5-phase10f2/test_policy.py     |  66 ++++++\n hw/arm/bcm2712-pcie.c                        |   8 +-\n hw/arm/trace-events                          |   1 +\n hw/intc/bcm2712-mip.c                        |   3 +\n hw/intc/trace-events                         |   2 +\n hw/misc/rp1-pci.c                            |  33 ++-\n hw/misc/trace-events                         |   4 +\n hw/ssi/dw-apb-ssi.c                          | 100 ++++++++-\n hw/ssi/trace-events                          |   3 +\n include/hw/ssi/dw-apb-ssi.h                  |   6 +\n tests/qtest/cm5io-test.c                     |  58 ++++-\n tests/qtest/rp1-test.c                       | 305 +++++++++++++++++++++++++++\n 19 files changed, 806 insertions(+), 22 deletions(-)\n",
+  "phase10h_public_files": 36,
+  "private_full_status": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/git-status-final.txt",
+  "private_diff": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z/git-diff-final.patch",
+  "private_checkpoint": "/home/aweso/cm5-v8-lab/phase10h/h-20261116T175856Z",
+  "phase10h_modified_existing_paths": [
+    "hw/misc/rp1-pci.c",
+    "hw/arm/bcm2712-pcie.c",
+    "hw/arm/trace-events",
+    "tests/qtest/rp1-test.c",
+    "tests/qtest/cm5io-test.c",
+    "experiments/cm5-phase10c/run.py",
+    "experiments/cm5-phase10g/run.py"
+  ],
+  "new_status_paths": 38,
+  "new_paths_outside_phase10h": [
+    "hw/arm/bcm2712-pcie.c",
+    "hw/arm/trace-events"
+  ]
+}

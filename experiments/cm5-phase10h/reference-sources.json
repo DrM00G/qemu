@@ -1,0 +1,10 @@
+{
+  "drivers/pci/msi/msi.c": {
+    "url": "https://raw.githubusercontent.com/raspberrypi/linux/cff533aec2fa601846766b32ff57204e0a61bed7/drivers/pci/msi/msi.c",
+    "sha256": "c68235b3bda27258905524b854ed5aa671d9e3de1fb88bf58b15e5a4e2a24cc8"
+  },
+  "drivers/pci/msi/api.c": {
+    "url": "https://raw.githubusercontent.com/raspberrypi/linux/cff533aec2fa601846766b32ff57204e0a61bed7/drivers/pci/msi/api.c",
+    "sha256": "df58f076dea2260ca91740e98bf7a0e465232a80a0760921a8baad5bb152b82b"
+  }
+}

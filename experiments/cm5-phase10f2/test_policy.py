@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import boot_policy as p
 sys.path.insert(0,str(p.HERE.parent/'cm5-phase10f'))
@@ -101,6 +102,71 @@ class PolicyTests(unittest.TestCase):
     def test_same_identity_rejected(self):
         self.sources['usb']=self.sources['emmc'];r,b=self.select(usb=True)
         self.assertEqual(r['status'],'UNSUPPORTED');self.assertFalse(b)
+
+    def test_hardlink_alias_rejected(self):
+        alias = self.work/'alias.qcow2'
+        os.link(self.sources['emmc'], alias)
+        self.sources['usb'] = alias
+        r, b = self.select(usb=True)
+        self.assertEqual(r['status'], 'UNSUPPORTED'); self.assertFalse(b)
+        self.assertFalse(r['reads'])
+
+    def test_missing_manifest_before_reads(self):
+        self.manifests['usb'] = None
+        r, b = self.select(usb=True)
+        self.assertFalse(b); self.assertEqual(len(r['boot_source_trace']['attempts']), 1)
+        row = r['boot_source_trace']['attempts'][0]
+        self.assertEqual(row['classification'], 'MISSING_ACCEPTANCE_MANIFEST')
+        self.assertEqual(row['reads'], [])
+
+    def test_missing_unselected_emmc_does_not_block_usb(self):
+        self.sources['emmc'] = self.work/'absent.qcow2'
+        r, b = self.select(usb=True)
+        self.assertEqual(r['status'], 'SELECTED')
+        self.assertEqual(b['cmdline'], self.files['usb']['cmdline.txt'])
+
+    def test_mutated_selected_bytes(self):
+        self.mutate('usb', self.locations['usb']['cmdline.txt']['offset'], b'X')
+        r, b = self.select(usb=True)
+        self.assertEqual(r['status'], 'INVALID_IMAGE'); self.assertFalse(b)
+        self.assertEqual(r['stage'], 'LAB_INTEGRITY')
+
+    def test_restart_limits(self):
+        for budget in (0, 3):
+            r, b = self.select(emmc=False, max_restarts=budget)
+            self.assertEqual(len(r['boot_source_trace']['attempts']), 2*(budget+1))
+            self.assertEqual(r['status'], 'BOUNDED_RESTART'); self.assertFalse(b)
+        for budget in (-1, 4, True):
+            r, b = self.select(emmc=False, max_restarts=budget)
+            self.assertEqual(r['status'], 'UNSUPPORTED'); self.assertFalse(b)
+
+    def test_active_source_in_backing_chain(self):
+        nested = self.work/'nested.qcow2'
+        run([BIN/'qemu-img', 'create', '-f', 'qcow2', '-F', 'qcow2', '-b', self.sources['emmc'], nested])
+        self.sources['usb'] = nested; self.manifests['usb'] = self.manifests['emmc']
+        r, b = self.select(usb=True)
+        self.assertEqual(r['status'], 'UNSUPPORTED'); self.assertFalse(b)
+        self.assertIn('backing chain', r['reason'])
+
+    def test_actual_usb_read_eio_stops(self):
+        real_select = p.h.select
+        sector = self.locations['usb']['kernel.img']['offset']//512
+        # The shared reader injects EIO in QEMU's block graph, not Python.
+        def with_eio(*args, **kwargs):
+            return real_select(*args, error_sector=sector, **kwargs)
+        with patch.object(p.h, 'select', with_eio):
+            r, b = self.select(usb=True)
+        self.assertEqual(r['status'], 'READ_ERROR'); self.assertFalse(b)
+        self.assertEqual(len(r['boot_source_trace']['attempts']), 1)
+        self.assertEqual(r['boot_source_trace']['attempts'][0]['classification'], 'UNREADABLE_MEDIA')
+        self.assertTrue(any(x['status'] == 'BLOCK_READ_ERROR' for x in r['reads']))
+
+    def test_missing_present_usb_is_not_declared_absence(self):
+        self.sources['usb'] = self.work/'missing.qcow2'
+        r, b = self.select(usb=True)
+        self.assertEqual(r['status'], 'READ_ERROR'); self.assertFalse(b)
+        self.assertEqual(len(r['boot_source_trace']['attempts']), 1)
+        self.assertEqual(r['boot_source_trace']['attempts'][0]['classification'], 'UNREADABLE_MEDIA')
 
     def test_error_classifications(self):
         self.assertEqual(p.classify(dict(status='READ_ERROR',stage='BOOT_FAT')),'UNREADABLE_MEDIA')

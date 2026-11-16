@@ -57,3 +57,7 @@ allwinner_gpio_set(const char *port, int line, int level) "[%s:%d] <- %d"
 allwinner_gpio_read(const char *reg, uint32_t value) "[%s] -> 0x%" PRIx32
 allwinner_gpio_write(const char *reg, uint32_t value) "[%s] <- 0x%" PRIx32
 allwinner_gpio_out_pin(const char *reg, uint32_t pin, uint32_t value) "[%s.%d] <- 0x%" PRIx32
+
+# rp1-gpio.c (local experiment)
+rp1_gpio_access(bool write, unsigned window, uint64_t addr, uint32_t value, bool valid) "write=%d window=%u addr=0x%" PRIx64 " value=0x%x valid=%d"
+rp1_gpio_irq(int64_t now, uint32_t input, uint32_t raw, uint32_t mask, uint32_t force, bool level) "virtual_ns=%" PRId64 " input=0x%x raw=0x%x mask=0x%x force=0x%x level=%d"

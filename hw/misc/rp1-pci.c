@@ -12,6 +12,7 @@
 #include "hw/pci/pcie.h"
 #include "hw/pci/msix.h"
 #include "hw/ssi/dw-apb-ssi.h"
+#include "hw/gpio/rp1-gpio.h"
 #include "hw/core/irq.h"
 #include "hw/core/qdev-properties.h"
 #include "migration/vmstate.h"
@@ -33,11 +34,14 @@ struct RP1PCIState {
     PCIDevice parent_obj;
     MemoryRegion bar0, bar1, bar2;
     DWAPBSSIState spi;
+    RP1GPIOState gpio;
+    bool gpio_lab;
     uint32_t irq_cfg[RP1_VECTORS];
     bool native_clock;
     uint32_t clocks[0x10038 / 4];
     uint64_t irq_level;
     uint64_t irq_outstanding;
+    uint64_t irq_edge_sent;
 };
 
 /*
@@ -85,6 +89,9 @@ static void rp1_clock_update(RP1PCIState *s)
         hz /= div ? div : 65536;
     }
     dw_apb_ssi_set_frequency(&s->spi, hz);
+    if (s->gpio_lab) {
+        rp1_gpio_set_clock(&s->gpio, hz != 0);
+    }
 }
 
 static uint32_t rp1_clock_read(RP1PCIState *s, hwaddr addr)
@@ -118,34 +125,72 @@ static void rp1_clock_write(RP1PCIState *s, hwaddr addr, uint32_t value)
     rp1_clock_update(s);
 }
 
+static void rp1_spi_diag(RP1PCIState *s, const char *event)
+{
+    PCIDevice *pdev = PCI_DEVICE(s);
+
+    if (trace_event_get_state_backends(TRACE_RP1_SPI_STATE)) {
+        trace_rp1_spi_state(event, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+            s->irq_cfg[RP1_SPI0_IRQ], s->irq_level, s->irq_outstanding,
+            msix_enabled(pdev), msix_is_masked(pdev, RP1_SPI0_IRQ),
+            msix_is_pending(pdev, RP1_SPI0_IRQ));
+    }
+}
+
 static void rp1_irq_update(RP1PCIState *s, unsigned vector)
 {
     uint64_t bit = UINT64_C(1) << vector;
 
     if ((s->irq_level & bit) && (s->irq_cfg[vector] & BIT(0)) &&
-        !(s->irq_outstanding & bit) && msix_enabled(PCI_DEVICE(s))) {
+        !(s->irq_outstanding & bit) &&
+        ((s->irq_cfg[vector] & BIT(3)) || !(s->irq_edge_sent & bit)) &&
+        msix_enabled(PCI_DEVICE(s))) {
         if (s->irq_cfg[vector] & BIT(3)) {
             s->irq_outstanding |= bit;
         }
+        /* Config writes/unmask are not new rising edges of a held source. */
+        s->irq_edge_sent |= bit;
+        if (vector == RP1_SPI0_IRQ) {
+            rp1_spi_diag(s, "notify-before");
+        }
+        trace_rp1_spi_notify(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL), vector,
+                            s->irq_cfg[vector], s->irq_level,
+                            s->irq_outstanding);
         trace_rp1_msix(vector);
         msix_notify(PCI_DEVICE(s), vector);
+        if (vector == RP1_SPI0_IRQ) {
+            rp1_spi_diag(s, "notify-after");
+        }
     }
 }
 
-static void rp1_spi_irq(void *opaque, int n, int level)
+static void rp1_source_irq(RP1PCIState *s, unsigned vector, int level)
 {
-    RP1PCIState *s = opaque;
-    uint64_t bit = UINT64_C(1) << RP1_SPI0_IRQ;
+    uint64_t bit = UINT64_C(1) << vector;
     bool previous = !!(s->irq_level & bit);
 
     if (level) {
         s->irq_level |= bit;
         if (!previous) {
-            rp1_irq_update(s, RP1_SPI0_IRQ);
+            rp1_irq_update(s, vector);
         }
     } else {
         s->irq_level &= ~bit;
+        s->irq_edge_sent &= ~bit;
     }
+    if (previous != !!level && vector == RP1_SPI0_IRQ) {
+        rp1_spi_diag(s, "source-level");
+    }
+}
+
+static void rp1_spi_irq(void *opaque, int n, int level)
+{
+    rp1_source_irq(opaque, RP1_SPI0_IRQ, level);
+}
+
+static void rp1_gpio_irq(void *opaque, int n, int level)
+{
+    rp1_source_irq(opaque, 0, level);
 }
 
 static uint64_t rp1_read(void *opaque, hwaddr addr, unsigned size)
@@ -202,6 +247,9 @@ static void rp1_write(void *opaque, hwaddr addr, uint64_t val,
         }
         if ((val & BIT(2)) && alias != 0xc00) {
             s->irq_outstanding &= ~(UINT64_C(1) << vector);
+        }
+        if (vector == RP1_SPI0_IRQ) {
+            rp1_spi_diag(s, "cfg-ack");
         }
         rp1_irq_update(s, vector);
         if ((val & BIT(1)) && alias != 0xc00 &&
@@ -274,6 +322,21 @@ static void rp1_realize(PCIDevice *pdev, Error **errp)
         pcie_cap_exit(pdev);
         return;
     }
+    if (s->gpio_lab) {
+        object_initialize_child(OBJECT(s), "gpio", &s->gpio, TYPE_RP1_GPIO);
+        if (!qdev_realize(DEVICE(&s->gpio), NULL, errp)) {
+            qdev_unrealize(DEVICE(&s->spi));
+            msix_uninit(pdev, &s->bar0, &s->bar0);
+            pcie_cap_exit(pdev);
+            return;
+        }
+        for (i = 0; i < 3; i++) {
+            memory_region_add_subregion(&s->bar1, 0xd0000 + i * 0x10000,
+                                        &s->gpio.windows[i].mmio);
+        }
+        qdev_connect_gpio_out(DEVICE(&s->gpio), 0,
+            qdev_get_gpio_in_named(DEVICE(s), "gpio-bank", 0));
+    }
     memory_region_add_subregion(&s->bar1, RP1_SPI0, &s->spi.mmio);
     qdev_connect_gpio_out(DEVICE(&s->spi), 0,
                           qdev_get_gpio_in(DEVICE(s), 0));
@@ -283,6 +346,14 @@ static void rp1_exit(PCIDevice *pdev)
 {
     RP1PCIState *s = RP1_PCI(pdev);
 
+    if (s->gpio_lab) {
+        unsigned i;
+        device_cold_reset(DEVICE(&s->gpio));
+        for (i = 0; i < 3; i++) {
+            memory_region_del_subregion(&s->bar1, &s->gpio.windows[i].mmio);
+        }
+        qdev_unrealize(DEVICE(&s->gpio));
+    }
     device_cold_reset(DEVICE(&s->spi));
     memory_region_del_subregion(&s->bar1, &s->spi.mmio);
     qdev_unrealize(DEVICE(&s->spi));
@@ -295,10 +366,13 @@ static void rp1_reset(DeviceState *dev)
     RP1PCIState *s = RP1_PCI(dev);
 
     memset(s->irq_cfg, 0, sizeof(s->irq_cfg));
-    s->irq_level = s->irq_outstanding = 0;
+    s->irq_level = s->irq_outstanding = s->irq_edge_sent = 0;
     memset(memory_region_get_ram_ptr(&s->bar2), 0, 64 * KiB);
     memory_region_set_dirty(&s->bar2, 0, 64 * KiB);
     msix_reset(PCI_DEVICE(s));
+    if (s->gpio_lab) {
+        device_cold_reset(DEVICE(&s->gpio));
+    }
     device_cold_reset(DEVICE(&s->spi));
     if (s->native_clock) {
         unsigned bank;
@@ -322,6 +396,7 @@ static void rp1_init(Object *obj)
 {
     RP1PCIState *s = RP1_PCI(obj);
 
+    qdev_init_gpio_in_named(DEVICE(obj), rp1_gpio_irq, "gpio-bank", 1);
     object_initialize_child(obj, "spi0", &s->spi, TYPE_DW_APB_SSI);
     s->spi.bus = ssi_create_bus(DEVICE(obj), "spi");
     qdev_init_gpio_in(DEVICE(obj), rp1_spi_irq, 1);
@@ -333,6 +408,7 @@ static const VMStateDescription rp1_vmstate = {
 };
 
 static const Property rp1_properties[] = {
+    DEFINE_PROP_BOOL("gpio-lab", RP1PCIState, gpio_lab, false),
     DEFINE_PROP_BOOL("native-clock", RP1PCIState, native_clock, false),
 };
 
