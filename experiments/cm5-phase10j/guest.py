@@ -43,6 +43,7 @@ try:
     elf.chmod(0o700)
     r['working_directory'] = str(work)
     r['guest_monotonic_start'] = time.monotonic()
+    print('\nP10K_FSW_START='+str(r['guest_monotonic_start']), flush=True)
     master, slave = pty.openpty()
     command = ['timeout', '-s', 'INT', '-k', '10s', str(DURATION)+'s', './RpiDeployment.elf']
     r['command'] = command

@@ -4,9 +4,11 @@ Local-only experiment; no upstream contribution. This is a human-operated
 procedure: no remote commands, installs, asset transfer or work-PC execution were
 performed by the agent. Preserve separate recovery-root experiments; wait until
 no full Linux guest is running. Do not reuse their directories or overlays.
-The work PC was reported at `cm5-rp1-hardware`, `64b13da`; the Phase10J harness
-and small Phase10C runner changes must also be present in this checkout via an
-authorized local file copy. The harness is not present merely because HEAD matches.
+Phase 10J was pushed on `cm5-rp1-hardware` at `bf5b2ce`
+(full revision `bf5b2cef36fceb90a872f116c1462763492c3851`). The earlier
+work-PC observation was `64b13da`; its current revision is unmeasured.
+Use a checkout containing the pushed Phase10J harness and Phase10C runner;
+review local differences before applying any later private diagnostic changes.
 Do not commit/push it upstream or change hardware models.
 
 Run in bash, stopping at every failed command. Paths below are private examples.
@@ -17,7 +19,7 @@ cd /code/davidg/qemu
 git branch --show-current
 git rev-parse HEAD
 git status --short
-# Expect cm5-rp1-hardware and 64b13da2b57c7ff0a5ff061d975d4363be478c6c.
+# Phase10J baseline: cm5-rp1-hardware at bf5b2cef36fceb90a872f116c1462763492c3851.
 # Inspect rather than reset/checkout/clean any differences.
 test -f experiments/cm5-phase10j/run.py
 python3 experiments/cm5-phase10c/run.py --help | rg 'phase10j-workload|lab-root|golden'

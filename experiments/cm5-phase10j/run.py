@@ -8,10 +8,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
 import sys
 import time
+from contextlib import contextmanager
+
+from events import summarize
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'experiments/cm5-phase10a'))
@@ -30,14 +32,17 @@ def payload_code(data, duration):
             + Path(__file__).with_name('guest.py').read_text())
 
 
+def direct_payload_code(generation, duration):
+    return ('DURATION = '+repr(duration)+'\nGENERATION = '+repr(generation['generation_id'])+
+            '\nTABLES = '+repr(generation['expected_tables'])+
+            '\nELF_SIZE = '+repr(generation['installed_elf']['bytes'])+'\n'+
+            (ROOT/'experiments/cm5-phase10m/guest_direct.py').read_text())
+
+
 def classify(boot, fsw, text):
     # Positive evidence remains reviewable: broad keywords alone never yield PASS.
-    patterns = dict(version=r'3\.0\.0-alpha', topology=r'topology.*initial',
-        components=r'component.*initial', tasks_created=r'task.*creat',
-        tasks_started=r'task.*start', housekeeping=r'housekeeping|\bHK\b',
-        packets=r'packet.*(?:rout|forward)|(?:rout|forward).*packet')
-    events = {k: re.findall(r'^.*'+v+r'.*$', text, re.I | re.M) for k, v in patterns.items()}
-    crash = re.findall(r'^.*(?:segmentation fault|core dumped|illegal instruction|error while loading shared libraries|cannot execute binary).*$\n?', text, re.I | re.M)
+    events = summarize(text)['events']
+    crash = events['crashes']
     if not fsw:
         return 'INCONCLUSIVE', 'No complete guest workload result', events
     if fsw.get('status') != 'COMPLETE':
@@ -51,13 +56,26 @@ def classify(boot, fsw, text):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--fsw', type=Path, required=True)
+    p.add_argument('--fsw', type=Path)
+    p.add_argument('--execution-mode', choices=('ram-staged','verified-fsw-partition'), default='ram-staged')
+    p.add_argument('--sealed-generation', type=Path)
+    p.add_argument('--generation-sha256')
     p.add_argument('--golden', type=Path, default=Path('/home/aweso/cm5-v8-lab/golden/cm5-emmc-userarea.img'))
     p.add_argument('--boot-expected', type=Path, default=Path('/home/aweso/cm5-v8-lab/phase10f2/accepted-01/accepted-hashes.json'))
     p.add_argument('--work', type=Path, required=True, help='fresh private directory outside checkout')
     p.add_argument('--duration', type=int, choices=(30, 300), default=30)
     p.add_argument('--host-timeout', type=int, default=1800, help='whole guest host seconds, including boot and serial transfer')
+    p.add_argument('--boot-profile', choices=('strict', 'operational'), default='strict')
+    p.add_argument('--operational-initramfs', type=Path,
+                   help='Phase10L exact-construction derivative; separate from accepted BOOT')
     a = p.parse_args()
+    direct = a.execution_mode == 'verified-fsw-partition'
+    if direct and (not a.sealed_generation or not a.generation_sha256 or a.fsw or a.boot_profile != 'operational'):
+        p.error('verified-fsw-partition requires a pinned sealed generation and operational profile; no --fsw upload')
+    if not direct and (not a.fsw or a.sealed_generation or a.generation_sha256):
+        p.error('RAM mode requires --fsw and forbids sealed-generation substitutions')
+    if not direct and (a.boot_profile == 'operational') != (a.operational_initramfs is not None):
+        p.error('operational requires its explicit derivative; strict forbids substitutions')
     os.umask(0o077)
     work = a.work.resolve()
     if work.is_relative_to(ROOT):
@@ -67,7 +85,10 @@ def main():
         clock=dict(name='CLOCK_MONOTONIC', domain='guest-monotonic', units='s', timestamp=None),
         software=dict(required_fsw_sha256=FSW_SHA),
         fixture=dict(identity='QEMU CM5; no SatNOGS/serial fixture', synthetic=False, physical_equivalence_measured=False),
-        operation=dict(duration_guest_seconds=a.duration, cwd='fresh executable /run tmpfs directory'),
+        operation=dict(duration_guest_seconds=a.duration, cwd='fresh executable /run tmpfs directory',
+                       boot_profile=a.boot_profile, execution_mode=a.execution_mode,
+                       fsw_source=('/opt/fsw/RpiDeployment.elf on verified partition' if direct else
+                                   'RAM-staged approved ELF; not protected-FSW survival')),
         required_for_fsw='YES', result=dict(status='INCONCLUSIVE'),
         timing=dict(host_elapsed_seconds=None, guest_elapsed_seconds=None, qemu_virtual_seconds=None),
         physical_baseline=dict(source='user observations; raw physical log not provided', duration_seconds=300,
@@ -75,6 +96,18 @@ def main():
             topology=True, components=True, tasks=True, housekeeping=True, packets=True, crash_observed=False))
     report['utc_started'] = datetime.now(timezone.utc).isoformat()
     start = time.monotonic()
+    report['timing']['host_stages'] = []
+
+    @contextmanager
+    def stage(name):
+        begin = time.monotonic()
+        try:
+            yield
+        finally:
+            report['timing']['host_stages'].append(dict(
+                name=name, start_host_seconds=begin-start,
+                end_host_seconds=time.monotonic()-start))
+
     def save():
         report['utc_last_updated'] = datetime.now(timezone.utc).isoformat()
         report['timing']['host_elapsed_seconds'] = time.monotonic()-start
@@ -97,17 +130,38 @@ def main():
         (work/'git-status.txt').write_bytes(subprocess.check_output(['git', 'status', '--short'], cwd=ROOT))
         report['software']['tools'] = {name: identity(bins/name) for name in ('qemu-system-aarch64', 'qemu-img', 'qemu-io')}
         report['software']['boot_manifest'] = identity(a.boot_expected)
-        golden = identity(a.golden)
+        with stage('golden_identity_before'):
+            golden = identity(a.golden)
         report['software']['golden'] = golden
         if golden['bytes'] != USER_BYTES or golden['sha256'] != GOLDEN_SHA:
             raise RuntimeError('golden does not match independently accepted full-eMMC identity')
+        base_image = Path(golden['path'])
+        sealed = None
+        if direct:
+            sys.path.insert(0, str(ROOT/'experiments/cm5-phase10m'))
+            import generation as sealed_policy
+            with stage('sealed_generation_acceptance'):
+                sealed = sealed_policy.load(a.sealed_generation, a.generation_sha256)
+            base_image = sealed_policy.artifact(sealed, 'image')
+            initrd = sealed_policy.artifact(sealed, 'initramfs')
+            if a.operational_initramfs and a.operational_initramfs.resolve() != initrd.resolve():
+                raise RuntimeError('Explicit initramfs does not belong to sealed generation')
+            a.operational_initramfs = initrd
+            if report['software']['boot_manifest']['sha256'] != sealed['artifacts']['boot_manifest']['sha256']:
+                raise RuntimeError('BOOT manifest differs from sealed generation')
+            report['software']['sealed_generation'] = dict(generation_id=sealed['generation_id'],
+                manifest=str(a.sealed_generation.resolve()), manifest_sha256=a.generation_sha256,
+                image=str(base_image), image_sha256=sealed['artifacts']['image']['sha256'],
+                installed_elf_sha256=sealed['installed_elf']['sha256'])
+            report['operation']['cwd'] = 'fresh non-executable /run work directory; ELF remains on verified FSW'
         disk = work/'emmc.qcow2'
-        subprocess.run([str(bins/'qemu-img'), 'create', '-f', 'qcow2', '-F', 'raw', '-b', golden['path'], str(disk)], check=True, capture_output=True)
+        subprocess.run([str(bins/'qemu-img'), 'create', '-f', 'qcow2', '-F', 'raw', '-b', str(base_image), str(disk)], check=True, capture_output=True)
         report['software']['overlay_before'] = identity(disk)
         selection_dir = work/'preflight-boot'; selection_dir.mkdir()
         os.environ['CM5_BOOT_READER'] = 'qemu-io'
         os.environ['CM5_BOOT_PREFETCH'] = '65536'
-        selection, buffers = handoff.select(disk, selection_dir, json.loads(a.boot_expected.read_text()), config_profile='cm5-headless-lab')
+        with stage('preflight_boot_acceptance'):
+            selection, buffers = handoff.select(disk, selection_dir, json.loads(a.boot_expected.read_text()), config_profile='cm5-headless-lab')
         handoff.write_report(selection_dir/'selection.json', selection)
         report['software']['boot_selection_report'] = str(selection_dir/'selection.json')
         if selection['status'] != 'SELECTED':
@@ -116,22 +170,32 @@ def main():
                                                   for name, meta in selection['files'].items()}
         report['software']['preflight_chain_unchanged'] = selection['overlay_chain_before'] == selection['overlay_chain_after']
         source_dir = work/'harness-sources'; source_dir.mkdir()
-        sources = [Path(__file__), Path(__file__).with_name('guest.py'), ROOT/'experiments/cm5-phase10c/run.py']
+        sources = [Path(__file__), Path(__file__).with_name('guest.py'),
+                   Path(__file__).with_name('events.py'), ROOT/'experiments/cm5-phase10c/run.py',
+                   ROOT/'experiments/cm5-phase10l/observe_profile.py']
+        if a.boot_profile == 'operational':
+            sources.append(ROOT/'experiments/cm5-phase10l/lab_profile.py')
+        if direct:
+            sources.extend(sorted((ROOT/'experiments/cm5-phase10m').glob('*.py')))
         report['software']['harness'] = {str(f.relative_to(ROOT)): identity(f) for f in sources}
         for source in sources:
             target = source_dir/source.relative_to(ROOT)
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(source.read_bytes())
-        if not a.fsw.exists():
-            raise FileNotFoundError('Approved executable absent at explicit path: '+str(a.fsw))
-        fsw = identity(a.fsw)
-        report['software']['fsw'] = fsw
-        if fsw['sha256'] != FSW_SHA:
-            raise RuntimeError('FSW SHA256 mismatch')
-        data = a.fsw.read_bytes()
-        if hashlib.sha256(data).hexdigest() != FSW_SHA or data[:4] != b'\x7fELF' or data[4:6] != b'\x02\x01' or int.from_bytes(data[18:20], 'little') != 183:
-            raise RuntimeError('ELF identity/architecture changed or invalid')
-        payload = work/'guest-workload.py'; payload.write_text(payload_code(data, a.duration))
+        payload = work/'guest-workload.py'
+        if direct:
+            payload.write_text(direct_payload_code(sealed, a.duration))
+        else:
+            if not a.fsw.exists():
+                raise FileNotFoundError('Approved executable absent at explicit path: '+str(a.fsw))
+            fsw = identity(a.fsw)
+            report['software']['fsw'] = fsw
+            if fsw['sha256'] != FSW_SHA:
+                raise RuntimeError('FSW SHA256 mismatch')
+            data = a.fsw.read_bytes()
+            if hashlib.sha256(data).hexdigest() != FSW_SHA or data[:4] != b'\x7fELF' or data[4:6] != b'\x02\x01' or int.from_bytes(data[18:20], 'little') != 183:
+                raise RuntimeError('ELF identity/architecture changed or invalid')
+            payload.write_text(payload_code(data, a.duration))
         command = [sys.executable, str(ROOT/'experiments/cm5-phase10c/run.py'), '--control-pipes',
             '--dma', '--batch', '--profile', 'native', '--boot-selection-policy', 'eeprom-fixture-0xf14',
             '--boot-config-profile', 'cm5-headless-lab', '--boot-overlay', str(disk),
@@ -139,10 +203,18 @@ def main():
             '--lab-root', str(work/'control'), '--debug-shell', '--observer-upload-once',
             '--poweroff-after-validation', '--phase10j-workload', str(payload),
             '--timeout', str(a.host_timeout), '--output', str(work/'v8')]
+        command += ['--boot-profile', a.boot_profile]
+        if a.operational_initramfs:
+            command += ['--operational-initramfs', str(a.operational_initramfs.resolve())]
+            report['software']['operational_initramfs'] = identity(a.operational_initramfs)
+        if direct:
+            command += ['--execution-mode',a.execution_mode,'--sealed-generation',str(a.sealed_generation.resolve()),
+                        '--generation-sha256',a.generation_sha256]
         (work/'launch.json').write_text(json.dumps(command, indent=2))
         save()
         with (work/'runner.log').open('xb') as log:
-            rc = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT).returncode
+            with stage('runner_process'):
+                rc = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT).returncode
         report['result']['runner_returncode'] = rc
         boot = json.loads((work/'v8/result.json').read_text()) if (work/'v8/result.json').exists() else {}
         fswpath = work/'v8/fsw-result.json'
@@ -153,7 +225,8 @@ def main():
         report['result'].update(status=status, justification=reason, events=events, boot=boot,
             fsw={k:v for k,v in result.items() if k != 'output_base64'})
         report['timing']['guest_elapsed_seconds'] = result.get('guest_elapsed_seconds')
-        report['software']['golden_unchanged'] = identity(a.golden) == golden
+        with stage('golden_identity_after'):
+            report['software']['golden_unchanged'] = identity(a.golden) == golden
         if not report['software']['golden_unchanged']:
             report['result'].update(status='FAIL', justification='Golden identity changed')
     except Exception as exc:

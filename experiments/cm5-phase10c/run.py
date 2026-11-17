@@ -16,6 +16,35 @@ import subprocess
 import sys
 import time
 
+
+class HostTimeline:
+    """Private diagnostic host offsets; never interpreted as guest time."""
+    def __init__(self, path, clock=None):
+        self.path = path
+        self.clock = clock or time.monotonic
+        self.start = self.clock()
+        self.seen = set()
+
+    def mark(self, name, **fields):
+        if name in self.seen:
+            return
+        self.seen.add(name)
+        with self.path.open('a') as stream:
+            stream.write(json.dumps(dict(event=name, host_seconds=self.clock()-self.start,
+                                         clock='host-monotonic', **fields))+'\n')
+
+    def console(self, text):
+        for name, marker in (
+                ('kernel_entry', 'Linux version 6.18.50'),
+                ('initramfs_entry', 'Run /init as init process'),
+                ('verified_root_mount', 'mounted filesystem a3680812-'),
+                ('systemd_entry', 'systemd 257.'),
+                ('upload_verified', 'P10J_UPLOAD_VERIFIED'),
+                ('fsw_start', 'P10K_FSW_START='),
+                ('power_down', 'reboot: Power down')):
+            if marker in text:
+                self.mark(name)
+
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO/'experiments/cm5-phase10a'))
 from preboot import identity
@@ -130,6 +159,30 @@ def workload_result(console):
     return json.loads(records[-1]) if records else None
 
 
+def upload_acknowledged(console, frame_index):
+    # Do not consume the final delimiter: adjacent LF-only records share it.
+    records = re.findall(r'(?:^|[\r\n])P10J_UPLOAD_ACK=(\d+)(?=[\r\n])', console)
+    return bool(records and int(records[-1]) == frame_index)
+
+
+def wait_console(selector, debug, timeout):
+    """Wake for debug ACKs without changing the main-stream EOF lifecycle.
+
+    The debug endpoint is temporary in the selector: FIFO endpoints remain
+    open locally even after QEMU exits. Only the main stream owns run lifetime.
+    The caller drains debug at the top of its loop, including fragmented ACKs.
+    """
+    if debug is None:
+        return selector.select(timeout)
+    reader = debug.reader if isinstance(debug, PipeEndpoint) else debug
+    selector.register(reader, selectors.EVENT_READ, data='debug-wakeup')
+    try:
+        return [(key, flags) for key, flags in selector.select(timeout)
+                if key.data != 'debug-wakeup']
+    finally:
+        selector.unregister(reader)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--phase10i-gpio-lab', action='store_true',
@@ -167,7 +220,21 @@ def main():
     p.add_argument('--lab-root', type=Path, default=Path('/home/aweso/cm5-v8-lab/phase10c'))
     p.add_argument('--golden', type=Path, default=Path('/home/aweso/cm5-v8-lab/golden/cm5-emmc-userarea.img'))
     p.add_argument('--phase10j-workload', type=Path, help='private generated guest workload; local experiments only')
+    p.add_argument('--boot-profile', choices=('strict', 'operational'), default='strict')
+    p.add_argument('--operational-initramfs', type=Path)
+    p.add_argument('--execution-mode', choices=('ram-staged','verified-fsw-partition'), default='ram-staged')
+    p.add_argument('--sealed-generation', type=Path)
+    p.add_argument('--generation-sha256')
     a = p.parse_args()
+    direct = a.execution_mode == 'verified-fsw-partition'
+    if direct and (not a.sealed_generation or not a.generation_sha256 or a.boot_profile != 'operational'):
+        p.error('Direct execution requires a pinned sealed operational generation')
+    if not direct and (a.sealed_generation or a.generation_sha256):
+        p.error('Sealed-generation arguments require verified-fsw-partition mode')
+    if (a.boot_profile == 'operational') != (a.operational_initramfs is not None):
+        p.error('operational requires an explicit derivative; strict forbids substitutions')
+    if a.boot_profile == 'operational' and not a.phase10j_workload:
+        p.error('Phase10L operational profile requires the guarded Phase10J experiment')
     if a.phase10j_workload and not (a.boot_overlay and a.boot_expected and a.debug_shell
             and a.observer_upload_once and a.poweroff_after_validation
             and not a.recovery_case and not a.native_rp1_test and not a.phase10i_gpio_lab):
@@ -199,6 +266,8 @@ def main():
     os.umask(0o077)
     out = a.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
+    timeline = HostTimeline(out/'host-timeline.jsonl')
+    timeline.mark('runner_setup_start')
     lab = a.lab_root.resolve()/out.name
     lab.mkdir(parents=True, exist_ok=False)
     assets = Path('/home/aweso/cm5-phase10-private/physical-boot/boot-assets')
@@ -211,7 +280,19 @@ def main():
         input_files = [golden]
     else:
         input_files = [*assets.iterdir(), golden]
+    timeline.mark('input_identity_start')
     inputs = {str(f): identity(f) for f in input_files if f.is_file()}
+    sealed = None
+    if direct:
+        sys.path.insert(0, str(REPO/'experiments/cm5-phase10m'))
+        import generation as sealed_policy
+        sealed = sealed_policy.load(a.sealed_generation, a.generation_sha256, verify_image=False)
+        base = sealed_policy.artifact(sealed,'image').resolve()
+        if set(inputs) != {str(base)} or inputs[str(base)]['sha256'] != sealed['artifacts']['image']['sha256']:
+            raise RuntimeError('Overlay backing image is not the pinned sealed generation')
+        if identity(a.boot_expected)['sha256'] != sealed['artifacts']['boot_manifest']['sha256']:
+            raise RuntimeError('BOOT manifest belongs to a different generation')
+    timeline.mark('input_identity_end')
     (out/'inputs-before.json').write_text(json.dumps(inputs, indent=2)+'\n')
     initrd = assets/'initramfs_2712-osverified-v8'
     if a.diagnostic:
@@ -231,13 +312,14 @@ def main():
     boot_selection = None
     kernel = assets/'kernel_2712.img'
     if a.boot_selection_policy:
+        timeline.mark('boot_selection_start')
         sys.path.insert(0, str(REPO/'experiments/cm5-phase10f'))
         import handoff
         selection_work = lab/'boot-selection'
         selection_work.mkdir(mode=0o700)
         source_snapshot = lab/'boot-harness-sources'
         source_snapshot.mkdir(mode=0o700)
-        for phase in ('10a','10c','10d','10e','10f','10f1','10f2'):
+        for phase in ('10a','10c','10d','10e','10f','10f1','10f2','10l','10m'):
             for source in (REPO/('experiments/cm5-phase'+phase)).glob('*.py'):
                 (source_snapshot/(phase+'-'+source.name)).write_bytes(source.read_bytes())
         expected = json.loads(a.boot_expected.read_text()) if a.boot_expected else None
@@ -250,6 +332,7 @@ def main():
             boot_selection, selected_buffers = handoff.select(
                 overlay, selection_work, expected, a.boot_selection_policy, config_profile=a.boot_config_profile)
         handoff.write_report(selection_work/'selection.json', boot_selection)
+        timeline.mark('boot_acceptance_end')
         # Public evidence records metadata only. Selected content stays private.
         (out/'boot-selection-location.json').write_text(json.dumps(dict(
             report=str(selection_work/'selection.json')), indent=2)+'\n')
@@ -260,6 +343,7 @@ def main():
                 private_report=str(selection_work/'selection.json')), indent=2)+'\n')
             return 1
         handoff.export(boot_selection, selected_buffers, selection_work/'exports')
+        timeline.mark('boot_export_end')
         handoff.write_report(selection_work/'selection.json', boot_selection)
         kernel = Path(boot_selection['exports']['kernel']['path'])
         initrd = Path(boot_selection['exports']['initramfs']['path'])
@@ -274,6 +358,24 @@ def main():
                      else assets/'cmdline_2712-osverified-v8.txt')
     cmdline = cmdline_input.read_text().strip()
     selected_cmdline = cmdline
+    operational_policy = None
+    if a.boot_profile == 'operational':
+        sys.path.insert(0, str(REPO/'experiments/cm5-phase10l'))
+        import lab_profile
+        if direct:
+            if a.operational_initramfs.resolve() != sealed_policy.artifact(sealed,'initramfs').resolve():
+                raise RuntimeError('Mixed sealed initramfs path')
+            operational_policy = sealed_policy.approve(initrd.read_bytes(),
+                lab_profile.regular_bytes(a.operational_initramfs),sealed,
+                boot_selection['exports']['kernel']['sha256'])
+        else:
+            operational_policy = lab_profile.approve(
+                initrd.read_bytes(), lab_profile.regular_bytes(a.operational_initramfs),
+                boot_selection['exports']['kernel']['sha256'])
+        initrd = a.operational_initramfs.resolve()
+        operational_policy['effective_identity'] = identity(initrd)
+        cmdline += ' '+lab_profile.PARAMETER
+        (out/'operational-policy.json').write_text(json.dumps(operational_policy, indent=2)+'\n')
     cmdline += ' console=ttyAMA0,115200 earlycon=pl011,mmio32,0x107d001000 ignore_loglevel'
     if a.debug_shell:
         cmdline += ' systemd.debug_shell=ttyAMA1'
@@ -310,12 +412,15 @@ def main():
     if boot_selection:
         # Last gate before opening the same overlay for the actual guest.
         handoff.verify_launch(boot_selection, overlay)
+        if operational_policy and identity(initrd) != operational_policy['effective_identity']:
+            raise RuntimeError('Operational derivative changed before launch')
         boot_selection['launch'] = dict(command_record=str(command_record), kernel=str(kernel), initramfs=str(initrd),
             overlay=str(overlay), cmdline_input_sha256=boot_selection['exports']['cmdline']['sha256'],
             lab_cmdline_append=cmdline[len(selected_cmdline):],
             lab_cmdline_normalization='strip surrounding ASCII whitespace before appending lab arguments',
             effective_cmdline_sha256=handoff.sha(cmdline.encode()),
             dt_substitution=boot_selection['dt_handoff'])
+        boot_selection['launch'].update(boot_profile=a.boot_profile, operational_policy=operational_policy)
         handoff.write_report(selection_work/'selection.json', boot_selection)
     qmp_parent = debug_parent = None
     if a.control_pipes:
@@ -328,6 +433,7 @@ def main():
             cmd[i] = 'chardev:debug'
             cmd += ['-chardev', f'pipe,id=debug,path={lab}/debug-pipe']
         command_record.write_text(json.dumps(cmd, indent=2)+'\n')
+    timeline.mark('qemu_launch')
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if boot_selection:
         boot_selection['process'] = dict(launched=True, pid=proc.pid)
@@ -343,6 +449,7 @@ def main():
     timed_out = False
     debug = None
     debug_data = ''
+    serial_tail = ''
     last_debug = -30
     shutdown_requested = False
     user_validated = False
@@ -355,6 +462,8 @@ def main():
     if a.phase10j_workload:
         # No disk writes: staging is tmpfs; do not assume a LOGS partition number.
         code = code[:code.index('payload = bytes(')] + "print('P10C_USER_JSON=' + json.dumps(r, separators=(',', ':')))\n"
+        extra = (REPO/'experiments/cm5-phase10l/observe_profile.py').read_text()
+        code = code.replace("print('P10C_USER_JSON='", extra+"\nprint('P10C_USER_JSON='")
 
     if boot_selection:
         extra = (REPO/'experiments/cm5-phase10f1/runtime_observe.py').read_text()
@@ -408,7 +517,12 @@ def main():
                     if data:
                         with (out/'debug-serial.log').open('ab') as stream:
                             stream.write(data)
+                            debug_end = stream.tell()
+                        with (out/'debug-chunks.jsonl').open('a') as chunks:
+                            chunks.write(json.dumps(dict(end_offset=debug_end,
+                                host_seconds=time.monotonic()-timeline.start))+'\n')
                         debug_data += data.decode(errors='replace')
+                        timeline.console(debug_data)
                     if workload_pending:
                         # Drain output between small writes: canonical tty and FIFO buffers are bounded.
                         _, writable, _ = select.select([], [debug.writer] if isinstance(debug, PipeEndpoint) else [debug], [], 0)
@@ -416,8 +530,7 @@ def main():
                             debug.sendall(workload_pending[:512])
                             workload_pending = workload_pending[512:]
                     if workload_frames and not workload_pending:
-                        acknowledgements = re.findall(r'(?:^|[\r\n])P10J_UPLOAD_ACK=(\d+)[\r\n]', debug_data)
-                        if (acknowledgements and int(acknowledgements[-1]) == workload_frame_index
+                        if (upload_acknowledged(debug_data, workload_frame_index)
                                 and workload_frame_index < len(workload_frames)):
                             debug.sendall(workload_frames[workload_frame_index])
                             workload_frame_index += 1
@@ -426,6 +539,7 @@ def main():
                         if record is not None:
                             (out/'fsw-result.json').write_text(json.dumps(record, indent=2)+'\n')
                             workload_complete = True
+                            timeline.mark('fsw_result_received')
                             debug.sendall(b'systemctl poweroff\n')
                             shutdown_requested = True
                     if ('#' in debug_data and not shutdown_requested and not workload_started and elapsed-last_debug >= 30
@@ -461,11 +575,24 @@ def main():
                                  'fec_roots 2' in r.get('os_table', '') and
                                  'fec_roots 2' in r.get('fsw_table', '') and
                                  r.get('libc_call') and (r.get('logs_fsync_readback') or a.phase10j_workload)]
+                        if a.boot_profile == 'operational':
+                            valid = [r for r in valid if
+                                r.get('phase10l_boot', {}).get('profile_marker') == 'operational' and
+                                'PHASE10L_OPERATIONAL' in (r['phase10l_boot'].get('os_log') or '') and
+                                not r['phase10l_boot'].get('scan_dd_log_exists') and
+                                'Verified OS full read PASS' not in r['phase10l_boot']['os_log'] and
+                                r['lower'].startswith('/dev/mapper/cm5_os_verified ext4 ro,') and
+                                r['fsw'].startswith('/dev/mapper/cm5_fsw_verified ext4 ro,')]
+                        if direct:
+                            valid = [r for r in valid if sealed_policy.maps_match(r,sealed)]
                         user_validated = len(valid) >= 2 and valid[-1].get('uptime', 0) - valid[0].get('uptime', 0) >= 20
                         if user_validated and a.poweroff_after_validation and not shutdown_requested:
+                            timeline.mark('userspace_validated')
                             if a.phase10j_workload:
                                 if not workload_started:
                                     workload_pending, workload_frames = workload_upload(a.phase10j_workload.read_text())
+                                    timeline.mark('upload_start', frames=len(workload_frames),
+                                                  bytes=sum(map(len, workload_frames)))
                                     workload_started = True
                             else:
                                 debug.sendall(b'systemctl poweroff\n')
@@ -474,7 +601,9 @@ def main():
                     last = elapsed
                     try:
                         sample = dict(wall_seconds=elapsed, blocks=qmp.command('query-blockstats'),
-                                      status=qmp.command('query-status'), host_io=Path(f'/proc/{proc.pid}/io').read_text())
+                                      status=qmp.command('query-status'), host_io=Path(f'/proc/{proc.pid}/io').read_text(),
+                                      host_stat=Path(f'/proc/{proc.pid}/stat').read_text(),
+                                      host_clk_tck=os.sysconf('SC_CLK_TCK'))
                     except OSError as error:
                         sample = dict(wall_seconds=elapsed, qmp_error=str(error))
                         qmp_failed = True
@@ -490,17 +619,26 @@ def main():
                     qmp.command('trace-event-set-state', dict(name='sdcard_read_block', enable=False))
                     qmp.command('trace-event-set-state', dict(name='sdcard_read_batch', enable=False))
                     trace_on = False
-                for key, _ in sel.select(.01 if workload_pending else .1):
+                for key, _ in wait_console(sel, debug, .01 if workload_pending else .1):
                     data = os.read(key.fileobj.fileno(), 65536)
                     if data:
                         log.write(data)
                         log.flush()
+                        # Retain chunk offsets so later analyses can map console
+                        # observations to host time without modifying raw logs.
+                        with (out/'serial-chunks.jsonl').open('a') as chunks:
+                            chunks.write(json.dumps(dict(end_offset=log.tell(),
+                                host_seconds=time.monotonic()-timeline.start))+'\n')
+                        serial_tail = (serial_tail + data.decode(errors='replace'))
+                        timeline.console(serial_tail)
+                        serial_tail = serial_tail[-256:]
                     else:
                         sel.unregister(key.fileobj)
     finally:
         if proc.poll() is None:
             proc.kill()
         proc.wait()
+        timeline.mark('qemu_exit', returncode=proc.returncode)
         if qmp:
             qmp.sock.close()
         if debug:
@@ -511,6 +649,7 @@ def main():
             debug_parent.close()
         sel.close()
     serial = (out/'serial.log').read_text(errors='replace')
+    timeline.mark('postrun_identity_start')
     result = dict(status='OBSERVED_RUN', diagnostic_copy=a.diagnostic or a.recovery_case == 'no-fec', dma=a.dma, batch=a.batch, profile=a.profile,
         timeout=timed_out, returncode=proc.returncode, wall_seconds=time.monotonic()-start,
         kernel_entry='Linux version 6.18.50' in serial,
@@ -522,11 +661,16 @@ def main():
         multi_user='Reached target multi-user.target' in serial,
         inputs_unchanged=all(identity(Path(name)) == meta for name, meta in inputs.items()),
         overlay=identity(overlay))
+    timeline.mark('postrun_identity_end')
     if a.phase10j_workload:
         result['fsw_workload_complete'] = workload_complete
         result['normal_poweroff'] = (shutdown_requested and proc.returncode == 0 and not timed_out
                                      and 'reboot: Power down' in serial)
     result['execution_clock'] = a.execution_clock
+    result['boot_profile'] = a.boot_profile
+    result['execution_mode'] = a.execution_mode
+    result['generation_id'] = sealed['generation_id'] if sealed else None
+    result['operational_policy'] = operational_policy
     result['observer_upload_once'] = a.observer_upload_once
     result.update(userspace_validated=user_validated, shutdown_requested=shutdown_requested,
                   debug_shell=a.debug_shell)
@@ -537,6 +681,8 @@ def main():
         handoff.write_report(selection_work/'selection.json', boot_selection)
         result['boot_selection_report'] = str(selection_work/'selection.json')
         result['boot_source'] = 'selected active-overlay private exports, generated lab DT substitution'
+        if direct:
+            result['boot_source'] = 'sealed lab image; original BOOT selection plus explicit sealed-root initramfs; generated lab DT'
     (out/'result.json').write_text(json.dumps(result, indent=2)+'\n')
     if recovery:
         recovery.finish(out, lab, golden, overlay, fault, result)
