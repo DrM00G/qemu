@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Bounded observed physical-kernel run; diagnostic copies are explicit."""
 import argparse
+import base64
+import hashlib
+import zlib
 import json
 import os
 from pathlib import Path
@@ -86,6 +89,47 @@ def observer_invoke(remote='/run/cm5-observer.py'):
     return ("printf '\\n'; python3 "+shlex.quote(remote)+'\n').encode()
 
 
+
+def workload_upload(code, remote='/run/cm5-fsw-launch.py'):
+    """One canonical-TTY line in flight; guest ACK prevents input queue overrun."""
+    data = code.encode()
+    packed = zlib.compress(data)
+    encoded = base64.b64encode(packed).decode()
+    frames = [(encoded[i:i+2048]+'\n').encode() for i in range(0, len(encoded), 2048)]
+    receiver = f"""import base64,hashlib,json,os,sys,zlib
+try:
+ data=bytearray()
+ print(flush=True)
+ print('P10J_UPLOAD_ACK=0',flush=True)
+ for index in range({len(frames)}):
+  line=sys.stdin.buffer.readline(4096)
+  if not line.endswith(b'\\n'): raise RuntimeError('incomplete upload frame')
+  data.extend(base64.b64decode(line.strip(),validate=True))
+  print('P10J_UPLOAD_ACK='+str(index+1),flush=True)
+ if len(data)!={len(packed)} or hashlib.sha256(data).hexdigest()!={hashlib.sha256(packed).hexdigest()!r}: raise RuntimeError('compressed upload digest mismatch')
+ code=zlib.decompress(data)
+ if hashlib.sha256(code).hexdigest()!={hashlib.sha256(data).hexdigest()!r}: raise RuntimeError('launcher digest mismatch')
+ with open({remote!r},'wb') as stream: stream.write(code)
+ print('P10J_UPLOAD_VERIFIED',flush=True)
+ os.execv(sys.executable,[sys.executable,{remote!r}])
+except Exception as exc:
+ print('P10J_RESULT='+json.dumps(dict(status='ERROR',error='upload: '+repr(exc))),flush=True)
+"""
+    # repr keeps the bootstrap on one short shell input line.
+    bootstrap = 'python3 -u -c '+shlex.quote('exec('+repr(receiver)+')')+'\n'
+    if len(bootstrap.encode()) >= 3000:
+        raise ValueError('upload bootstrap exceeds conservative canonical line bound')
+    return bootstrap.encode(), frames
+
+
+
+def workload_result(console):
+    # Nested braces may arrive before the end of a long JSON string. Only a
+    # newline proves the complete record has arrived over the serial stream.
+    records = re.findall(r'(?:^|[\r\n])P10J_RESULT=(\{[^\r\n]+\})[\r\n]', console)
+    return json.loads(records[-1]) if records else None
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--phase10i-gpio-lab', action='store_true',
@@ -120,7 +164,14 @@ def main():
     p.add_argument('--boot-config-profile', choices=('cm5-headless-lab',))
     p.add_argument('--boot-overlay', type=Path,
                    help='Phase10F: use this exact disposable private QCOW2, exclusively owned by this run')
+    p.add_argument('--lab-root', type=Path, default=Path('/home/aweso/cm5-v8-lab/phase10c'))
+    p.add_argument('--golden', type=Path, default=Path('/home/aweso/cm5-v8-lab/golden/cm5-emmc-userarea.img'))
+    p.add_argument('--phase10j-workload', type=Path, help='private generated guest workload; local experiments only')
     a = p.parse_args()
+    if a.phase10j_workload and not (a.boot_overlay and a.boot_expected and a.debug_shell
+            and a.observer_upload_once and a.poweroff_after_validation
+            and not a.recovery_case and not a.native_rp1_test and not a.phase10i_gpio_lab):
+        p.error('Phase10J requires selected overlay, manifest, debug shell, upload-once, poweroff; no recovery or synthetic stimulus')
     if a.phase10i_gpio_lab and (not a.native_rp1_test or a.profile != 'native' or a.phase10h_smp_stress):
         p.error('Phase10I GPIO lab requires native RP1 profile without SMP stress')
     if a.phase10h_smp_stress and not a.native_rp1_test:
@@ -148,10 +199,10 @@ def main():
     os.umask(0o077)
     out = a.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    lab = Path('/home/aweso/cm5-v8-lab/phase10c')/out.name
+    lab = a.lab_root.resolve()/out.name
     lab.mkdir(parents=True, exist_ok=False)
     assets = Path('/home/aweso/cm5-phase10-private/physical-boot/boot-assets')
-    golden = Path('/home/aweso/cm5-v8-lab/golden/cm5-emmc-userarea.img')
+    golden = a.golden.resolve()
     if a.boot_overlay:
         sys.path.insert(0, str(REPO/'experiments/cm5-phase10f'))
         import handoff
@@ -296,7 +347,15 @@ def main():
     shutdown_requested = False
     user_validated = False
     qmp_failed = False
+    workload_pending = b''
+    workload_frames = []
+    workload_frame_index = 0
+    workload_started = workload_complete = False
     code = (REPO/'experiments/cm5-phase10c/observe.py').read_text()
+    if a.phase10j_workload:
+        # No disk writes: staging is tmpfs; do not assume a LOGS partition number.
+        code = code[:code.index('payload = bytes(')] + "print('P10C_USER_JSON=' + json.dumps(r, separators=(',', ':')))\n"
+
     if boot_selection:
         extra = (REPO/'experiments/cm5-phase10f1/runtime_observe.py').read_text()
         code = code.replace("print('P10C_USER_JSON='", extra+"\nprint('P10C_USER_JSON='")
@@ -350,7 +409,26 @@ def main():
                         with (out/'debug-serial.log').open('ab') as stream:
                             stream.write(data)
                         debug_data += data.decode(errors='replace')
-                    if ('#' in debug_data and not shutdown_requested and elapsed-last_debug >= 30
+                    if workload_pending:
+                        # Drain output between small writes: canonical tty and FIFO buffers are bounded.
+                        _, writable, _ = select.select([], [debug.writer] if isinstance(debug, PipeEndpoint) else [debug], [], 0)
+                        if writable:
+                            debug.sendall(workload_pending[:512])
+                            workload_pending = workload_pending[512:]
+                    if workload_frames and not workload_pending:
+                        acknowledgements = re.findall(r'(?:^|[\r\n])P10J_UPLOAD_ACK=(\d+)[\r\n]', debug_data)
+                        if (acknowledgements and int(acknowledgements[-1]) == workload_frame_index
+                                and workload_frame_index < len(workload_frames)):
+                            debug.sendall(workload_frames[workload_frame_index])
+                            workload_frame_index += 1
+                    if a.phase10j_workload and workload_started and not workload_complete:
+                        record = workload_result(debug_data)
+                        if record is not None:
+                            (out/'fsw-result.json').write_text(json.dumps(record, indent=2)+'\n')
+                            workload_complete = True
+                            debug.sendall(b'systemctl poweroff\n')
+                            shutdown_requested = True
+                    if ('#' in debug_data and not shutdown_requested and not workload_started and elapsed-last_debug >= 30
                             and not (a.observer_upload_once and observer_running)):
                         last_debug = elapsed
                         # Here-document avoids a canonical tty's single-line limit.
@@ -382,11 +460,16 @@ def main():
                                  'cm5_fsw_verified' in r.get('fsw', '') and
                                  'fec_roots 2' in r.get('os_table', '') and
                                  'fec_roots 2' in r.get('fsw_table', '') and
-                                 r.get('libc_call') and r.get('logs_fsync_readback')]
+                                 r.get('libc_call') and (r.get('logs_fsync_readback') or a.phase10j_workload)]
                         user_validated = len(valid) >= 2 and valid[-1].get('uptime', 0) - valid[0].get('uptime', 0) >= 20
                         if user_validated and a.poweroff_after_validation and not shutdown_requested:
-                            debug.sendall(b'systemctl poweroff\n')
-                            shutdown_requested = True
+                            if a.phase10j_workload:
+                                if not workload_started:
+                                    workload_pending, workload_frames = workload_upload(a.phase10j_workload.read_text())
+                                    workload_started = True
+                            else:
+                                debug.sendall(b'systemctl poweroff\n')
+                                shutdown_requested = True
                 if qmp and elapsed-last >= 10:
                     last = elapsed
                     try:
@@ -407,7 +490,7 @@ def main():
                     qmp.command('trace-event-set-state', dict(name='sdcard_read_block', enable=False))
                     qmp.command('trace-event-set-state', dict(name='sdcard_read_batch', enable=False))
                     trace_on = False
-                for key, _ in sel.select(.1):
+                for key, _ in sel.select(.01 if workload_pending else .1):
                     data = os.read(key.fileobj.fileno(), 65536)
                     if data:
                         log.write(data)
@@ -439,11 +522,15 @@ def main():
         multi_user='Reached target multi-user.target' in serial,
         inputs_unchanged=all(identity(Path(name)) == meta for name, meta in inputs.items()),
         overlay=identity(overlay))
+    if a.phase10j_workload:
+        result['fsw_workload_complete'] = workload_complete
+        result['normal_poweroff'] = (shutdown_requested and proc.returncode == 0 and not timed_out
+                                     and 'reboot: Power down' in serial)
     result['execution_clock'] = a.execution_clock
     result['observer_upload_once'] = a.observer_upload_once
     result.update(userspace_validated=user_validated, shutdown_requested=shutdown_requested,
                   debug_shell=a.debug_shell)
-    if user_validated:
+    if user_validated and (not a.phase10j_workload or workload_complete):
         result['status'] = 'PASS' if proc.returncode == 0 and not timed_out else 'MILESTONES_VALIDATED_CLEANUP_INCOMPLETE'
     if boot_selection:
         boot_selection['process'].update(returncode=proc.returncode, timeout=timed_out)
